@@ -1,0 +1,437 @@
+/* VelyKapet - User Profile Styles */
+/* Sistema completo de estilos para el perfil de usuario */
+
+/* Variables CSS para consistencia de colores */
+:root {
+    --velykapet-primary: #E45A84;
+    --velykapet-secondary: #D94876;
+    --velykapet-success: #28a745;
+    --velykapet-info: #17a2b8;
+    --velykapet-warning: #ffc107;
+    --velykapet-danger: #dc3545;
+    --velykapet-light: #f8f9fa;
+    --velykapet-dark: #333;
+}
+
+/* Animaciones */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* Contenedor principal del perfil */
+.user-profile {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Pestañas de navegación */
+.profile-tabs {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.profile-tabs::-webkit-scrollbar {
+    display: none; /* Chrome, Safari and Opera */
+}
+
+.profile-tabs button:hover {
+    background: linear-gradient(135deg, var(--velykapet-primary), var(--velykapet-secondary)) !important;
+    color: white !important;
+    transform: translateY(-2px);
+}
+
+/* Dashboard welcome section */
+.welcome-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.welcome-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+    animation: float 20s infinite linear;
+    pointer-events: none;
+}
+
+@keyframes float {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Cards de estadísticas */
+.stat-card {
+    transition: all 0.3s ease;
+    animation: slideIn 0.6s ease-out;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+/* Acciones rápidas */
+.quick-actions button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Secciones de información personal */
+.personal-info-section {
+    animation: fadeIn 0.8s ease-out;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(228, 90, 132, 0.2);
+    border-color: var(--velykapet-primary) !important;
+}
+
+/* Cards de mascotas */
+.pet-card {
+    transition: all 0.3s ease;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.pet-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.pet-card button {
+    transition: all 0.2s ease;
+}
+
+.pet-card button:hover {
+    transform: scale(1.05);
+}
+
+/* Cards de direcciones */
+.address-card {
+    transition: all 0.3s ease;
+    animation: fadeIn 0.6s ease-out;
+}
+
+.address-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.address-card button {
+    transition: all 0.2s ease;
+}
+
+.address-card button:hover {
+    transform: scale(1.05);
+}
+
+/* Sección de preferencias */
+.preferences-section {
+    animation: fadeIn 0.8s ease-out;
+}
+
+.notification-item {
+    transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1) !important;
+}
+
+.notification-item label:hover {
+    background-color: var(--velykapet-light) !important;
+}
+
+/* Checkboxes personalizados */
+input[type="checkbox"] {
+    transition: all 0.2s ease;
+}
+
+input[type="checkbox"]:hover {
+    transform: scale(1.1);
+}
+
+/* Marcas y categorías favoritas */
+.preferences-section label {
+    transition: all 0.3s ease;
+}
+
+.preferences-section label:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+}
+
+/* Modals */
+.modal-overlay {
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    animation: slideIn 0.4s ease-out;
+}
+
+/* Botones principales */
+button {
+    transition: all 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+}
+
+button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+/* Loading spinner */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .user-profile {
+        padding: 10px;
+    }
+    
+    .profile-tabs {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .profile-tabs button {
+        min-width: 120px;
+        font-size: 12px;
+        padding: 10px 12px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+        gap: 15px !important;
+    }
+    
+    .stat-card {
+        padding: 20px !important;
+    }
+    
+    .quick-actions > div {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .personal-form {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .pets-section .pets-grid,
+    .addresses-section .addresses-grid,
+    .preferences-section .notifications-grid,
+    .preferences-section .brands-grid,
+    .preferences-section .categories-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .modal-content {
+        margin: 10px;
+        max-height: 90vh;
+        padding: 20px;
+    }
+    
+    .modal-form {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-profile {
+        padding: 5px;
+    }
+    
+    .welcome-section {
+        padding: 20px !important;
+    }
+    
+    .welcome-section h2 {
+        font-size: 1.5rem !important;
+    }
+    
+    .stat-card h3 {
+        font-size: 1.5rem !important;
+    }
+    
+    .profile-tabs {
+        padding: 4px !important;
+        gap: 4px !important;
+    }
+    
+    .profile-tabs button {
+        min-width: 100px;
+        font-size: 11px;
+        padding: 8px 10px;
+    }
+    
+    .pet-card,
+    .address-card {
+        padding: 15px !important;
+    }
+    
+    .modal-content {
+        padding: 15px;
+    }
+}
+
+/* Estados especiales */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.error-state {
+    border: 2px solid var(--velykapet-danger);
+    background-color: #fff5f5;
+}
+
+.success-state {
+    border: 2px solid var(--velykapet-success);
+    background-color: #f0fff4;
+}
+
+/* Efectos de hover para mejor UX */
+.clickable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.clickable:hover {
+    opacity: 0.9;
+}
+
+/* Badges y etiquetas */
+.badge-primary {
+    background: linear-gradient(135deg, var(--velykapet-primary), var(--velykapet-secondary));
+    color: white;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    display: inline-block;
+}
+
+.badge-success {
+    background: linear-gradient(135deg, var(--velykapet-success), #20c997);
+    color: white;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    display: inline-block;
+}
+
+.badge-warning {
+    background: linear-gradient(135deg, var(--velykapet-warning), #ff8906);
+    color: #212529;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.375rem;
+    display: inline-block;
+}
+
+/* Scroll suave */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Mejora de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus visible para mejor accesibilidad */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--velykapet-primary);
+    outline-offset: 2px;
+}
+
+/* Tooltips y ayuda contextual */
+.tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.tooltip::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s;
+    z-index: 1000;
+}
+
+.tooltip:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Estilo para elementos deshabilitados */
+.disabled,
+[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed !important;
+    pointer-events: none;
+}
+
+/* Contenedor con scroll personalizado */
+.custom-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: var(--velykapet-primary);
+    border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--velykapet-secondary);
+}

@@ -1,0 +1,236 @@
+/* Estilos específicos para ModernCheckout Component */
+
+/* Indicador de pasos */
+.checkout-steps {
+    position: relative;
+}
+
+.step-indicator {
+    position: relative;
+}
+
+.step-indicator::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -15px;
+    width: 30px;
+    height: 2px;
+    background: var(--gray-300);
+    transform: translateY(-50%);
+    z-index: 0;
+}
+
+.step-indicator:last-child::after {
+    display: none;
+}
+
+/* Animaciones para el checkout */
+.animate-fadeIn {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.animate-delay-100 {
+    animation-delay: 0.1s;
+}
+
+.animate-delay-200 {
+    animation-delay: 0.2s;
+}
+
+.animate-delay-300 {
+    animation-delay: 0.3s;
+}
+
+.animate-delay-400 {
+    animation-delay: 0.4s;
+}
+
+.animate-delay-500 {
+    animation-delay: 0.5s;
+}
+
+.animate-delay-600 {
+    animation-delay: 0.6s;
+}
+
+.animate-bounce {
+    animation: bounce 0.6s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Tarjetas de métodos de pago */
+.payment-method {
+    transition: all 0.3s ease;
+}
+
+.payment-method:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+.payment-method.selected {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 25px rgba(var(--primary-rgb), 0.25) !important;
+}
+
+/* Form inputs específicos del checkout */
+.modern-checkout input,
+.modern-checkout select {
+    font-family: var(--font-family-primary);
+    transition: all 0.2s ease;
+}
+
+.modern-checkout input:focus,
+.modern-checkout select:focus {
+    outline: none;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+.modern-checkout .form-group {
+    margin-bottom: 16px;
+}
+
+.modern-checkout label {
+    color: var(--gray-700);
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: block;
+}
+
+/* Grid responsivo para métodos de pago */
+.payment-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+@media (max-width: 768px) {
+    .payment-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .modern-checkout {
+        padding: 10px !important;
+    }
+    
+    .checkout-steps {
+        flex-direction: column;
+        gap: 10px !important;
+    }
+    
+    .step-indicator {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .step-indicator::after {
+        display: none;
+    }
+}
+
+/* Loading spinner para el botón de pago */
+.loader {
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid #ffffff;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Estados de éxito y error */
+.text-success {
+    color: var(--success-color) !important;
+}
+
+.text-warning {
+    color: var(--warning-color) !important;
+}
+
+.text-error {
+    color: var(--error-color) !important;
+}
+
+/* Badges en los métodos de pago */
+.payment-method .badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.payment-method .badge.popular {
+    background: #FF6B35;
+    color: white;
+}
+
+.payment-method .badge.recommended {
+    background: #28a745;
+    color: white;
+}
+
+.payment-method .badge.secure {
+    background: #17a2b8;
+    color: white;
+}
+
+/* Confirmación de pago exitoso */
+.payment-confirmation .success-icon {
+    color: var(--success-color);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.payment-confirmation .order-number {
+    background: var(--gray-50);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--border-radius-lg);
+    padding: 20px;
+    margin: 20px 0;
+    font-family: var(--font-family-mono, monospace);
+}
+
+/* Responsive breakpoints */
+@media (max-width: 480px) {
+    .form-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .payment-method {
+        padding: 15px !important;
+    }
+    
+    .modern-checkout h2 {
+        font-size: 1.5rem !important;
+    }
+}

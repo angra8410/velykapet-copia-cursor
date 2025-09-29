@@ -1,0 +1,474 @@
+/* VelyKapet - Filter Styles */
+/* Estilos para el sistema de filtros lateral */
+
+/* Spinner para loading */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Estilos para el sidebar de filtros */
+.filter-sidebar {
+    transition: all 0.3s ease;
+}
+
+.filter-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.filter-sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.filter-sidebar::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.filter-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #bbb;
+}
+
+/* Estilos para secciones de filtros */
+.filter-section {
+    transition: all 0.2s ease;
+}
+
+.filter-section:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.filter-header {
+    transition: background-color 0.2s ease;
+}
+
+.filter-header:hover {
+    background: #e9ecef !important;
+}
+
+.filter-content {
+    border-radius: 0 0 8px 8px;
+}
+
+.filter-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.filter-content::-webkit-scrollbar-track {
+    background: #f8f9fa;
+}
+
+.filter-content::-webkit-scrollbar-thumb {
+    background: #dee2e6;
+    border-radius: 2px;
+}
+
+/* Estilos para opciones de filtro */
+.filter-option {
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    padding: 6px 4px !important;
+}
+
+.filter-option:hover {
+    background: #f8f9fa;
+    transform: translateX(2px);
+}
+
+/* Estilos para checkboxes */
+.filter-option input[type="checkbox"] {
+    accent-color: #E45A84;
+    transition: all 0.2s ease;
+}
+
+.filter-option input[type="checkbox"]:hover {
+    transform: scale(1.1);
+}
+
+/* Estilos para el slider de precio */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-track {
+    background: #ddd;
+    height: 6px;
+    border-radius: 3px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #E45A84;
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    background: #D94876;
+    transform: scale(1.1);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+input[type="range"]::-moz-range-track {
+    background: #ddd;
+    height: 6px;
+    border-radius: 3px;
+    border: none;
+}
+
+input[type="range"]::-moz-range-thumb {
+    background: #E45A84;
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* Estilos para el área de productos */
+.catalog-with-filters {
+    gap: 30px;
+}
+
+.products-area {
+    min-height: 500px;
+}
+
+.results-header {
+    transition: all 0.2s ease;
+}
+
+.results-header:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+}
+
+.products-grid {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estados de loading y error */
+.catalog-loading {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.catalog-error {
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+/* Infinite Scroll Styles */
+.products-grid {
+    transition: all 0.3s ease;
+}
+
+.products-grid .product-card {
+    animation: slideUp 0.4s ease-out;
+    animation-fill-mode: both;
+}
+
+.products-grid .product-card:nth-child(odd) {
+    animation-delay: 0.1s;
+}
+
+.products-grid .product-card:nth-child(even) {
+    animation-delay: 0.2s;
+}
+
+.loading-more {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px) scale(0.95); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll to Top Button */
+.scroll-to-top {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.scroll-to-top:active {
+    transform: scale(0.95) !important;
+}
+
+@media (max-width: 768px) {
+    .scroll-to-top {
+        bottom: 20px !important;
+        right: 20px !important;
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 16px !important;
+    }
+}
+
+/* Grid responsivo mejorado - FORZANDO MÁS COLUMNAS */
+/* OVERRIDE ULTRA FUERTE PARA MÁS COLUMNAS */
+.products-grid {
+    /* Forzar grid de columnas con cards más pequeñas */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+    gap: 16px !important;
+    max-width: none !important;
+    width: 100% !important;
+}
+
+.products-grid .product-card {
+    min-width: 200px !important;
+    max-width: none !important;
+}
+
+/* Forzar más columnas en cualquier pantalla ancha */
+@media (min-width: 1400px) {
+    .products-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+    }
+}
+@media (min-width: 2000px) {
+    .products-grid {
+        grid-template-columns: repeat(7, 1fr) !important; /* 7 columnas en pantallas ultra anchas */
+        gap: 18px !important;
+        max-width: none;
+        grid-auto-rows: minmax(360px, auto);
+    }
+    
+    .catalog-with-filters {
+        padding: 20px 3rem !important;
+        max-width: 95vw !important;
+    }
+    
+    .filter-sidebar {
+        width: 300px !important; /* Sidebar compacto para más productos */
+    }
+}
+
+@media (min-width: 1800px) and (max-width: 1999px) {
+    .products-grid {
+        grid-template-columns: repeat(6, 1fr) !important; /* 6 columnas en pantallas muy grandes */
+        gap: 18px !important;
+        max-width: none;
+        grid-auto-rows: minmax(360px, auto);
+    }
+    
+    .catalog-with-filters {
+        padding: 20px 2.5rem !important;
+    }
+    
+    .filter-sidebar {
+        width: 290px !important;
+    }
+}
+
+@media (min-width: 1600px) and (max-width: 1799px) {
+    .products-grid {
+        grid-template-columns: repeat(5, 1fr) !important; /* 5 columnas en pantallas grandes */
+        gap: 18px !important;
+        max-width: none;
+        grid-auto-rows: minmax(360px, auto);
+    }
+    
+    .catalog-with-filters {
+        padding: 20px 2rem !important;
+    }
+    
+    .filter-sidebar {
+        width: 280px !important;
+    }
+}
+
+@media (min-width: 1400px) and (max-width: 1599px) {
+    .products-grid {
+        grid-template-columns: repeat(4, 1fr) !important; /* 4 columnas en pantallas grandes */
+        gap: 22px !important;
+        max-width: none;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr) !important; /* 3 columnas en pantallas medianas */
+        gap: 20px !important;
+    }
+}
+
+@media (min-width: 1000px) and (max-width: 1199px) {
+    .products-grid {
+        grid-template-columns: repeat(3, 1fr) !important; /* 3 columnas en pantallas laptop pequeñas */
+        gap: 18px !important;
+    }
+}
+
+@media (min-width: 800px) and (max-width: 999px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr) !important; /* 2 columnas en tablets */
+        gap: 18px !important;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .catalog-with-filters {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .filter-sidebar {
+        width: 100% !important;
+        position: static !important;
+        order: -1;
+    }
+    
+    .products-area {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .filter-sidebar {
+        padding: 15px !important;
+    }
+    
+    .filter-section {
+        margin-bottom: 15px !important;
+    }
+    
+    .filter-header {
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+    }
+    
+    .filter-content {
+        padding: 10px 12px !important;
+    }
+    
+    .filter-option {
+        font-size: 12px !important;
+    }
+    
+    .products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+        gap: 15px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .catalog-with-filters {
+        padding: 10px !important;
+    }
+    
+    .filter-sidebar {
+        padding: 10px !important;
+    }
+    
+    .products-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+    }
+    
+    .results-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px;
+    }
+    
+    .loading-more {
+        padding: 25px 15px !important;
+        gap: 10px !important;
+    }
+    
+    .loading-more span {
+        font-size: 14px !important;
+    }
+    
+    .product-card {
+        min-height: 380px !important;
+    }
+}
+
+/* Animaciones adicionales */
+.filter-option input[type="checkbox"]:checked + span {
+    font-weight: 600;
+    color: #E45A84;
+}
+
+.filter-section.expanded .filter-content {
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 200px;
+    }
+}
+
+/* Estilos para badges y contadores */
+.filter-option span:last-child {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 2px 8px;
+    transition: all 0.2s ease;
+}
+
+.filter-option:hover span:last-child {
+    background: #e9ecef;
+    color: #E45A84;
+}

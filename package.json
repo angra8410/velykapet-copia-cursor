@@ -1,0 +1,15 @@
+{
+  "name": "ventas-pet",
+  "version": "1.0.0",
+  "description": "Sistema de ventas para tienda de mascotas",
+  "main": "simple-server.cjs",
+  "scripts": {
+    "start": "node simple-server.cjs",
+    "dev": "set NODE_ENV=development && node simple-server.cjs",
+    "prod": "set NODE_ENV=production && node simple-server.cjs",
+    "start:env": "node -e \"process.argv.length > 2 && (process.env.NODE_ENV = process.argv[2]); require('./simple-server.cjs');\""
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}

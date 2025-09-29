@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 VelyKapet - Tienda de Mascotas</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Sistema de estilos moderno -->
+    <link rel="stylesheet" href="src/styles.css">
+    <link rel="stylesheet" href="src/checkout-styles.css">
+    <link rel="stylesheet" href="src/filter-styles.css">
+    <link rel="stylesheet" href="src/css/user-profile.css">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #ffffff;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        
+        #root {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .loading {
+            text-align: center;
+            color: white;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .loading h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .loading .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top: 5px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px;
+            max-width: 600px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="root">
+        <div class="loading">
+            <h1>🚀 VelyKapet</h1>
+            <div class="spinner"></div>
+            <p>Cargando aplicación React...</p>
+        </div>
+    </div>
+
+    <!-- Cargar React desde CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Cargar servicios -->
+    <script src="src/currency.js"></script>
+    <script src="src/api.js"></script>
+    <script src="src/auth.js"></script>
+    <script src="src/products.js"></script>
+    <script src="src/cart.js"></script>
+    <script src="src/checkout.js"></script>
+    
+    <!-- Sistemas de optimización de rendimiento -->
+    <script src="src/performance.js"></script>
+    <script src="src/cache-manager.js"></script>
+    <script src="src/lazy-loader-fixed.js"></script>
+    <script src="src/image-optimizer.js"></script>
+    <script src="src/api-optimizer.js"></script>
+    <script src="src/performance-testing.js"></script>
+    
+    <!-- Sistemas de procesamiento de datos -->
+    <script src="src/pdf-processor.js"></script>
+    <script src="src/iconopet-scraper.js"></script>
+    
+    <!-- Cargar componentes modernos -->
+    <script src="src/components/Header.js"></script>
+    <script src="src/components/HamburgerMenu.js"></script>
+    <script src="src/components/PrivacySettings.js"></script>
+    <script src="src/components/TermsConditions.js"></script>
+    <script src="src/components/PrivacyPolicy.js"></script>
+    <script src="src/components/CategoryNav.js"></script>
+    <script src="src/components/ProductCard.js"></script>
+    <script src="src/components/ModernLayout.js"></script>
+    <script src="src/components/SectionWrappers.js"></script>
+    <script src="src/components/ModernCheckout.js"></script>
+    <script src="src/components/HeroCategories.js"></script>
+    <script src="src/components/FilterSidebar.js"></script>
+    <script src="src/components/CatalogWithFilters.js"></script>
+    <script src="src/components/UserProfile.js"></script>
+    <script src="src/components/AdminPanel.js"></script>
+    <script src="src/components/OrderHistory.js"></script>
+    <script src="src/components/ProductReviews.js"></script>
+    
+    <!-- Cargar nuestra aplicación React -->
+    <script src="src/app.js"></script>
+    
+    <script>
+        // Mostrar información de carga en consola
+        console.log('🌐 index.html cargado');
+        console.log('🔗 Cargando React desde CDN...');
+        
+        // Verificar que el servidor esté funcionando
+        window.addEventListener('load', () => {
+            console.log('✅ Página completamente cargada');
+        });
+        
+        // Manejo de errores de carga de scripts
+        window.addEventListener('error', (event) => {
+            console.error('❌ Error cargando recurso:', event.target.src || event.target.href);
+        });
+        
+        // Debug específico para PrivacyPolicy
+        setTimeout(() => {
+            console.log('🔍 DEBUG PrivacyPolicy desde HTML:', {
+                disponible: !!window.PrivacyPolicyComponent,
+                tipo: typeof window.PrivacyPolicyComponent,
+                todasLasProps: Object.keys(window).filter(k => k.includes('Privacy'))
+            });
+        }, 3000);
+    </script>
+</body>
+</html>
