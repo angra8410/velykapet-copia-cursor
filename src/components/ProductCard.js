@@ -8,8 +8,23 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
     const [imageError, setImageError] = React.useState(false);
     const [isAddingToCart, setIsAddingToCart] = React.useState(false);
     const [showQuickView, setShowQuickView] = React.useState(false);
+    const [selectedVariation, setSelectedVariation] = React.useState(null);
+    const [productVariations, setProductVariations] = React.useState([]);
     
     if (!product) return null;
+    
+    // Cargar variaciones del producto
+    React.useEffect(() => {
+        if (window.getProductVariations) {
+            const variations = window.getProductVariations(product);
+            setProductVariations(variations);
+            
+            // Seleccionar la primera variación por defecto
+            if (variations.length > 0) {
+                setSelectedVariation(variations[0]);
+            }
+        }
+    }, [product]);
     
     const handleImageLoad = () => {
         setIsImageLoading(false);
@@ -28,10 +43,13 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
         setIsAddingToCart(true);
         
         try {
+            // Usar la variación seleccionada o el producto original
+            const productToAdd = selectedVariation || product;
+            
             // Solo usar onAddToCart - NO usar cartManager directamente
             if (onAddToCart) {
-                await onAddToCart(product);
-                console.log('🛒 Producto añadido al carrito:', product.name);
+                await onAddToCart(productToAdd);
+                console.log('🛒 Producto añadido al carrito:', productToAdd.name || productToAdd.Name);
             } else {
                 console.error('❌ No se puede agregar producto: falta onAddToCart');
                 return;
@@ -59,10 +77,17 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
         return `$${price?.toLocaleString() || '0'}`;
     };
     
+    // Obtener el precio actual (de la variación seleccionada o del producto)
+    const getCurrentPrice = () => {
+        return selectedVariation?.price || product.Price || product.price || 0;
+    };
+    
     const getStockStatus = () => {
-        if (!product.stock || product.stock === 0) {
+        const currentStock = selectedVariation?.stock || product.Stock || product.stock || 0;
+        
+        if (!currentStock || currentStock === 0) {
             return { text: 'Agotado', color: '#dc3545', available: false };
-        } else if (product.stock <= 5) {
+        } else if (currentStock <= 5) {
             return { text: 'Últimas unidades', color: '#ffc107', available: true };
         } else {
             return { text: 'Disponible', color: '#28a745', available: true };
@@ -182,11 +207,14 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
                 }
             ),
             
-            // Imagen del producto o placeholder
+            // Imagen del producto o placeholder mejorado
             React.createElement('img',
                 {
-                    src: !imageError && product.image ? product.image : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik05NSA2MEg5MFY1NUg5NVY2MFpNMTA1IDYwSDExMFY1NUgxMDVWNjBaTTk1IDcwSDkwVjc1SDk1VjcwWk0xMDUgNzBIMTEwVjc1SDEwNVY3MFoiIGZpbGw9IiNERUUyRTYiLz4KPHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSI4MCIgeT0iNTUiPgo8cGF0aCBkPSJNMjAgMzJDMjYuNjI3NCAzMiAzMiAyNi42Mjc0IDMyIDIwQzMyIDEzLjM3MjYgMjYuNjI3NCA4IDIwIDhDMTMuMzcyNiA4IDggMTMuMzcyNiA4IDIwQzggMjYuNjI3NCAxMy4zNzI2IDMyIDIwIDMyWiIgZmlsbD0iI0RFRTJFNiIvPgo8cGF0aCBkPSJNMjAgMjJDMjEuMTA0NiAyMiAyMiAyMS4xMDQ2IDIyIDIwQzIyIDE4Ljg5NTQgMjEuMTA0NiAxOCAyMCAxOEMxOC44OTU0IDE4IDE4IDE4Ljg5NTQgMTggMjBDMTggMjEuMTA0NiAxOC44OTU0IDIyIDIwIDIyWiIgZmlsbD0iI0FCQjVCRCIvPgo8L3N2Zz4KPC9zdmc+',
-                    alt: product.name,
+                    src: !imageError && (product.image || product.ImageUrl || product.imageUrl) ? 
+                        (product.image || product.ImageUrl || product.imageUrl) : 
+                        // Placeholder mejorado con imagen de mascota
+                        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM0QTkwRTI7c3RvcC1vcGFjaXR5OjEiIC8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzM1N0FCRDtzdG9wLW9wYWNpdHk6MSIgLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8Y2lyY2xlIGN4PSIxMDAiIGN5PSI3NSIgcj0iMzAiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOSIvPgo8Y2lyY2xlIGN4PSI5MCIgY3k9IjY1IiByPSI4IiBmaWxsPSIjMzMzIi8+CjxjaXJjbGUgY3g9IjExMCIgY3k9IjY1IiByPSI4IiBmaWxsPSIjMzMzIi8+CjxwYXRoIGQ9Ik0xMDAgODVDMTA1IDkwIDk1IDkwIDEwMCA4NSIgZmlsbD0iIzMzMyIvPgo8dGV4dCB4PSIxMDAiIHk9IjEzMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+4p2M77iPPC90ZXh0Pgo8L3N2Zz4=',
+                    alt: product.name || product.Name,
                     onLoad: handleImageLoad,
                     onError: handleImageError,
                     style: {
@@ -259,7 +287,7 @@ React.createElement('div',
                                 marginBottom: '8px'
                             }
                         },
-                        formatPrice(product.price)
+                        formatPrice(getCurrentPrice())
                     ),
                     
                     // Stock
@@ -346,6 +374,13 @@ React.createElement('div',
                 product.description
             ),
             
+            // Variaciones del producto (si existen)
+            productVariations.length > 1 && window.ProductVariationsComponent && React.createElement(window.ProductVariationsComponent, {
+                product: product,
+                onVariationChange: setSelectedVariation,
+                selectedVariation: selectedVariation
+            }),
+            
             // Rating (si existe)
             product.rating && React.createElement('div',
                 {
@@ -414,7 +449,7 @@ React.createElement('div',
                             color: '#4A90E2'
                         }
                     },
-                    formatPrice(product.price)
+                    formatPrice(getCurrentPrice())
                 )
             ),
             
