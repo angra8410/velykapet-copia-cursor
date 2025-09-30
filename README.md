@@ -35,10 +35,12 @@
 ## 🚀 Tecnologías
 
 - **Frontend**: React 18 (puro, sin JSX)
+- **Backend**: .NET Core API con base de datos en español ([Ver análisis](./ANALISIS_BACKEND_DOTNET.md))
 - **Estilos**: CSS3 con variables personalizadas
 - **Assets**: Imágenes PNG sin fondo para mejor integración
 - **Performance**: Optimizadores de imágenes y cache manager
 - **API**: Sistema de conexión con backend RESTful
+- **Seguridad**: Autenticación JWT para protección de endpoints
 
 ## 📁 Estructura del Proyecto
 
@@ -163,6 +165,26 @@ npx http-server . -p 8080
 - [ ] Chat de soporte en vivo
 - [ ] App móvil complementaria
 - [ ] Sistema de recompensas para clientes
+
+## 📚 Documentación del Backend
+
+### Análisis y Arquitectura .NET
+- **[Análisis Completo del Backend .NET](./ANALISIS_BACKEND_DOTNET.md)** - Documento exhaustivo de arquitectura, base de datos en español, y estrategia de implementación
+- **[Guía Rápida de Implementación](./GUIA_RAPIDA_IMPLEMENTACION.md)** - Tutorial paso a paso para desarrolladores
+
+### Características del Backend
+- ✅ Base de datos en español (Usuarios, Productos, Ordenes, Categorias, Marcas)
+- ✅ Autenticación JWT robusta
+- ✅ API RESTful con documentación Swagger
+- ✅ Arquitectura en capas (Controllers, Services, Repositories)
+- ✅ Entity Framework Core con SQL Server
+- ✅ Seguridad con hash de contraseñas
+- ✅ CORS configurado para frontend
+
+### Scripts y Configuración
+- **[Scripts de Inicialización](./SCRIPTS_README.md)** - Cómo iniciar frontend y backend
+- **[Configuración de Ambientes](./AMBIENTES.md)** - Variables de entorno
+- **[Panel de Administración](./ADMIN_ACCESS.md)** - Acceso al panel admin
 
 ## 🤝 Contribuir
 
