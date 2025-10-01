@@ -220,6 +220,23 @@ class ApiService {
     // ENDPOINTS DE PRODUCTOS
     // ======================
 
+    // Mapear propiedades del backend (español) al frontend (inglés)
+    mapProductFromBackend(producto) {
+        if (!producto) return null;
+        
+        return {
+            Id: producto.Id,
+            Name: producto.Nombre,
+            Description: producto.Descripcion,
+            Price: producto.Precio,
+            Stock: producto.Stock,
+            Category: producto.Categoria,
+            Brand: producto.Marca,
+            ImageUrl: producto.UrlImagen,
+            PetType: producto.TipoMascota
+        };
+    }
+
     async getProducts(filters = {}) {
         console.log('📦 Obteniendo productos', filters);
         const queryParams = new URLSearchParams();
@@ -229,10 +246,16 @@ class ApiService {
         if (filters.minPrice) queryParams.append('minPrice', filters.minPrice);
         if (filters.maxPrice) queryParams.append('maxPrice', filters.maxPrice);
         
-        const endpoint = queryParams.toString() ? `/Products?${queryParams}` : '/Products';
+        const endpoint = queryParams.toString() ? `/Productos?${queryParams}` : '/Productos';
         
         try {
-            return await this.get(endpoint);
+            const productos = await this.get(endpoint);
+            // Mapear array de productos del backend al formato del frontend
+            const mappedProducts = Array.isArray(productos) 
+                ? productos.map(p => this.mapProductFromBackend(p))
+                : [];
+            console.log('✅ Productos mapeados:', mappedProducts.length);
+            return mappedProducts;
         } catch (error) {
             console.error('❌ Error obteniendo productos:', error.message);
             throw error;
@@ -242,7 +265,9 @@ class ApiService {
     async getProduct(id) {
         console.log('📦 Obteniendo producto:', id);
         try {
-            return await this.get(`/Products/${id}`);
+            const producto = await this.get(`/Productos/${id}`);
+            // Mapear producto individual del backend al formato del frontend
+            return this.mapProductFromBackend(producto);
         } catch (error) {
             console.error('❌ Error obteniendo producto:', error.message);
             throw error;

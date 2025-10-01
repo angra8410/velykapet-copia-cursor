@@ -371,7 +371,7 @@ class IconoPetScraper {
             // Intentar guardar via API
             if (window.ApiService && window.ApiService.post) {
                 try {
-                    const result = await window.ApiService.post('/Products/bulk', products);
+                    const result = await window.ApiService.post('/Productos/bulk', products);
                     console.log('✅ Productos de IconoPet guardados en API:', result);
                     return { success: true, count: products.length, method: 'API' };
                 } catch (error) {
