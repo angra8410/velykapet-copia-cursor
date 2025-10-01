@@ -128,34 +128,61 @@ if (cartManager.getItems().some(item => item.price === 0 || item.price === null 
 function ProductCard({ product, onAddToCart }) {
     // Si existe el componente moderno, usarlo
     if (window.ProductCardComponent) {
-        // Convertir datos del backend al formato esperado por el componente moderno
+        // El producto ya viene con el formato del backend (ProductoDto)
+        // Pasarlo directamente con las variaciones incluidas
         const modernProduct = {
-            Id: product.Id,
-            name: product.Name,
-            price: product.Price,
-            image: product.ImageUrl || null,
-            description: product.Description,
-            category: product.Category,
-            stock: product.Stock,
-            rating: product.Rating
+            // Datos del producto base
+            Id: product.IdProducto,
+            IdProducto: product.IdProducto,
+            name: product.NombreBase,
+            Name: product.NombreBase,
+            NombreBase: product.NombreBase,
+            price: 0, // El precio viene de las variaciones
+            Price: 0,
+            image: product.URLImagen,
+            ImageUrl: product.URLImagen,
+            URLImagen: product.URLImagen,
+            description: product.Descripcion,
+            Description: product.Descripcion,
+            Descripcion: product.Descripcion,
+            category: product.NombreCategoria,
+            Category: product.NombreCategoria,
+            NombreCategoria: product.NombreCategoria,
+            stock: 0, // El stock viene de las variaciones
+            Stock: 0,
+            rating: product.Rating,
+            Rating: product.Rating,
+            petType: product.TipoMascota,
+            PetType: product.TipoMascota,
+            TipoMascota: product.TipoMascota,
+            // IMPORTANTE: Incluir las variaciones del backend
+            Variaciones: product.Variaciones || []
         };
         
         return React.createElement(window.ProductCardComponent, {
             product: modernProduct,
             onAddToCart: (modernProd) => {
-                // Convertir el producto moderno de vuelta al formato del backend
+                // El producto a agregar debe incluir la variación seleccionada
+                // Si es una variación, incluir idVariacion
                 const backendProduct = {
-                    Id: modernProd.Id || product.Id,
-                    Name: modernProd.name || product.Name,
-                    Price: modernProd.price || product.Price,
-                    Stock: modernProd.stock || product.Stock,
-                    Description: modernProd.description || product.Description,
-                    Category: modernProd.category || product.Category,
-                    ImageUrl: modernProd.image || product.ImageUrl,
+                    Id: modernProd.idProducto || modernProd.IdProducto || product.IdProducto,
+                    IdProducto: modernProd.idProducto || modernProd.IdProducto || product.IdProducto,
+                    IdVariacion: modernProd.idVariacion || modernProd.IdVariacion,
+                    Name: modernProd.name || product.NombreBase,
+                    NombreBase: product.NombreBase,
+                    Peso: modernProd.peso || 'Estándar',
+                    Price: modernProd.price || 0,
+                    Stock: modernProd.stock || 0,
+                    Description: modernProd.description || product.Descripcion,
+                    Descripcion: product.Descripcion,
+                    Category: modernProd.category || product.NombreCategoria,
+                    NombreCategoria: product.NombreCategoria,
+                    ImageUrl: modernProd.image || product.URLImagen,
+                    URLImagen: product.URLImagen,
                     Rating: modernProd.rating || product.Rating
                 };
                 console.log('🛒 DEBUG - Producto original:', product);
-                console.log('🛒 DEBUG - Producto moderno:', modernProd);
+                console.log('🛒 DEBUG - Producto moderno (variación):', modernProd);
                 console.log('🛒 DEBUG - Producto convertido:', backendProduct);
                 return onAddToCart(backendProduct);
             },
@@ -547,7 +574,8 @@ function ProductCatalog() {
             setFilteredProducts(products);
         } else {
             const filtered = products.filter(product =>
-                product.Name.toLowerCase().includes(searchTerm.toLowerCase())
+                (product.NombreBase && product.NombreBase.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (product.Descripcion && product.Descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
             );
             setFilteredProducts(filtered);
         }
@@ -569,18 +597,46 @@ function ProductCatalog() {
 
     const handleAddToCart = async (product) => {
         console.log('🛒 DEBUG - Producto a agregar:', product);
-        console.log('🛒 DEBUG - Price:', product.Price, 'Stock:', product.Stock, 'Name:', product.Name);
+        console.log('🛒 DEBUG - IdVariacion:', product.IdVariacion, 'Price:', product.Price, 'Stock:', product.Stock, 'Name:', product.Name);
         
+        // Verificar si es una variación con stock
         if (product.Stock <= 0) {
             alert('❌ Producto sin stock disponible');
             return;
         }
         
-        cartManager.addItem(product, 1);
+        // Agregar al carrito con la información de la variación
+        const itemToAdd = {
+            productId: product.IdProducto || product.Id,
+            variationId: product.IdVariacion,
+            name: product.Name || product.NombreBase,
+            peso: product.Peso || 'Estándar',
+            price: product.Price,
+            quantity: 1,
+            subtotal: product.Price * 1,
+            stock: product.Stock
+        };
+        
+        console.log('🛒 DEBUG - Item a agregar al carrito:', itemToAdd);
+        
+        // Usar el cartManager para agregar
+        if (window.cartManager) {
+            // Adaptar el producto para el cartManager existente
+            const cartProduct = {
+                Id: product.IdProducto || product.Id,
+                IdVariacion: product.IdVariacion,
+                Name: product.Name || product.NombreBase,
+                Peso: product.Peso || 'Estándar',
+                Price: product.Price,
+                Stock: product.Stock
+            };
+            cartManager.addItem(cartProduct, 1);
+        }
+        
         console.log('🛒 DEBUG - Carrito después de agregar:', cartManager.getItems());
         
         // Mostrar notificación
-        alert(`✅ ${product.Name} agregado al carrito!`);
+        alert(`✅ ${product.Name || product.NombreBase} agregado al carrito!`);
     };
 
     if (loading) {

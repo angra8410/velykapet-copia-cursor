@@ -16,6 +16,7 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
     // Cargar variaciones del producto
     React.useEffect(() => {
         if (window.getProductVariations) {
+            // Pasar el producto completo con Variaciones del backend
             const variations = window.getProductVariations(product);
             setProductVariations(variations);
             
