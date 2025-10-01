@@ -1,5 +1,5 @@
 // VentasPet - Sistema de Variaciones de Productos
-// Maneja diferentes tamaños, pesos y opciones de productos
+// Maneja diferentes tamaños, pesos y opciones de productos desde el backend
 
 console.log('📦 Cargando Product Variations Component...');
 
@@ -7,10 +7,10 @@ window.ProductVariationsComponent = function({ product, onVariationChange, selec
     const [variations, setVariations] = React.useState([]);
     const [currentVariation, setCurrentVariation] = React.useState(selectedVariation || null);
     
-    // Generar variaciones basadas en el producto
+    // Cargar variaciones desde el producto del backend
     React.useEffect(() => {
         if (product) {
-            const productVariations = generateProductVariations(product);
+            const productVariations = getBackendVariations(product);
             setVariations(productVariations);
             
             // Seleccionar la primera variación por defecto si no hay selección
@@ -23,87 +23,55 @@ window.ProductVariationsComponent = function({ product, onVariationChange, selec
         }
     }, [product]);
     
-    const generateProductVariations = (product) => {
-        const baseProduct = {
-            id: product.Id || product.id,
-            name: product.Name || product.name,
-            description: product.Description || product.description,
-            category: product.Category || product.category,
-            petType: product.PetType || product.petType || 'General',
-            brand: product.Brand || product.brand || 'Sin marca',
-            rating: product.Rating || product.rating || 4.0
-        };
-        
-        // Generar variaciones basadas en el tipo de producto
-        const variations = [];
-        
-        // Para alimentos, generar variaciones de peso
-        if (baseProduct.category?.toLowerCase().includes('alimento') || 
-            baseProduct.name?.toLowerCase().includes('alimento')) {
-            
-            const weightVariations = [
-                { weight: '500g', price: (product.Price || product.price || 15000) * 0.6, stock: 50 },
-                { weight: '1.5kg', price: (product.Price || product.price || 15000) * 1.0, stock: 30 },
-                { weight: '3kg', price: (product.Price || product.price || 15000) * 1.8, stock: 20 }
-            ];
-            
-            weightVariations.forEach((variation, index) => {
-                variations.push({
-                    ...baseProduct,
-                    id: `${baseProduct.id}_${variation.weight}`,
-                    name: `${baseProduct.name} ${variation.weight}`,
-                    price: variation.price,
-                    stock: variation.stock,
-                    weight: variation.weight,
-                    size: variation.weight,
-                    image: product.image || product.ImageUrl || product.imageUrl,
-                    isVariation: true,
-                    parentId: baseProduct.id
-                });
-            });
-        }
-        // Para snacks, generar variaciones de cantidad
-        else if (baseProduct.category?.toLowerCase().includes('snack') || 
-                 baseProduct.name?.toLowerCase().includes('snack')) {
-            
-            const quantityVariations = [
-                { quantity: '1 unidad', price: product.Price || product.price || 5000, stock: 100 },
-                { quantity: 'Pack 3', price: (product.Price || product.price || 5000) * 2.5, stock: 50 },
-                { quantity: 'Pack 6', price: (product.Price || product.price || 5000) * 4.5, stock: 25 }
-            ];
-            
-            quantityVariations.forEach((variation, index) => {
-                variations.push({
-                    ...baseProduct,
-                    id: `${baseProduct.id}_${variation.quantity.replace(' ', '_')}`,
-                    name: `${baseProduct.name} (${variation.quantity})`,
-                    price: variation.price,
-                    stock: variation.stock,
-                    quantity: variation.quantity,
-                    image: product.image || product.ImageUrl || product.imageUrl,
-                    isVariation: true,
-                    parentId: baseProduct.id
-                });
-            });
-        }
-        // Para otros productos, crear una variación única
-        else {
-            variations.push({
-                ...baseProduct,
-                price: product.Price || product.price || 10000,
-                stock: product.Stock || product.stock || 10,
-                image: product.image || product.ImageUrl || product.imageUrl,
-                isVariation: false
-            });
+    const getBackendVariations = (product) => {
+        // Si el producto tiene variaciones del backend, usarlas
+        if (product.Variaciones && Array.isArray(product.Variaciones) && product.Variaciones.length > 0) {
+            console.log('📦 Usando variaciones del backend:', product.Variaciones.length);
+            return product.Variaciones.map(variacion => ({
+                id: variacion.IdVariacion,
+                idVariacion: variacion.IdVariacion,
+                idProducto: variacion.IdProducto,
+                name: `${product.NombreBase || product.Name || product.name} - ${variacion.Peso}`,
+                peso: variacion.Peso,
+                price: variacion.Precio,
+                stock: variacion.Stock,
+                activa: variacion.Activa,
+                // Campos adicionales del producto base
+                description: product.Descripcion || product.Description || product.description,
+                category: product.NombreCategoria || product.Category || product.category,
+                petType: product.TipoMascota || product.PetType || product.petType || 'General',
+                image: product.URLImagen || product.ImageUrl || product.image || product.imageUrl,
+                isVariation: true
+            }));
         }
         
-        return variations;
+        // Si no hay variaciones, crear una variación única con los datos del producto
+        console.log('⚠️ Producto sin variaciones del backend, creando variación única');
+        return [{
+            id: product.IdProducto || product.Id || product.id,
+            idProducto: product.IdProducto || product.Id || product.id,
+            name: product.NombreBase || product.Name || product.name,
+            peso: 'Estándar',
+            price: product.Price || product.price || 0,
+            stock: product.Stock || product.stock || 0,
+            activa: true,
+            description: product.Descripcion || product.Description || product.description,
+            category: product.NombreCategoria || product.Category || product.category,
+            petType: product.TipoMascota || product.PetType || product.petType || 'General',
+            image: product.URLImagen || product.ImageUrl || product.image || product.imageUrl,
+            isVariation: false
+        }];
     };
+
     
-    const handleVariationSelect = (variation) => {
-        setCurrentVariation(variation);
-        if (onVariationChange) {
-            onVariationChange(variation);
+    const handleVariationSelect = (e) => {
+        const selectedId = parseInt(e.target.value);
+        const variation = variations.find(v => v.id === selectedId || v.idVariacion === selectedId);
+        if (variation) {
+            setCurrentVariation(variation);
+            if (onVariationChange) {
+                onVariationChange(variation);
+            }
         }
     };
     
@@ -116,6 +84,7 @@ window.ProductVariationsComponent = function({ product, onVariationChange, selec
         return null;
     }
     
+    // Selector de variaciones como dropdown (estilo e-commerce moderno)
     return React.createElement('div',
         {
             className: 'product-variations',
@@ -125,185 +94,105 @@ window.ProductVariationsComponent = function({ product, onVariationChange, selec
         },
         
         // Título de variaciones
-        React.createElement('div',
+        React.createElement('label',
             {
                 style: {
-                    fontSize: '14px',
+                    fontSize: '13px',
                     fontWeight: '600',
                     color: '#333',
-                    marginBottom: '8px'
+                    marginBottom: '6px',
+                    display: 'block'
                 }
             },
-            'Opciones disponibles:'
+            'Selecciona un peso:'
         ),
         
-        // Selector de variaciones
-        React.createElement('div',
+        // Dropdown selector
+        React.createElement('select',
             {
+                value: currentVariation?.id || currentVariation?.idVariacion || '',
+                onChange: handleVariationSelect,
                 style: {
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px'
+                    width: '100%',
+                    padding: '10px 12px',
+                    border: '2px solid #e0e0e0',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    color: '#333',
+                    backgroundColor: 'white',
+                    cursor: 'pointer',
+                    outline: 'none',
+                    transition: 'all 0.2s ease',
+                    appearance: 'none',
+                    backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")',
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition: 'right 10px center',
+                    backgroundSize: '20px',
+                    paddingRight: '40px'
+                },
+                onFocus: (e) => {
+                    e.target.style.borderColor = '#4A90E2';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(74, 144, 226, 0.1)';
+                },
+                onBlur: (e) => {
+                    e.target.style.borderColor = '#e0e0e0';
+                    e.target.style.boxShadow = 'none';
                 }
             },
             
-            variations.map((variation, index) => 
-                React.createElement('div',
+            variations.map((variation) => 
+                React.createElement('option',
                     {
-                        key: variation.id,
-                        onClick: () => handleVariationSelect(variation),
-                        style: {
-                            padding: '10px 12px',
-                            border: currentVariation?.id === variation.id ? 
-                                '2px solid #4A90E2' : '1px solid #ddd',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            backgroundColor: currentVariation?.id === variation.id ? 
-                                '#f0f8ff' : 'white',
-                            transition: 'all 0.2s ease',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center'
-                        },
-                        onMouseEnter: (e) => {
-                            if (currentVariation?.id !== variation.id) {
-                                e.target.style.borderColor = '#4A90E2';
-                                e.target.style.backgroundColor = '#f8f9fa';
-                            }
-                        },
-                        onMouseLeave: (e) => {
-                            if (currentVariation?.id !== variation.id) {
-                                e.target.style.borderColor = '#ddd';
-                                e.target.style.backgroundColor = 'white';
-                            }
-                        }
+                        key: variation.id || variation.idVariacion,
+                        value: variation.id || variation.idVariacion,
+                        disabled: !variation.stock || variation.stock === 0
                     },
-                    
-                    // Información de la variación
-                    React.createElement('div',
-                        {
-                            style: {
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '2px'
-                            }
-                        },
-                        React.createElement('div',
-                            {
-                                style: {
-                                    fontSize: '13px',
-                                    fontWeight: '600',
-                                    color: '#333'
-                                }
-                            },
-                            variation.weight || variation.quantity || 'Estándar'
-                        ),
-                        React.createElement('div',
-                            {
-                                style: {
-                                    fontSize: '11px',
-                                    color: '#666'
-                                }
-                            },
-                            variation.stock > 0 ? `${variation.stock} disponibles` : 'Agotado'
-                        )
-                    ),
-                    
-                    // Precio de la variación
-                    React.createElement('div',
-                        {
-                            style: {
-                                fontSize: '14px',
-                                fontWeight: 'bold',
-                                color: '#4A90E2'
-                            }
-                        },
-                        window.formatCOP ? window.formatCOP(variation.price) : `$${variation.price.toLocaleString()}`
-                    )
+                    `${variation.peso} — ${window.formatCOP ? window.formatCOP(variation.price) : '$' + variation.price.toLocaleString()} ${variation.stock > 0 ? `(${variation.stock} disp.)` : '(Agotado)'}`
                 )
             )
         )
     );
 };
 
-// Función helper para obtener variaciones de un producto
+// Función helper para obtener variaciones de un producto desde el backend
 window.getProductVariations = function(product) {
     if (!product) return [];
     
-    // Lógica similar a la del componente pero como función independiente
-    const baseProduct = {
-        id: product.Id || product.id,
-        name: product.Name || product.name,
-        description: product.Description || product.description,
-        category: product.Category || product.category,
-        petType: product.PetType || product.petType || 'General',
-        brand: product.Brand || product.brand || 'Sin marca',
-        rating: product.Rating || product.rating || 4.0
-    };
-    
-    const variations = [];
-    
-    // Para alimentos, generar variaciones de peso
-    if (baseProduct.category?.toLowerCase().includes('alimento') || 
-        baseProduct.name?.toLowerCase().includes('alimento')) {
-        
-        const weightVariations = [
-            { weight: '500g', price: (product.Price || product.price || 15000) * 0.6, stock: 50 },
-            { weight: '1.5kg', price: (product.Price || product.price || 15000) * 1.0, stock: 30 },
-            { weight: '3kg', price: (product.Price || product.price || 15000) * 1.8, stock: 20 }
-        ];
-        
-        weightVariations.forEach((variation, index) => {
-            variations.push({
-                ...baseProduct,
-                id: `${baseProduct.id}_${variation.weight}`,
-                name: `${baseProduct.name} ${variation.weight}`,
-                price: variation.price,
-                stock: variation.stock,
-                weight: variation.weight,
-                size: variation.weight,
-                image: product.image || product.ImageUrl || product.imageUrl,
-                isVariation: true,
-                parentId: baseProduct.id
-            });
-        });
-    }
-    // Para snacks, generar variaciones de cantidad
-    else if (baseProduct.category?.toLowerCase().includes('snack') || 
-             baseProduct.name?.toLowerCase().includes('snack')) {
-        
-        const quantityVariations = [
-            { quantity: '1 unidad', price: product.Price || product.price || 5000, stock: 100 },
-            { quantity: 'Pack 3', price: (product.Price || product.price || 5000) * 2.5, stock: 50 },
-            { quantity: 'Pack 6', price: (product.Price || product.price || 5000) * 4.5, stock: 25 }
-        ];
-        
-        quantityVariations.forEach((variation, index) => {
-            variations.push({
-                ...baseProduct,
-                id: `${baseProduct.id}_${variation.quantity.replace(' ', '_')}`,
-                name: `${baseProduct.name} (${variation.quantity})`,
-                price: variation.price,
-                stock: variation.stock,
-                quantity: variation.quantity,
-                image: product.image || product.ImageUrl || product.imageUrl,
-                isVariation: true,
-                parentId: baseProduct.id
-            });
-        });
-    }
-    // Para otros productos, crear una variación única
-    else {
-        variations.push({
-            ...baseProduct,
-            price: product.Price || product.price || 10000,
-            stock: product.Stock || product.stock || 10,
-            image: product.image || product.ImageUrl || product.imageUrl,
-            isVariation: false
-        });
+    // Si el producto tiene variaciones del backend, usarlas directamente
+    if (product.Variaciones && Array.isArray(product.Variaciones) && product.Variaciones.length > 0) {
+        return product.Variaciones.map(variacion => ({
+            id: variacion.IdVariacion,
+            idVariacion: variacion.IdVariacion,
+            idProducto: variacion.IdProducto,
+            name: `${product.NombreBase || product.Name || product.name} - ${variacion.Peso}`,
+            peso: variacion.Peso,
+            price: variacion.Precio,
+            stock: variacion.Stock,
+            activa: variacion.Activa,
+            description: product.Descripcion || product.Description || product.description,
+            category: product.NombreCategoria || product.Category || product.category,
+            petType: product.TipoMascota || product.PetType || product.petType || 'General',
+            image: product.URLImagen || product.ImageUrl || product.image || product.imageUrl,
+            isVariation: true
+        }));
     }
     
-    return variations;
+    // Si no hay variaciones del backend, retornar array vacío o variación única
+    return [{
+        id: product.IdProducto || product.Id || product.id,
+        idProducto: product.IdProducto || product.Id || product.id,
+        name: product.NombreBase || product.Name || product.name,
+        peso: 'Estándar',
+        price: product.Price || product.price || 0,
+        stock: product.Stock || product.stock || 0,
+        activa: true,
+        description: product.Descripcion || product.Description || product.description,
+        category: product.NombreCategoria || product.Category || product.category,
+        petType: product.TipoMascota || product.PetType || product.petType || 'General',
+        image: product.URLImagen || product.ImageUrl || product.image || product.imageUrl,
+        isVariation: false
+    }];
 };
 
 console.log('✅ Product Variations Component cargado');

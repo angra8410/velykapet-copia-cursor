@@ -220,20 +220,25 @@ class ApiService {
     // ENDPOINTS DE PRODUCTOS
     // ======================
 
-    // Mapear propiedades del backend (español) al frontend (inglés)
+    // Mapear propiedades del backend (español) al frontend
+    // Ahora incluye las variaciones del producto
     mapProductFromBackend(producto) {
         if (!producto) return null;
         
+        // El backend devuelve ProductoDto con la siguiente estructura:
+        // - IdProducto, NombreBase, Descripcion, NombreCategoria, TipoMascota, URLImagen
+        // - Variaciones: array de VariacionProductoDto con IdVariacion, Peso, Precio, Stock
+        
         return {
-            Id: producto.Id,
-            Name: producto.Nombre,
-            Description: producto.Descripcion,
-            Price: producto.Precio,
-            Stock: producto.Stock,
-            Category: producto.Categoria,
-            Brand: producto.Marca,
-            ImageUrl: producto.UrlImagen,
-            PetType: producto.TipoMascota
+            IdProducto: producto.IdProducto,
+            NombreBase: producto.NombreBase,
+            Descripcion: producto.Descripcion,
+            NombreCategoria: producto.NombreCategoria,
+            TipoMascota: producto.TipoMascota,
+            URLImagen: producto.URLImagen,
+            Activo: producto.Activo,
+            // IMPORTANTE: Mantener las variaciones tal como vienen del backend
+            Variaciones: producto.Variaciones || []
         };
     }
 
@@ -241,20 +246,20 @@ class ApiService {
         console.log('📦 Obteniendo productos', filters);
         const queryParams = new URLSearchParams();
         
-        if (filters.search) queryParams.append('search', filters.search);
-        if (filters.category) queryParams.append('category', filters.category);
-        if (filters.minPrice) queryParams.append('minPrice', filters.minPrice);
-        if (filters.maxPrice) queryParams.append('maxPrice', filters.maxPrice);
+        if (filters.search) queryParams.append('busqueda', filters.search);
+        if (filters.category) queryParams.append('categoria', filters.category);
+        if (filters.petType) queryParams.append('tipoMascota', filters.petType);
         
         const endpoint = queryParams.toString() ? `/Productos?${queryParams}` : '/Productos';
         
         try {
             const productos = await this.get(endpoint);
-            // Mapear array de productos del backend al formato del frontend
+            // Mapear array de productos del backend
             const mappedProducts = Array.isArray(productos) 
                 ? productos.map(p => this.mapProductFromBackend(p))
                 : [];
             console.log('✅ Productos mapeados:', mappedProducts.length);
+            console.log('📦 Primer producto con variaciones:', mappedProducts[0]);
             return mappedProducts;
         } catch (error) {
             console.error('❌ Error obteniendo productos:', error.message);
@@ -266,8 +271,10 @@ class ApiService {
         console.log('📦 Obteniendo producto:', id);
         try {
             const producto = await this.get(`/Productos/${id}`);
-            // Mapear producto individual del backend al formato del frontend
-            return this.mapProductFromBackend(producto);
+            // Mapear producto individual del backend
+            const mapped = this.mapProductFromBackend(producto);
+            console.log('✅ Producto mapeado con variaciones:', mapped);
+            return mapped;
         } catch (error) {
             console.error('❌ Error obteniendo producto:', error.message);
             throw error;
