@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test: Selector de Variaciones de Productos</title>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .header p {
+            margin: 0;
+            color: #666;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .info-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .info-box h3 {
+            margin-top: 0;
+            color: #4A90E2;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-list li:before {
+            content: "✅ ";
+            margin-right: 8px;
+        }
+        
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Test: Selector de Variaciones de Productos</h1>
+            <p>Demostración del nuevo componente de variaciones usando datos de ejemplo</p>
+        </div>
+        
+        <div class="info-box">
+            <h3>📋 Características Implementadas</h3>
+            <ul class="feature-list">
+                <li>Dropdown selector para elegir peso/presentación</li>
+                <li>Actualización automática del precio al cambiar variación</li>
+                <li>Muestra stock disponible por cada variación</li>
+                <li>Una sola tarjeta por producto (no múltiples tarjetas)</li>
+                <li>Integración con backend .NET para variaciones reales</li>
+            </ul>
+        </div>
+        
+        <div class="info-box">
+            <h3>🎯 Producto de Ejemplo</h3>
+            <p><strong>Nombre:</strong> BR FOR CAT VET CONTROL DE PESO</p>
+            <p><strong>Variaciones disponibles:</strong></p>
+            <ul>
+                <li>500 GR — $20,400 (50 disponibles)</li>
+                <li>1.5 KG — $58,200 (30 disponibles)</li>
+                <li>3 KG — $110,800 (20 disponibles)</li>
+            </ul>
+        </div>
+        
+        <div id="product-container" class="products-grid">
+            <!-- El producto se renderizará aquí -->
+        </div>
+    </div>
+
+    <!-- Cargar React desde CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Cargar utilidades necesarias -->
+    <script src="src/currency.js"></script>
+    
+    <!-- Cargar datos de demo -->
+    <script src="src/demo-data.js"></script>
+    
+    <!-- Cargar componentes -->
+    <script src="src/components/ProductVariations.js"></script>
+    <script src="src/components/ProductCard.js"></script>
+    
+    <script>
+        console.log('🧪 Iniciando test de variaciones...');
+        
+        // Esperar a que React esté disponible
+        window.addEventListener('load', () => {
+            console.log('✅ React cargado');
+            console.log('✅ Componentes cargados');
+            
+            // Obtener el producto demo
+            window.loadDemoProducts().then(products => {
+                const product = products[0]; // BR FOR CAT VET CONTROL DE PESO
+                console.log('📦 Producto demo:', product);
+                
+                // Simular onAddToCart
+                const handleAddToCart = (productData) => {
+                    console.log('🛒 Agregando al carrito:', productData);
+                    alert(`✅ Producto agregado al carrito:\n\n${productData.name}\nPeso: ${productData.peso}\nPrecio: ${window.formatCOP ? window.formatCOP(productData.price) : '$' + productData.price.toLocaleString()}`);
+                };
+                
+                // Renderizar el producto con ProductCard moderno
+                if (window.ProductCardComponent) {
+                    const productElement = React.createElement(window.ProductCardComponent, {
+                        product: product,
+                        onAddToCart: handleAddToCart,
+                        onViewDetails: (prod) => {
+                            console.log('👁️ Ver detalles:', prod);
+                            alert('Ver detalles: ' + prod.name);
+                        }
+                    });
+                    
+                    ReactDOM.render(productElement, document.getElementById('product-container'));
+                    console.log('✅ Producto renderizado');
+                } else {
+                    console.error('❌ ProductCardComponent no está disponible');
+                    document.getElementById('product-container').innerHTML = `
+                        <div class="info-box" style="background: #f8d7da; color: #721c24;">
+                            <h3>❌ Error</h3>
+                            <p>El componente ProductCardComponent no se cargó correctamente.</p>
+                            <p>Por favor, verifica que todos los archivos estén en su lugar.</p>
+                        </div>
+                    `;
+                }
+            });
+        });
+        
+        // Log de errores
+        window.addEventListener('error', (event) => {
+            console.error('❌ Error:', event.error);
+        });
+    </script>
+</body>
+</html>
