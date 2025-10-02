@@ -8,7 +8,12 @@ using VentasPetApi.Controllers;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Preserve PascalCase property names in JSON (to match DTO structure)
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+    });
 
 // Configurar Entity Framework con soporte para SQLite y SQL Server
 var databaseProvider = builder.Configuration["DatabaseProvider"] ?? "SqlServer";
