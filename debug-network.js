@@ -71,10 +71,9 @@ window.testDirectEndpoint = async function() {
     console.log('🧪 PROBANDO ENDPOINT DIRECTO...');
     
     const testUrls = [
-        'http://localhost:5135/api/Productos',
-        'http://localhost:5135/api/Products',
-        'http://localhost:5135/Productos',
-        'http://localhost:5135/Products'
+        '/api/Productos',                      // A través del proxy (correcto)
+        'http://localhost:5135/api/Productos', // Directo al backend
+        'http://localhost:3333/api/Productos'  // Proxy explícito
     ];
     
     for (const url of testUrls) {
