@@ -10,9 +10,27 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Configurar Entity Framework
+// Configurar Entity Framework con soporte para SQLite y SQL Server
+var databaseProvider = builder.Configuration["DatabaseProvider"] ?? "SqlServer";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+Console.WriteLine($"🔧 Configurando base de datos:");
+Console.WriteLine($"   📌 Proveedor: {databaseProvider}");
+Console.WriteLine($"   📌 Connection: {connectionString}");
+
 builder.Services.AddDbContext<VentasPetDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    if (databaseProvider == "Sqlite")
+    {
+        options.UseSqlite(connectionString);
+        Console.WriteLine("   ✅ Usando SQLite (ideal para desarrollo)");
+    }
+    else
+    {
+        options.UseSqlServer(connectionString);
+        Console.WriteLine("   ✅ Usando SQL Server (ideal para producción)");
+    }
+});
 
 // Configurar CORS
 builder.Services.AddCors(options =>
@@ -104,14 +122,34 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<VentasPetDbContext>();
+    var dbProvider = builder.Configuration["DatabaseProvider"] ?? "SqlServer";
+    
     try
     {
+        Console.WriteLine($"📊 Inicializando base de datos ({dbProvider})...");
         context.Database.EnsureCreated();
-        Console.WriteLine("✅ Base de datos creada/verificada exitosamente");
+        
+        // Contar productos para verificar que hay datos
+        var productCount = context.Productos.Count();
+        Console.WriteLine($"✅ Base de datos inicializada exitosamente");
+        Console.WriteLine($"   📦 Productos en DB: {productCount}");
+        
+        if (productCount == 0)
+        {
+            Console.WriteLine("   ⚠️  No hay productos en la base de datos. Se crearán con el seed data.");
+        }
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"❌ Error creando la base de datos: {ex.Message}");
+        Console.WriteLine($"❌ Error inicializando la base de datos: {ex.Message}");
+        Console.WriteLine($"   💡 Sugerencia: Si estás usando SQL Server, verifica que:");
+        Console.WriteLine($"      - SQL Server está instalado y corriendo");
+        Console.WriteLine($"      - La cadena de conexión es correcta");
+        Console.WriteLine($"   💡 Para desarrollo, considera usar SQLite:");
+        Console.WriteLine($"      - Crea appsettings.Development.json");
+        Console.WriteLine($"      - Configura DatabaseProvider: 'Sqlite'");
+        Console.WriteLine($"      - Configura ConnectionString: 'Data Source=VentasPet.db'");
+        Console.WriteLine($"   ⚠️  El API seguirá corriendo pero las peticiones fallarán sin base de datos.");
     }
 }
 
