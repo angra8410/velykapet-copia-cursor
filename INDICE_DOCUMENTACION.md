@@ -6,6 +6,11 @@ Este documento proporciona un índice completo de toda la documentación del pro
 
 ## 🎯 Inicio Rápido
 
+### 🚨 ¿Problemas de Conexión? (NUEVO)
+👉 **[QUICK_FIX_CONNECTION.md](./QUICK_FIX_CONNECTION.md)** - ⚡ Solución rápida a ERR_CONNECTION_REFUSED (2 minutos)
+👉 **[PORT_CONFIGURATION.md](./PORT_CONFIGURATION.md)** - 📚 Guía completa de configuración de puertos y protocolos
+👉 **[ONBOARDING.md](./ONBOARDING.md)** - 👋 Checklist completo para nuevos desarrolladores
+
 ### Para Arquitectos y Product Owners
 👉 Comienza con: **[ANALISIS_BACKEND_DOTNET.md](./ANALISIS_BACKEND_DOTNET.md)**
 - Análisis exhaustivo de 1,668 líneas
@@ -255,7 +260,87 @@ Este documento proporciona un índice completo de toda la documentación del pro
 
 ## 📁 Documentación Adicional Existente
 
-### 5. SCRIPTS_README.md (3.6 KB)
+### 5. PORT_CONFIGURATION.md (NUEVO - 10.5 KB)
+**Guía Completa de Configuración de Puertos y Protocolos**
+
+**Contenido:**
+- Resumen ejecutivo del problema ERR_CONNECTION_REFUSED
+- Configuración de puertos en desarrollo vs producción
+- Opciones de configuración del backend (HTTP, HTTPS, ambos)
+- Guías paso a paso para cada escenario
+- Diagnóstico de problemas de conexión
+- Mejores prácticas
+- Configuración de emergencia
+
+**Cuándo usar:**
+- Experimentas errores ERR_CONNECTION_REFUSED
+- Configurar el proyecto por primera vez
+- Cambiar entre HTTP y HTTPS
+- Problemas de conexión frontend-backend
+
+---
+
+### 6. ONBOARDING.md (NUEVO - 10.3 KB)
+**Checklist Completo para Nuevos Desarrolladores**
+
+**Contenido:**
+- Checklist de pre-requisitos
+- Pasos para clonar y configurar
+- Primera ejecución del proyecto
+- Verificación de instalación
+- Errores comunes y soluciones
+- Arquitectura del proyecto explicada
+- Mejores prácticas
+- Próximos pasos después de configuración
+
+**Cuándo usar:**
+- Primer día en el proyecto
+- Onboarding de nuevos desarrolladores
+- Problemas de configuración inicial
+- Guía de referencia rápida
+
+---
+
+### 7. QUICK_FIX_CONNECTION.md (NUEVO - 4.4 KB)
+**Solución Rápida a Errores de Conexión**
+
+**Contenido:**
+- Solución en 6 pasos (2 minutos)
+- Verificación de backend
+- Verificación de frontend
+- Verificación de coherencia de configuración
+- Corrección de configuración
+- Diagnóstico adicional
+- Configuración de emergencia
+
+**Cuándo usar:**
+- ERROR URGENTE: ERR_CONNECTION_REFUSED
+- Necesitas solución rápida
+- Debugging de conexión
+- Primera consulta ante problemas
+
+---
+
+### 8. backend-config/README_CONFIGURATION.md (NUEVO - 4.3 KB)
+**Configuración del Backend .NET**
+
+**Contenido:**
+- Explicación de archivos de configuración
+- appsettings.json vs appsettings.Development.json
+- Cómo cambiar configuración de puerto
+- Iniciar el backend
+- Verificar configuración
+- Problemas comunes del backend
+
+**Cuándo usar:**
+- Configurar el backend
+- Cambiar puertos del backend
+- Problemas específicos del backend .NET
+- Configurar SSL/HTTPS
+
+---
+
+### 9. SCRIPTS_README.md (3.6 KB)
 **Scripts de Inicialización de Servidores**
 
 **Contenido:**
@@ -272,7 +357,7 @@ Este documento proporciona un índice completo de toda la documentación del pro
 
 ---
 
-### 6. AMBIENTES.md
+### 10. AMBIENTES.md
 **Configuración de Variables de Entorno**
 
 **Contenido:**
@@ -288,7 +373,7 @@ Este documento proporciona un índice completo de toda la documentación del pro
 
 ---
 
-### 7. ADMIN_ACCESS.md
+### 11. ADMIN_ACCESS.md
 **Panel de Administración**
 
 **Contenido:**
@@ -304,7 +389,7 @@ Este documento proporciona un índice completo de toda la documentación del pro
 
 ---
 
-### 8. TEST_COMMANDS.md
+### 12. TEST_COMMANDS.md
 **Comandos de Testing**
 
 **Contenido:**
@@ -322,18 +407,26 @@ Este documento proporciona un índice completo de toda la documentación del pro
 ```
 velykapet-copia-cursor/
 │
-├── 📚 DOCUMENTACIÓN BACKEND .NET (NUEVO)
+├── 📚 DOCUMENTACIÓN BACKEND .NET
 │   ├── ANALISIS_BACKEND_DOTNET.md       ⭐ Análisis completo
 │   ├── GUIA_RAPIDA_IMPLEMENTACION.md    ⭐ Tutorial práctico
 │   ├── ARQUITECTURA_VISUAL.md           ⭐ Diagramas visuales
 │   └── INDICE_DOCUMENTACION.md          📖 Este archivo
+│
+├── 📚 DOCUMENTACIÓN DE CONFIGURACIÓN (NUEVO)
+│   ├── PORT_CONFIGURATION.md            🔌 Configuración de puertos (⭐ IMPORTANTE)
+│   ├── ONBOARDING.md                    👋 Guía para nuevos devs
+│   ├── QUICK_FIX_CONNECTION.md          ⚡ Solución rápida
+│   └── backend-config/
+│       └── README_CONFIGURATION.md      🔧 Config del backend
 │
 ├── 📚 DOCUMENTACIÓN GENERAL
 │   ├── README.md                         📖 Inicio del proyecto
 │   ├── SCRIPTS_README.md                 🔧 Scripts de inicio
 │   ├── AMBIENTES.md                      ⚙️ Configuración
 │   ├── ADMIN_ACCESS.md                   👨‍💼 Panel admin
-│   └── TEST_COMMANDS.md                  🧪 Testing
+│   ├── TEST_COMMANDS.md                  🧪 Testing
+│   └── TROUBLESHOOTING_API.md            🔍 Solución de problemas
 │
 ├── 🎨 FRONTEND (React)
 │   ├── src/
@@ -362,10 +455,12 @@ velykapet-copia-cursor/
 
 ### Para Nuevos Desarrolladores
 
-**Día 1: Entender el proyecto**
+**Día 1: Entender el proyecto y configuración**
 1. Leer [README.md](./README.md)
-2. Ver [ARQUITECTURA_VISUAL.md](./ARQUITECTURA_VISUAL.md) - Secciones 1-4
-3. Ejecutar proyecto con [SCRIPTS_README.md](./SCRIPTS_README.md)
+2. **🆕 Seguir [ONBOARDING.md](./ONBOARDING.md) - Checklist completo**
+3. **🆕 Si hay problemas: [QUICK_FIX_CONNECTION.md](./QUICK_FIX_CONNECTION.md)**
+4. Ver [ARQUITECTURA_VISUAL.md](./ARQUITECTURA_VISUAL.md) - Secciones 1-4
+5. Ejecutar proyecto con [SCRIPTS_README.md](./SCRIPTS_README.md)
 
 **Día 2-3: Arquitectura del backend**
 1. Leer [ANALISIS_BACKEND_DOTNET.md](./ANALISIS_BACKEND_DOTNET.md) - Secciones 1-5
@@ -401,6 +496,19 @@ velykapet-copia-cursor/
 ---
 
 ## 🔍 Búsqueda Rápida por Tema
+
+### 🚨 Problemas de Conexión / ERR_CONNECTION_REFUSED (NUEVO)
+- **Solución rápida:** [QUICK_FIX_CONNECTION.md](./QUICK_FIX_CONNECTION.md) ⚡
+- **Guía completa:** [PORT_CONFIGURATION.md](./PORT_CONFIGURATION.md)
+- **Troubleshooting:** [TROUBLESHOOTING_API.md](./TROUBLESHOOTING_API.md)
+- **Backend config:** [backend-config/README_CONFIGURATION.md](./backend-config/README_CONFIGURATION.md)
+- **Variables de entorno:** [AMBIENTES.md](./AMBIENTES.md)
+
+### 👋 Onboarding / Nuevos Desarrolladores (NUEVO)
+- **Checklist completo:** [ONBOARDING.md](./ONBOARDING.md)
+- **Primer paso:** [README.md](./README.md)
+- **Configuración:** [PORT_CONFIGURATION.md](./PORT_CONFIGURATION.md)
+- **Scripts:** [SCRIPTS_README.md](./SCRIPTS_README.md)
 
 ### Autenticación JWT
 - **Análisis completo:** [ANALISIS_BACKEND_DOTNET.md](./ANALISIS_BACKEND_DOTNET.md) - Sección 6

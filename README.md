@@ -6,6 +6,18 @@
 
 **VelyKapet** es una moderna tienda en línea especializada en productos para mascotas, desarrollada con React puro y diseño responsive.
 
+---
+
+## 🚨 ¿Problemas de Conexión? ERR_CONNECTION_REFUSED
+
+Si experimentas errores de conexión al iniciar el proyecto, consulta:
+
+- **[QUICK_FIX_CONNECTION.md](./QUICK_FIX_CONNECTION.md)** - ⚡ Solución rápida (2 minutos)
+- **[PORT_CONFIGURATION.md](./PORT_CONFIGURATION.md)** - 📚 Guía completa de configuración
+- **[ONBOARDING.md](./ONBOARDING.md)** - 👋 Guía para nuevos desarrolladores
+
+---
+
 ## ✨ Características
 
 ### 🎨 **Diseño Moderno**
