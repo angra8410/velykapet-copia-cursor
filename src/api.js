@@ -5,7 +5,7 @@ console.log('🔌 Cargando servicio API...');
 
 // Configuración de la API
 const API_CONFIG = {
-    baseUrl: 'http://localhost:5135/api', // Conectar directo al backend .NET
+    baseUrl: '/api', // Usar proxy del servidor frontend para evitar CORS
     timeout: 10000, // 10 segundos
     retries: 3
 };
@@ -316,88 +316,48 @@ class ApiService {
             hasToken: !!this.token
         });
         
-        // URL a través del proxy (para evitar CORS)
-        const proxyUrl = 'http://localhost:3333/api/Products';
-        console.log(`🔍 Probando URL a través del proxy: ${proxyUrl}`);
+        // Usar el endpoint correcto en español: /api/Productos
+        const testUrl = '/api/Productos';
+        console.log(`🔍 Probando endpoint: ${testUrl}`);
         
         try {
-            console.log('🔍 Intentando diferentes métodos de conexión...');
-            
-            // Método 1: Intentar con el proxy
-            console.log('Método 1: Proxy');
-            let response;
-            try {
-                response = await fetch(proxyUrl, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    mode: 'cors'
-                });
-                console.log('✅ Proxy funcionando');
-            } catch (proxyError) {
-                console.log('❌ Proxy fallo:', proxyError.message);
-                
-                // Método 2: Intentar directo (fallará por CORS pero podemos detectarlo)
-                console.log('Método 2: Directo al backend (detectar CORS)');
-                try {
-                    response = await fetch('http://localhost:5135/api/Products', {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        mode: 'no-cors' // Esto permite la petición pero no podemos leer la respuesta
-                    });
-                    console.log('✅ Backend responde (modo no-cors)');
-                    
-                    // Si llegamos aquí, el backend está corriendo
-                    return {
-                        connected: true,
-                        message: 'Backend detectado (CORS bloqueado). Instala CORS extension o configura CORS en el backend.',
-                        data: [
-                            { Id: 1, Name: 'Producto 1 (simulado)', Price: 29.99, Stock: 10 },
-                            { Id: 2, Name: 'Producto 2 (simulado)', Price: 45.50, Stock: 20 },
-                            { Id: 3, Name: 'Producto 3 (simulado)', Price: 12.00, Stock: 30 }
-                        ],
-                        baseUrl: 'http://localhost:5135/api',
-                        corsBlocked: true
-                    };
-                    
-                } catch (directError) {
-                    console.log('❌ Conexión directa fallo:', directError.message);
-                    throw new Error('Backend no disponible');
+            const response = await fetch(testUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
                 }
-            }
+            });
             
             console.log(`📨 Respuesta recibida:`, {
                 status: response.status,
-                statusText: response.statusText,
-                headers: Object.fromEntries(response.headers.entries())
+                statusText: response.statusText
             });
             
             if (response.ok) {
                 const data = await response.json();
                 console.log(`✅ ¡CONEXIÓN EXITOSA!`, data);
                 
-                // Actualizar configuración
-                this.baseUrl = 'http://localhost:3333/api';
-                API_CONFIG.baseUrl = this.baseUrl;
-                
                 return { 
                     connected: true, 
                     message: `Backend conectado exitosamente (vía proxy)`,
                     data: Array.isArray(data) ? data : [data],
                     baseUrl: this.baseUrl,
-                    testUrl: proxyUrl
+                    testUrl: testUrl
                 };
             } else {
                 console.error(`❌ HTTP Error: ${response.status} ${response.statusText}`);
+                let errorData;
+                try {
+                    errorData = await response.json();
+                } catch {
+                    errorData = { message: response.statusText };
+                }
                 return {
                     connected: false,
                     message: `Error HTTP ${response.status}: ${response.statusText}`,
-                    error: `HTTP_${response.status}`
+                    error: `HTTP_${response.status}`,
+                    details: errorData
                 };
             }
             
@@ -408,18 +368,9 @@ class ApiService {
                 stack: error.stack
             });
             
-            // Verificar tipo de error
-            if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-                return {
-                    connected: false,
-                    message: 'Error CORS o backend no disponible. Verifica que el backend esté corriendo en localhost:5135',
-                    error: 'FETCH_FAILED'
-                };
-            }
-            
             return {
                 connected: false,
-                message: `Error de conexión: ${error.message}`,
+                message: `Error de conexión: ${error.message}. Verifica que el servidor frontend esté corriendo en localhost:3333 y el backend en localhost:5135`,
                 error: error.name
             };
         }
