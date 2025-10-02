@@ -209,14 +209,16 @@ namespace VentasPetApi.Controllers
                 return NotFound();
             }
 
-            // Verificar si el proveedor tiene productos asociados
-            var tieneProductos = await _context.Productos
-                .AnyAsync(p => p.ProveedorId == id);
-
-            if (tieneProductos)
-            {
-                return BadRequest("No se puede eliminar el proveedor porque tiene productos asociados. Desactívelo en su lugar.");
-            }
+            // NOTE: Producto model doesn't have ProveedorId relationship
+            // If you need to track proveedor-producto relationship, add ProveedorId to Producto model
+            // For now, we allow deletion without checking products
+            // var tieneProductos = await _context.Productos
+            //     .AnyAsync(p => p.ProveedorId == id);
+            //
+            // if (tieneProductos)
+            // {
+            //     return BadRequest("No se puede eliminar el proveedor porque tiene productos asociados. Desactívelo en su lugar.");
+            // }
 
             _context.Proveedores.Remove(proveedor);
             await _context.SaveChangesAsync();
@@ -273,34 +275,40 @@ namespace VentasPetApi.Controllers
                 return NotFound();
             }
 
-            var productos = await _context.Productos
-                .Include(p => p.Categoria)
-                .Include(p => p.Variaciones.Where(v => v.Activa))
-                .Where(p => p.ProveedorId == id && p.Activo)
-                .ToListAsync();
-
-            var productosDto = productos.Select(p => new ProductoDto
-            {
-                IdProducto = p.IdProducto,
-                NombreBase = p.NombreBase,
-                Descripcion = p.Descripcion,
-                IdCategoria = p.IdCategoria,
-                NombreCategoria = p.Categoria.Nombre,
-                TipoMascota = p.TipoMascota,
-                URLImagen = p.URLImagen,
-                Activo = p.Activo,
-                Variaciones = p.Variaciones.Select(v => new VariacionProductoDto
-                {
-                    IdVariacion = v.IdVariacion,
-                    IdProducto = v.IdProducto,
-                    Peso = v.Peso,
-                    Precio = v.Precio,
-                    Stock = v.Stock,
-                    Activa = v.Activa
-                }).ToList()
-            }).ToList();
-
-            return Ok(productosDto);
+            // NOTE: Producto model doesn't have ProveedorId relationship
+            // This endpoint cannot filter by provider until the relationship is added
+            // Returning empty list for now
+            return Ok(new List<ProductoDto>());
+            
+            // ORIGINAL CODE (commented out until Producto model has ProveedorId):
+            // var productos = await _context.Productos
+            //     .Include(p => p.Categoria)
+            //     .Include(p => p.Variaciones.Where(v => v.Activa))
+            //     .Where(p => p.ProveedorId == id && p.Activo)
+            //     .ToListAsync();
+            //
+            // var productosDto = productos.Select(p => new ProductoDto
+            // {
+            //     IdProducto = p.IdProducto,
+            //     NombreBase = p.NombreBase,
+            //     Descripcion = p.Descripcion,
+            //     IdCategoria = p.IdCategoria,
+            //     NombreCategoria = p.Categoria.Nombre,
+            //     TipoMascota = p.TipoMascota,
+            //     URLImagen = p.URLImagen,
+            //     Activo = p.Activo,
+            //     Variaciones = p.Variaciones.Select(v => new VariacionProductoDto
+            //     {
+            //         IdVariacion = v.IdVariacion,
+            //         IdProducto = v.IdProducto,
+            //         Peso = v.Peso,
+            //         Precio = v.Precio,
+            //         Stock = v.Stock,
+            //         Activa = v.Activa
+            //     }).ToList()
+            // }).ToList();
+            //
+            // return Ok(productosDto);
         }
 
         private bool ProveedorExists(int id)

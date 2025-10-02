@@ -23,54 +23,72 @@ namespace VentasPetApi.Controllers
             [FromQuery] string? tipoMascota = null,
             [FromQuery] string? busqueda = null)
         {
-            var query = _context.Productos
-                .Include(p => p.Categoria)
-                .Include(p => p.Variaciones.Where(v => v.Activa))
-                .Where(p => p.Activo);
-
-            // Filtrar por categoría
-            if (!string.IsNullOrEmpty(categoria))
+            try
             {
-                query = query.Where(p => p.Categoria.Nombre.ToLower().Contains(categoria.ToLower()));
-            }
+                var query = _context.Productos
+                    .Include(p => p.Categoria)
+                    .Include(p => p.Variaciones.Where(v => v.Activa))
+                    .Where(p => p.Activo);
 
-            // Filtrar por tipo de mascota
-            if (!string.IsNullOrEmpty(tipoMascota))
-            {
-                query = query.Where(p => p.TipoMascota.ToLower() == tipoMascota.ToLower());
-            }
-
-            // Buscar por nombre
-            if (!string.IsNullOrEmpty(busqueda))
-            {
-                query = query.Where(p => p.NombreBase.ToLower().Contains(busqueda.ToLower()) ||
-                                       p.Descripcion.ToLower().Contains(busqueda.ToLower()));
-            }
-
-            var productos = await query.ToListAsync();
-
-            var productosDto = productos.Select(p => new ProductoDto
-            {
-                IdProducto = p.IdProducto,
-                NombreBase = p.NombreBase,
-                Descripcion = p.Descripcion,
-                IdCategoria = p.IdCategoria,
-                NombreCategoria = p.Categoria.Nombre,
-                TipoMascota = p.TipoMascota,
-                URLImagen = p.URLImagen,
-                Activo = p.Activo,
-                Variaciones = p.Variaciones.Select(v => new VariacionProductoDto
+                // Filtrar por categoría
+                if (!string.IsNullOrEmpty(categoria))
                 {
-                    IdVariacion = v.IdVariacion,
-                    IdProducto = v.IdProducto,
-                    Peso = v.Peso,
-                    Precio = v.Precio,
-                    Stock = v.Stock,
-                    Activa = v.Activa
-                }).ToList()
-            }).ToList();
+                    query = query.Where(p => p.Categoria.Nombre.ToLower().Contains(categoria.ToLower()));
+                }
 
-            return Ok(productosDto);
+                // Filtrar por tipo de mascota
+                if (!string.IsNullOrEmpty(tipoMascota))
+                {
+                    query = query.Where(p => p.TipoMascota.ToLower() == tipoMascota.ToLower());
+                }
+
+                // Buscar por nombre
+                if (!string.IsNullOrEmpty(busqueda))
+                {
+                    query = query.Where(p => p.NombreBase.ToLower().Contains(busqueda.ToLower()) ||
+                                           p.Descripcion.ToLower().Contains(busqueda.ToLower()));
+                }
+
+                var productos = await query.ToListAsync();
+
+                var productosDto = productos.Select(p => new ProductoDto
+                {
+                    IdProducto = p.IdProducto,
+                    NombreBase = p.NombreBase,
+                    Descripcion = p.Descripcion,
+                    IdCategoria = p.IdCategoria,
+                    NombreCategoria = p.Categoria.Nombre,
+                    TipoMascota = p.TipoMascota,
+                    URLImagen = p.URLImagen,
+                    Activo = p.Activo,
+                    Variaciones = p.Variaciones.Select(v => new VariacionProductoDto
+                    {
+                        IdVariacion = v.IdVariacion,
+                        IdProducto = v.IdProducto,
+                        Peso = v.Peso,
+                        Precio = v.Precio,
+                        Stock = v.Stock,
+                        Activa = v.Activa
+                    }).ToList()
+                }).ToList();
+
+                Console.WriteLine($"✅ Se encontraron {productosDto.Count} productos");
+                return Ok(productosDto);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error en GetProductos: {ex.Message}");
+                Console.WriteLine($"   StackTrace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"   InnerException: {ex.InnerException.Message}");
+                }
+                return StatusCode(500, new { 
+                    error = "Error al obtener productos", 
+                    message = ex.Message,
+                    details = ex.InnerException?.Message 
+                });
+            }
         }
 
         // GET: api/Productos/5

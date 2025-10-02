@@ -18,7 +18,7 @@ namespace VentasPetApi.Data
         public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<ItemPedido> ItemsPedido { get; set; }
         public DbSet<Pago> Pagos { get; set; }
-        public DbSet<CarritoCompra> CarritoCompras { get; set; }
+        public DbSet<CarritoCompras> CarritoCompras { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,7 +41,6 @@ namespace VentasPetApi.Data
                 entity.HasKey(e => e.IdCategoria);
                 entity.Property(e => e.Nombre).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Descripcion).HasMaxLength(500);
-                entity.Property(e => e.URLImagen).HasMaxLength(500);
             });
 
             // Configuración de Proveedores
@@ -73,11 +72,6 @@ namespace VentasPetApi.Data
                     .WithMany(p => p.Productos)
                     .HasForeignKey(d => d.IdCategoria)
                     .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(d => d.Proveedor)
-                    .WithMany(p => p.Productos)
-                    .HasForeignKey(d => d.ProveedorId)
-                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Configuración de Variaciones de Producto
@@ -99,7 +93,7 @@ namespace VentasPetApi.Data
             {
                 entity.HasKey(e => e.IdPedido);
                 entity.Property(e => e.Estado).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Total).HasColumnType("decimal(10,2)");
+                entity.Property(e => e.TotalPedido).HasColumnType("decimal(10,2)");
                 entity.Property(e => e.DireccionEnvio).HasMaxLength(500);
                 entity.Property(e => e.Notas).HasMaxLength(1000);
 
@@ -113,24 +107,19 @@ namespace VentasPetApi.Data
             // Configuración de Items de Pedido
             modelBuilder.Entity<ItemPedido>(entity =>
             {
-                entity.HasKey(e => e.IdItem);
+                entity.HasKey(e => e.IdItemPedido);
                 entity.Property(e => e.Cantidad).IsRequired();
                 entity.Property(e => e.PrecioUnitario).HasColumnType("decimal(10,2)");
                 entity.Property(e => e.Subtotal).HasColumnType("decimal(10,2)");
 
                 // Relaciones
                 entity.HasOne(d => d.Pedido)
-                    .WithMany(p => p.Items)
+                    .WithMany(p => p.ItemsPedido)
                     .HasForeignKey(d => d.IdPedido)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne(d => d.Producto)
-                    .WithMany()
-                    .HasForeignKey(d => d.IdProducto)
-                    .OnDelete(DeleteBehavior.Restrict);
-
                 entity.HasOne(d => d.Variacion)
-                    .WithMany()
+                    .WithMany(v => v.ItemsPedido)
                     .HasForeignKey(d => d.IdVariacion)
                     .OnDelete(DeleteBehavior.Restrict);
             });
@@ -139,10 +128,10 @@ namespace VentasPetApi.Data
             modelBuilder.Entity<Pago>(entity =>
             {
                 entity.HasKey(e => e.IdPago);
-                entity.Property(e => e.MetodoPago).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Metodo).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Estado).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Monto).HasColumnType("decimal(10,2)");
-                entity.Property(e => e.Referencia).HasMaxLength(100);
+                entity.Property(e => e.IdTransaccion).HasMaxLength(100);
 
                 // Relación con Pedido
                 entity.HasOne(d => d.Pedido)
@@ -152,7 +141,7 @@ namespace VentasPetApi.Data
             });
 
             // Configuración de Carrito de Compras
-            modelBuilder.Entity<CarritoCompra>(entity =>
+            modelBuilder.Entity<CarritoCompras>(entity =>
             {
                 entity.HasKey(e => e.IdCarrito);
                 entity.Property(e => e.Cantidad).IsRequired();
@@ -163,13 +152,8 @@ namespace VentasPetApi.Data
                     .HasForeignKey(d => d.IdUsuario)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne(d => d.Producto)
-                    .WithMany()
-                    .HasForeignKey(d => d.IdProducto)
-                    .OnDelete(DeleteBehavior.Cascade);
-
                 entity.HasOne(d => d.Variacion)
-                    .WithMany()
+                    .WithMany(v => v.CarritoCompras)
                     .HasForeignKey(d => d.IdVariacion)
                     .OnDelete(DeleteBehavior.Cascade);
             });
@@ -187,40 +171,32 @@ namespace VentasPetApi.Data
                     IdCategoria = 1,
                     Nombre = "Alimento para Perros",
                     Descripcion = "Alimento balanceado para perros de todas las edades",
-                    URLImagen = "/images/categorias/alimento-perros.jpg",
-                    Activa = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    TipoMascota = "Perros",
+                    Activa = true
                 },
                 new Categoria
                 {
                     IdCategoria = 2,
                     Nombre = "Alimento para Gatos",
                     Descripcion = "Alimento balanceado para gatos de todas las edades",
-                    URLImagen = "/images/categorias/alimento-gatos.jpg",
-                    Activa = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    TipoMascota = "Gatos",
+                    Activa = true
                 },
                 new Categoria
                 {
                     IdCategoria = 3,
                     Nombre = "Snacks y Premios",
                     Descripcion = "Snacks y premios para perros y gatos",
-                    URLImagen = "/images/categorias/snacks.jpg",
-                    Activa = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    TipoMascota = "Ambos",
+                    Activa = true
                 },
                 new Categoria
                 {
                     IdCategoria = 4,
                     Nombre = "Accesorios",
                     Descripcion = "Accesorios para mascotas",
-                    URLImagen = "/images/categorias/accesorios.jpg",
-                    Activa = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    TipoMascota = "Ambos",
+                    Activa = true
                 }
             );
 
@@ -238,9 +214,7 @@ namespace VentasPetApi.Data
                     SitioWeb = "https://www.royalcanin.com.mx",
                     PersonaContacto = "María González",
                     Notas = "Proveedor principal de alimento premium",
-                    Activo = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    Activo = true
                 },
                 new Proveedor
                 {
@@ -254,9 +228,7 @@ namespace VentasPetApi.Data
                     SitioWeb = "https://www.hills.com.mx",
                     PersonaContacto = "Carlos Rodríguez",
                     Notas = "Especialistas en nutrición veterinaria",
-                    Activo = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    Activo = true
                 },
                 new Proveedor
                 {
@@ -270,9 +242,7 @@ namespace VentasPetApi.Data
                     SitioWeb = "https://www.purina.com.mx",
                     PersonaContacto = "Ana Martínez",
                     Notas = "Alimento de alta calidad para mascotas",
-                    Activo = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    Activo = true
                 }
             );
         }
