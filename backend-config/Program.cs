@@ -153,9 +153,30 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-Console.WriteLine("🚀 VelyKapet API iniciada en:");
-Console.WriteLine("   📡 API: https://localhost:5135");
-Console.WriteLine("   📚 Swagger: https://localhost:5135");
-Console.WriteLine("   🔗 Frontend: http://localhost:3333");
+// Obtener configuración de endpoints
+var httpEndpoint = builder.Configuration["Kestrel:Endpoints:Http:Url"];
+var httpsEndpoint = builder.Configuration["Kestrel:Endpoints:Https:Url"];
+var apiUrl = httpEndpoint ?? httpsEndpoint ?? "http://localhost:5135";
+
+Console.WriteLine("");
+Console.WriteLine("═══════════════════════════════════════════════════════");
+Console.WriteLine("🚀 VelyKapet API Backend");
+Console.WriteLine("═══════════════════════════════════════════════════════");
+Console.WriteLine($"   📡 API: {apiUrl}");
+Console.WriteLine($"   📚 Swagger: {apiUrl}");
+Console.WriteLine("   🔗 Frontend esperado: http://localhost:3333");
+Console.WriteLine("");
+Console.WriteLine("💡 Configuración actual:");
+if (httpEndpoint != null)
+    Console.WriteLine($"   ✅ HTTP: {httpEndpoint}");
+if (httpsEndpoint != null)
+    Console.WriteLine($"   ✅ HTTPS: {httpsEndpoint}");
+Console.WriteLine($"   📦 Base de datos: {databaseProvider}");
+Console.WriteLine("");
+Console.WriteLine("⚠️  Para evitar ERR_CONNECTION_REFUSED en el frontend:");
+Console.WriteLine($"   → Verificar que .env.development tenga: API_URL={apiUrl}");
+Console.WriteLine("   → Ver PORT_CONFIGURATION.md para más información");
+Console.WriteLine("═══════════════════════════════════════════════════════");
+Console.WriteLine("");
 
 app.Run();
