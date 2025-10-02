@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using VentasPetApi.Data;
-using VentasPetApi.Services;
 using VentasPetApi.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,12 +44,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
         };
     });
-
-// Configurar servicios
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IProductoService, ProductoService>();
-builder.Services.AddScoped<ICarritoService, CarritoService>();
-builder.Services.AddScoped<IPedidoService, PedidoService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

@@ -41,7 +41,6 @@ namespace VentasPetApi.Data
                 entity.HasKey(e => e.IdCategoria);
                 entity.Property(e => e.Nombre).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Descripcion).HasMaxLength(500);
-                entity.Property(e => e.URLImagen).HasMaxLength(500);
             });
 
             // Configuración de Proveedores
@@ -94,7 +93,7 @@ namespace VentasPetApi.Data
             {
                 entity.HasKey(e => e.IdPedido);
                 entity.Property(e => e.Estado).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Total).HasColumnType("decimal(10,2)");
+                entity.Property(e => e.TotalPedido).HasColumnType("decimal(10,2)");
                 entity.Property(e => e.DireccionEnvio).HasMaxLength(500);
                 entity.Property(e => e.Notas).HasMaxLength(1000);
 
@@ -129,10 +128,10 @@ namespace VentasPetApi.Data
             modelBuilder.Entity<Pago>(entity =>
             {
                 entity.HasKey(e => e.IdPago);
-                entity.Property(e => e.MetodoPago).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Metodo).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Estado).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Monto).HasColumnType("decimal(10,2)");
-                entity.Property(e => e.Referencia).HasMaxLength(100);
+                entity.Property(e => e.IdTransaccion).HasMaxLength(100);
 
                 // Relación con Pedido
                 entity.HasOne(d => d.Pedido)
@@ -172,40 +171,32 @@ namespace VentasPetApi.Data
                     IdCategoria = 1,
                     Nombre = "Alimento para Perros",
                     Descripcion = "Alimento balanceado para perros de todas las edades",
-                    URLImagen = "/images/categorias/alimento-perros.jpg",
-                    Activa = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    TipoMascota = "Perros",
+                    Activa = true
                 },
                 new Categoria
                 {
                     IdCategoria = 2,
                     Nombre = "Alimento para Gatos",
                     Descripcion = "Alimento balanceado para gatos de todas las edades",
-                    URLImagen = "/images/categorias/alimento-gatos.jpg",
-                    Activa = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    TipoMascota = "Gatos",
+                    Activa = true
                 },
                 new Categoria
                 {
                     IdCategoria = 3,
                     Nombre = "Snacks y Premios",
                     Descripcion = "Snacks y premios para perros y gatos",
-                    URLImagen = "/images/categorias/snacks.jpg",
-                    Activa = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    TipoMascota = "Ambos",
+                    Activa = true
                 },
                 new Categoria
                 {
                     IdCategoria = 4,
                     Nombre = "Accesorios",
                     Descripcion = "Accesorios para mascotas",
-                    URLImagen = "/images/categorias/accesorios.jpg",
-                    Activa = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    TipoMascota = "Ambos",
+                    Activa = true
                 }
             );
 
@@ -223,9 +214,7 @@ namespace VentasPetApi.Data
                     SitioWeb = "https://www.royalcanin.com.mx",
                     PersonaContacto = "María González",
                     Notas = "Proveedor principal de alimento premium",
-                    Activo = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    Activo = true
                 },
                 new Proveedor
                 {
@@ -239,9 +228,7 @@ namespace VentasPetApi.Data
                     SitioWeb = "https://www.hills.com.mx",
                     PersonaContacto = "Carlos Rodríguez",
                     Notas = "Especialistas en nutrición veterinaria",
-                    Activo = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    Activo = true
                 },
                 new Proveedor
                 {
@@ -255,9 +242,7 @@ namespace VentasPetApi.Data
                     SitioWeb = "https://www.purina.com.mx",
                     PersonaContacto = "Ana Martínez",
                     Notas = "Alimento de alta calidad para mascotas",
-                    Activo = true,
-                    FechaCreacion = DateTime.Now,
-                    FechaModificacion = DateTime.Now
+                    Activo = true
                 }
             );
         }
