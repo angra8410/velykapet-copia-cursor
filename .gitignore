@@ -124,6 +124,11 @@ Thumbs.db
 *.old
 *.tmp
 
+# SQLite database files
+*.db
+*.db-shm
+*.db-wal
+
 # Test files
 test-results/
 screenshots/

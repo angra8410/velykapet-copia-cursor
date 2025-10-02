@@ -245,6 +245,199 @@ namespace VentasPetApi.Data
                     Activo = true
                 }
             );
+
+            // Productos iniciales
+            modelBuilder.Entity<Producto>().HasData(
+                new Producto
+                {
+                    IdProducto = 1,
+                    NombreBase = "Royal Canin Adult",
+                    Descripcion = "Alimento balanceado para perros adultos de todas las razas",
+                    IdCategoria = 1,
+                    TipoMascota = "Perros",
+                    URLImagen = "/images/productos/royal-canin-adult.jpg",
+                    Activo = true,
+                    FechaCreacion = DateTime.Now,
+                    FechaActualizacion = DateTime.Now
+                },
+                new Producto
+                {
+                    IdProducto = 2,
+                    NombreBase = "BR FOR CAT VET CONTROL DE PESO",
+                    Descripcion = "Alimento con balance adecuado de nutrientes que ayuda a reducir la formación de bolas de pelo",
+                    IdCategoria = 2,
+                    TipoMascota = "Gatos",
+                    URLImagen = "/images/productos/royal-canin-cat-weight.jpg",
+                    Activo = true,
+                    FechaCreacion = DateTime.Now,
+                    FechaActualizacion = DateTime.Now
+                },
+                new Producto
+                {
+                    IdProducto = 3,
+                    NombreBase = "Hill's Science Diet Puppy",
+                    Descripcion = "Nutrición científicamente formulada para cachorros",
+                    IdCategoria = 1,
+                    TipoMascota = "Perros",
+                    URLImagen = "/images/productos/hills-puppy.jpg",
+                    Activo = true,
+                    FechaCreacion = DateTime.Now,
+                    FechaActualizacion = DateTime.Now
+                },
+                new Producto
+                {
+                    IdProducto = 4,
+                    NombreBase = "Purina Pro Plan Adult Cat",
+                    Descripcion = "Alimento completo y balanceado para gatos adultos",
+                    IdCategoria = 2,
+                    TipoMascota = "Gatos",
+                    URLImagen = "/images/productos/purina-cat.jpg",
+                    Activo = true,
+                    FechaCreacion = DateTime.Now,
+                    FechaActualizacion = DateTime.Now
+                },
+                new Producto
+                {
+                    IdProducto = 5,
+                    NombreBase = "Snacks Naturales",
+                    Descripcion = "Premios naturales para perros y gatos",
+                    IdCategoria = 3,
+                    TipoMascota = "Ambos",
+                    URLImagen = "/images/productos/snacks.jpg",
+                    Activo = true,
+                    FechaCreacion = DateTime.Now,
+                    FechaActualizacion = DateTime.Now
+                }
+            );
+
+            // Variaciones de productos
+            modelBuilder.Entity<VariacionProducto>().HasData(
+                // Royal Canin Adult variaciones
+                new VariacionProducto
+                {
+                    IdVariacion = 1,
+                    IdProducto = 1,
+                    Peso = "3 KG",
+                    Precio = 450.00m,
+                    Stock = 25,
+                    Activa = true,
+                    FechaCreacion = DateTime.Now
+                },
+                new VariacionProducto
+                {
+                    IdVariacion = 2,
+                    IdProducto = 1,
+                    Peso = "7.5 KG",
+                    Precio = 980.00m,
+                    Stock = 15,
+                    Activa = true,
+                    FechaCreacion = DateTime.Now
+                },
+                new VariacionProducto
+                {
+                    IdVariacion = 3,
+                    IdProducto = 1,
+                    Peso = "15 KG",
+                    Precio = 1850.00m,
+                    Stock = 10,
+                    Activa = true,
+                    FechaCreacion = DateTime.Now
+                },
+                // BR FOR CAT VET variaciones
+                new VariacionProducto
+                {
+                    IdVariacion = 4,
+                    IdProducto = 2,
+                    Peso = "500 GR",
+                    Precio = 204.00m,
+                    Stock = 50,
+                    Activa = true,
+                    FechaCreacion = DateTime.Now
+                },
+                new VariacionProducto
+                {
+                    IdVariacion = 5,
+                    IdProducto = 2,
+                    Peso = "1.5 KG",
+                    Precio = 582.00m,
+                    Stock = 30,
+                    Activa = true,
+                    FechaCreacion = DateTime.Now
+                },
+                new VariacionProducto
+                {
+                    IdVariacion = 6,
+                    IdProducto = 2,
+                    Peso = "3 KG",
+                    Precio = 1108.00m,
+                    Stock = 20,
+                    Activa = true,
+                    FechaCreacion = DateTime.Now
+                },
+                // Hill's Puppy variaciones
+                new VariacionProducto
+                {
+                    IdVariacion = 7,
+                    IdProducto = 3,
+                    Peso = "2 KG",
+                    Precio = 380.00m,
+                    Stock = 30,
+                    Activa = true,
+                    FechaCreacion = DateTime.Now
+                },
+                new VariacionProducto
+                {
+                    IdVariacion = 8,
+                    IdProducto = 3,
+                    Peso = "6 KG",
+                    Precio = 920.00m,
+                    Stock = 18,
+                    Activa = true,
+                    FechaCreacion = DateTime.Now
+                },
+                // Purina Cat variaciones
+                new VariacionProducto
+                {
+                    IdVariacion = 9,
+                    IdProducto = 4,
+                    Peso = "1 KG",
+                    Precio = 185.00m,
+                    Stock = 40,
+                    Activa = true,
+                    FechaCreacion = DateTime.Now
+                },
+                new VariacionProducto
+                {
+                    IdVariacion = 10,
+                    IdProducto = 4,
+                    Peso = "3 KG",
+                    Precio = 495.00m,
+                    Stock = 25,
+                    Activa = true,
+                    FechaCreacion = DateTime.Now
+                },
+                // Snacks variaciones
+                new VariacionProducto
+                {
+                    IdVariacion = 11,
+                    IdProducto = 5,
+                    Peso = "200 GR",
+                    Precio = 85.00m,
+                    Stock = 60,
+                    Activa = true,
+                    FechaCreacion = DateTime.Now
+                },
+                new VariacionProducto
+                {
+                    IdVariacion = 12,
+                    IdProducto = 5,
+                    Peso = "500 GR",
+                    Precio = 195.00m,
+                    Stock = 35,
+                    Activa = true,
+                    FechaCreacion = DateTime.Now
+                }
+            );
         }
     }
 }
