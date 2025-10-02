@@ -13,16 +13,21 @@ La aplicación ahora soporta múltiples ambientes mediante archivos de configura
 
 ## Variables de Entorno Disponibles
 
-| Variable | Descripción | Ejemplo |
-|----------|-------------|--------|
-| `FRONTEND_PORT` | Puerto del servidor frontend | `3333` |
-| `FRONTEND_HOST` | Host del servidor frontend | `localhost` |
-| `BACKEND_PORT` | Puerto del servidor backend | `5135` |
-| `BACKEND_HOST` | Host del servidor backend | `localhost` |
-| `APP_ENV` | Nombre del ambiente | `development` |
-| `APP_DEBUG` | Modo debug (true/false) | `true` |
-| `API_URL` | URL completa de la API | `http://localhost:5135` |
-| `FRONTEND_URL` | URL completa del frontend | `http://localhost:3333` |
+| Variable | Descripción | Ejemplo | Notas |
+|----------|-------------|---------|-------|
+| `FRONTEND_PORT` | Puerto del servidor frontend | `3333` | Donde corre el proxy Node.js |
+| `FRONTEND_HOST` | Host del servidor frontend | `localhost` | Usar `0.0.0.0` para acceso externo |
+| `BACKEND_PORT` | Puerto del servidor backend | `5135` | Debe coincidir con appsettings.json |
+| `BACKEND_HOST` | Host del servidor backend | `localhost` | En producción: dominio real |
+| `APP_ENV` | Nombre del ambiente | `development` | Identificador del ambiente |
+| `APP_DEBUG` | Modo debug (true/false) | `true` | Habilita logs detallados |
+| `API_URL` | URL completa de la API | `http://localhost:5135` | ⚠️ Debe coincidir con configuración del backend |
+| `FRONTEND_URL` | URL completa del frontend | `http://localhost:3333` | URL donde se accede al sitio |
+
+⚠️ **IMPORTANTE:** 
+- El puerto en `API_URL` debe coincidir con el puerto configurado en `backend-config/appsettings.Development.json`
+- En desarrollo, se recomienda usar HTTP (no HTTPS) para evitar problemas con certificados
+- Para más información sobre configuración de puertos, ver **[PORT_CONFIGURATION.md](./PORT_CONFIGURATION.md)**
 
 ## Scripts de Inicio
 
@@ -64,3 +69,37 @@ start-custom.bat staging
 - Si encuentras errores al iniciar, verifica que los archivos `.env` estén correctamente formateados
 - Asegúrate de que los puertos especificados no estén siendo utilizados por otras aplicaciones
 - Para depurar problemas, revisa los logs en la consola
+- **Si experimentas ERR_CONNECTION_REFUSED:** Verifica que el puerto y protocolo en `API_URL` coincidan con la configuración del backend. Ver **[PORT_CONFIGURATION.md](./PORT_CONFIGURATION.md)** para guía completa.
+
+### Configuración del Backend
+
+El puerto del backend se configura en `backend-config/appsettings.Development.json`:
+
+```json
+{
+  "Kestrel": {
+    "Endpoints": {
+      "Http": {
+        "Url": "http://localhost:5135"
+      }
+    }
+  }
+}
+```
+
+**IMPORTANTE:** El puerto y protocolo (HTTP/HTTPS) configurado aquí **debe coincidir** con `API_URL` en el archivo `.env`.
+
+**Ejemplo de configuración coherente:**
+
+Si `appsettings.Development.json` tiene:
+```json
+"Url": "http://localhost:5135"
+```
+
+Entonces `.env.development` debe tener:
+```bash
+API_URL=http://localhost:5135
+BACKEND_PORT=5135
+```
+
+Ver **[PORT_CONFIGURATION.md](./PORT_CONFIGURATION.md)** para más detalles sobre configuraciones de puertos y protocolos.

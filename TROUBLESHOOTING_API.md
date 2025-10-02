@@ -162,7 +162,61 @@ Significa que el backend NO está corriendo.
 2. Verifica que la base de datos esté accesible
 3. Confirma que las tablas y datos existen
 
-### Error: Connection Refused
+### Error: ERR_CONNECTION_REFUSED en http://localhost:5135
+
+**Síntoma:**
+```
+This site can't be reached
+localhost refused to connect.
+ERR_CONNECTION_REFUSED
+```
+
+**Posibles Causas y Soluciones:**
+
+1. **Backend no está corriendo**
+   ```bash
+   # Verificar
+   curl http://localhost:5135/api/Productos
+   
+   # Si falla, iniciar backend
+   cd backend-config
+   dotnet run
+   ```
+
+2. **Backend configurado para HTTPS, no HTTP**
+   - Verificar logs del backend al iniciar
+   - Si dice `https://localhost:5135`, actualizar `.env.development`:
+     ```bash
+     API_URL=https://localhost:5135
+     ```
+   - O cambiar backend a HTTP en `appsettings.Development.json`
+
+3. **Backend escucha en puerto diferente (ej: 5000)**
+   - Verificar `backend-config/appsettings.Development.json`
+   - Actualizar `.env.development` con el puerto correcto
+
+4. **Puerto ocupado por otro proceso**
+   ```bash
+   # Windows
+   netstat -ano | findstr :5135
+   taskkill /PID <pid> /F
+   
+   # Linux/Mac
+   lsof -i :5135
+   kill -9 <pid>
+   ```
+
+5. **Frontend intenta conectarse directamente al backend (bypass del proxy)**
+   - Verificar que `src/api.js` use URL relativa:
+     ```javascript
+     const API_CONFIG = {
+         baseUrl: '/api',  // ✅ Correcto
+     };
+     ```
+
+**📚 Para guía completa sobre configuración de puertos, ver [PORT_CONFIGURATION.md](./PORT_CONFIGURATION.md)**
+
+### Error: Connection Refused en otros puertos
 **Causa:** Puerto ocupado o servicio no iniciado
 **Solución:**
 1. Verifica que no haya otros procesos usando los puertos

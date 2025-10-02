@@ -82,23 +82,79 @@ ventas_pet_new/
 
 ## 🔧 Instalación y Uso
 
-### Desarrollo Local
+### Desarrollo Local - Inicio Rápido
+
+**Paso 1: Configuración de Puertos**
+
+VelyKapet usa la siguiente configuración de puertos en desarrollo:
+- **Frontend (navegador):** `http://localhost:3333`
+- **Backend API (.NET):** `http://localhost:5135`
+
+⚠️ **IMPORTANTE:** Si experimentas errores `ERR_CONNECTION_REFUSED`, consulta **[PORT_CONFIGURATION.md](./PORT_CONFIGURATION.md)** para una guía completa de configuración de puertos y protocolos.
+
+**Paso 2: Iniciar Backend**
 ```bash
-# Clonar el repositorio
-git clone https://github.com/angra8410/velykapet.git
+# Navegar a la carpeta del backend
+cd backend-config
 
-# Navegar al directorio
-cd velykapet
+# Iniciar el servidor .NET
+dotnet run
 
-# Servir con un servidor HTTP local
-# Opción 1: Python
-python -m http.server 8080
-
-# Opción 2: Node.js
-npx http-server . -p 8080
-
-# Acceder a http://localhost:8080
+# Deberías ver:
+# 🚀 VelyKapet API iniciada en:
+#    📡 API: http://localhost:5135
 ```
+
+**Paso 3: Iniciar Frontend (en otra terminal)**
+```bash
+# Instalar dependencias (solo la primera vez)
+npm install
+
+# Iniciar el servidor frontend con proxy
+npm start
+
+# Deberías ver:
+# 🌐 Servidor corriendo en http://localhost:3333
+# 🔀 Proxy configurado para backend en http://localhost:5135
+```
+
+**Paso 4: Abrir en Navegador**
+```
+http://localhost:3333
+```
+
+### Scripts de Inicio Rápido
+
+Para mayor facilidad, puedes usar los scripts incluidos:
+
+**Windows:**
+```bash
+# Iniciar ambos servidores (frontend y backend)
+start-servers.bat
+
+# O iniciar por separado
+start-backend.bat
+start-frontend.bat
+
+# Iniciar en ambiente específico
+start-dev.bat        # Desarrollo
+start-prod.bat       # Producción
+```
+
+**PowerShell:**
+```powershell
+.\start-servers.ps1
+```
+
+### Configuración de Ambientes
+
+VelyKapet soporta múltiples ambientes mediante archivos `.env`:
+
+- `.env` - Configuración por defecto
+- `.env.development` - Configuración para desarrollo (HTTP en puerto 5135)
+- `.env.production` - Configuración para producción (HTTPS)
+
+Ver **[AMBIENTES.md](./AMBIENTES.md)** para más detalles.
 
 ### Producción
 ```bash
@@ -106,6 +162,24 @@ npx http-server . -p 8080
 # Asegurar configuración HTTPS
 # Configurar dominio velykapet.com
 ```
+
+### Solución de Problemas de Conexión
+
+Si encuentras errores como `ERR_CONNECTION_REFUSED` o problemas de CORS:
+
+1. **Verifica que ambos servidores estén corriendo:**
+   ```bash
+   # Verificar backend
+   curl http://localhost:5135/api/Productos
+   
+   # Verificar proxy
+   curl http://localhost:3333/api/Productos
+   ```
+
+2. **Consulta la documentación:**
+   - **[PORT_CONFIGURATION.md](./PORT_CONFIGURATION.md)** - Configuración de puertos y protocolos
+   - **[TROUBLESHOOTING_API.md](./TROUBLESHOOTING_API.md)** - Solución de problemas API
+   - **[SOLUCION_ERROR_500.md](./SOLUCION_ERROR_500.md)** - Errores comunes
 
 ## 🌟 Características Destacadas
 
