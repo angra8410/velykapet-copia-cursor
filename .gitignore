@@ -12,6 +12,28 @@ dist/
 *.min.js
 *.min.css
 
+# .NET Build artifacts
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.editorconfig
+*.AssemblyInfo.cs
+*.AssemblyInfoInputs.cache
+*.assets.cache
+*.csproj.*.cache
+project.assets.json
+project.fragment.lock.json
+artifacts/
+**/Properties/launchSettings.json
+*.runtimeconfig.json
+*.deps.json
+*.staticwebassets.*.json
+
 # Environment variables
 .env
 .env.local
