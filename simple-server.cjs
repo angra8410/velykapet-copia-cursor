@@ -114,10 +114,25 @@ server.listen(PORT, process.env.FRONTEND_HOST || 'localhost', () => {
     const frontendUrl = `http://${process.env.FRONTEND_HOST || 'localhost'}:${PORT}`;
     const backendUrl = process.env.API_URL || `http://${BACKEND_HOST}:${BACKEND_PORT}`;
     
+    console.log('');
+    console.log('═══════════════════════════════════════════════════════');
+    console.log('🚀 VelyKapet Frontend Server');
+    console.log('═══════════════════════════════════════════════════════');
     console.log(`🌐 Servidor corriendo en ${frontendUrl}`);
     console.log(`🔀 Proxy configurado para backend en ${backendUrl}`);
     console.log(`🔧 Ambiente: ${process.env.APP_ENV || 'development'}`);
     console.log('✨ CORS habilitado para todas las rutas');
+    console.log('');
+    console.log('💡 Próximos pasos:');
+    console.log(`   1. Abrir navegador en: ${frontendUrl}`);
+    console.log(`   2. Verificar que el backend esté corriendo en: ${backendUrl}`);
+    console.log('   3. Ver documentación: README.md y PORT_CONFIGURATION.md');
+    console.log('');
+    console.log('⚠️  Si experimentas ERR_CONNECTION_REFUSED:');
+    console.log('   → Verifica que el backend esté corriendo (dotnet run)');
+    console.log('   → Ver PORT_CONFIGURATION.md para ayuda completa');
+    console.log('═══════════════════════════════════════════════════════');
+    console.log('');
 });
 
 server.on('error', (err) => {
