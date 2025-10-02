@@ -18,7 +18,7 @@ namespace VentasPetApi.Data
         public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<ItemPedido> ItemsPedido { get; set; }
         public DbSet<Pago> Pagos { get; set; }
-        public DbSet<CarritoCompra> CarritoCompras { get; set; }
+        public DbSet<CarritoCompras> CarritoCompras { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -73,11 +73,6 @@ namespace VentasPetApi.Data
                     .WithMany(p => p.Productos)
                     .HasForeignKey(d => d.IdCategoria)
                     .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasOne(d => d.Proveedor)
-                    .WithMany(p => p.Productos)
-                    .HasForeignKey(d => d.ProveedorId)
-                    .OnDelete(DeleteBehavior.Restrict);
             });
 
             // Configuración de Variaciones de Producto
@@ -113,24 +108,19 @@ namespace VentasPetApi.Data
             // Configuración de Items de Pedido
             modelBuilder.Entity<ItemPedido>(entity =>
             {
-                entity.HasKey(e => e.IdItem);
+                entity.HasKey(e => e.IdItemPedido);
                 entity.Property(e => e.Cantidad).IsRequired();
                 entity.Property(e => e.PrecioUnitario).HasColumnType("decimal(10,2)");
                 entity.Property(e => e.Subtotal).HasColumnType("decimal(10,2)");
 
                 // Relaciones
                 entity.HasOne(d => d.Pedido)
-                    .WithMany(p => p.Items)
+                    .WithMany(p => p.ItemsPedido)
                     .HasForeignKey(d => d.IdPedido)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne(d => d.Producto)
-                    .WithMany()
-                    .HasForeignKey(d => d.IdProducto)
-                    .OnDelete(DeleteBehavior.Restrict);
-
                 entity.HasOne(d => d.Variacion)
-                    .WithMany()
+                    .WithMany(v => v.ItemsPedido)
                     .HasForeignKey(d => d.IdVariacion)
                     .OnDelete(DeleteBehavior.Restrict);
             });
@@ -152,7 +142,7 @@ namespace VentasPetApi.Data
             });
 
             // Configuración de Carrito de Compras
-            modelBuilder.Entity<CarritoCompra>(entity =>
+            modelBuilder.Entity<CarritoCompras>(entity =>
             {
                 entity.HasKey(e => e.IdCarrito);
                 entity.Property(e => e.Cantidad).IsRequired();
@@ -163,13 +153,8 @@ namespace VentasPetApi.Data
                     .HasForeignKey(d => d.IdUsuario)
                     .OnDelete(DeleteBehavior.Cascade);
 
-                entity.HasOne(d => d.Producto)
-                    .WithMany()
-                    .HasForeignKey(d => d.IdProducto)
-                    .OnDelete(DeleteBehavior.Cascade);
-
                 entity.HasOne(d => d.Variacion)
-                    .WithMany()
+                    .WithMany(v => v.CarritoCompras)
                     .HasForeignKey(d => d.IdVariacion)
                     .OnDelete(DeleteBehavior.Cascade);
             });
