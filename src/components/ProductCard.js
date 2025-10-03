@@ -10,8 +10,36 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
     const [showQuickView, setShowQuickView] = React.useState(false);
     const [selectedVariation, setSelectedVariation] = React.useState(null);
     const [productVariations, setProductVariations] = React.useState([]);
+    const [isFavorite, setIsFavorite] = React.useState(false);
     
     if (!product) return null;
+    
+    // Verificar si el producto está en favoritos
+    React.useEffect(() => {
+        if (window.favoritesManager) {
+            const productId = product.Id || product.IdProducto;
+            setIsFavorite(window.favoritesManager.isFavorite(productId));
+        }
+    }, [product]);
+    
+    // Suscribirse a cambios de favoritos
+    React.useEffect(() => {
+        const updateFavoriteStatus = () => {
+            if (window.favoritesManager) {
+                const productId = product.Id || product.IdProducto;
+                setIsFavorite(window.favoritesManager.isFavorite(productId));
+            }
+        };
+        
+        if (window.favoritesManager && window.favoritesManager.subscribe) {
+            window.favoritesManager.subscribe(updateFavoriteStatus);
+            return () => {
+                if (window.favoritesManager && window.favoritesManager.unsubscribe) {
+                    window.favoritesManager.unsubscribe(updateFavoriteStatus);
+                }
+            };
+        }
+    }, [product]);
     
     // Cargar variaciones del producto
     React.useEffect(() => {
@@ -68,6 +96,14 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
     const handleCardClick = () => {
         if (onViewDetails) {
             onViewDetails(product);
+        }
+    };
+    
+    const handleToggleFavorite = (e) => {
+        e.stopPropagation(); // Prevenir que se active el click del card
+        
+        if (window.favoritesManager) {
+            window.favoritesManager.toggleFavorite(product);
         }
     };
     
@@ -154,6 +190,42 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
                 }
             },
             `-${product.discount}%`
+        ),
+        
+        // Botón de favoritos
+        React.createElement('button',
+            {
+                onClick: handleToggleFavorite,
+                style: {
+                    position: 'absolute',
+                    top: '10px',
+                    right: product.discount && product.discount > 0 ? '70px' : '10px',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '36px',
+                    height: '36px',
+                    fontSize: '18px',
+                    cursor: 'pointer',
+                    zIndex: 3,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                    transition: 'all 0.2s ease',
+                    color: isFavorite ? '#E45A84' : '#999'
+                },
+                onMouseEnter: (e) => {
+                    e.target.style.transform = 'scale(1.15)';
+                    e.target.style.boxShadow = '0 4px 12px rgba(228, 90, 132, 0.3)';
+                },
+                onMouseLeave: (e) => {
+                    e.target.style.transform = 'scale(1)';
+                    e.target.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.15)';
+                },
+                title: isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'
+            },
+            isFavorite ? '❤️' : '🤍'
         ),
         
         // Badge de stock
