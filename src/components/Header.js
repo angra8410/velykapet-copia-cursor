@@ -7,6 +7,7 @@ window.HeaderComponent = function() {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [isSearchExpanded, setIsSearchExpanded] = React.useState(false);
     const [cartItems, setCartItems] = React.useState(0);
+    const [favoritesCount, setFavoritesCount] = React.useState(0);
     const [scrollPosition, setScrollPosition] = React.useState(0);
     const [headerVisible, setHeaderVisible] = React.useState(true);
     const [lastScrollTop, setLastScrollTop] = React.useState(0);
@@ -34,6 +35,33 @@ window.HeaderComponent = function() {
             clearInterval(interval);
             if (window.cartManager && window.cartManager.unsubscribe) {
                 window.cartManager.unsubscribe(updateCart);
+            }
+        };
+    }, []);
+    
+    // Actualizar contador de favoritos
+    React.useEffect(() => {
+        const updateFavorites = () => {
+            if (window.favoritesManager) {
+                setFavoritesCount(window.favoritesManager.getTotalFavorites());
+            }
+        };
+        
+        // Actualizar inmediatamente
+        updateFavorites();
+        
+        // Suscribirse a cambios de favoritos
+        if (window.favoritesManager && window.favoritesManager.subscribe) {
+            window.favoritesManager.subscribe(updateFavorites);
+        }
+        
+        // Actualizar cada segundo (backup)
+        const interval = setInterval(updateFavorites, 1000);
+        
+        return () => {
+            clearInterval(interval);
+            if (window.favoritesManager && window.favoritesManager.unsubscribe) {
+                window.favoritesManager.unsubscribe(updateFavorites);
             }
         };
     }, []);
@@ -482,17 +510,8 @@ window.HeaderComponent = function() {
                         {
                             className: 'btn-favorites',
                             onClick: () => {
-                                // Verificar si la vista de favoritos existe
                                 if (window.setCurrentView) {
-                                    // Comprobar si existe la vista de favoritos
-                                    if (window.availableViews && window.availableViews.includes('favorites')) {
-                                        window.setCurrentView('favorites');
-                                    } else {
-                                        // Si no existe la vista, mostrar un mensaje amigable
-                                        alert('La sección de favoritos estará disponible próximamente. ¡Gracias por tu paciencia!');
-                                    }
-                                } else {
-                                    alert('Función de favoritos próximamente disponible');
+                                    window.setCurrentView('favorites');
                                 }
                             },
                             style: {
@@ -522,7 +541,33 @@ window.HeaderComponent = function() {
                                 e.target.style.transform = 'scale(1)';
                             }
                         },
-                        '❤️'
+                        // Ícono del corazón
+                        '❤️',
+                        
+                        // Badge del contador de favoritos
+                        favoritesCount > 0 && React.createElement('span',
+                            {
+                                className: 'favorites-badge',
+                                style: {
+                                    position: 'absolute',
+                                    top: '-5px',
+                                    right: '-5px',
+                                    background: '#E45A84',
+                                    color: 'white',
+                                    borderRadius: '50%',
+                                    width: '22px',
+                                    height: '22px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '12px',
+                                    fontWeight: 'bold',
+                                    boxShadow: '0 2px 6px rgba(228, 90, 132, 0.4)',
+                                    animation: 'heartbeat 1.5s ease-in-out'
+                                }
+                            },
+                            favoritesCount > 99 ? '99+' : favoritesCount
+                        )
                     ),
                     
                     // Carrito

@@ -10,6 +10,7 @@ yarn-error.log*
 build/
 dist/
 *.min.js
+!lib/*.min.js
 *.min.css
 
 # .NET Build artifacts

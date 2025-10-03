@@ -498,6 +498,22 @@ if (typeof React === 'undefined') {
                         }
                     }
                     
+                    if (currentView === 'favorites') {
+                        // Vista de favoritos
+                        return window.FavoritesView ? React.createElement(window.FavoritesView) : 
+                            React.createElement('div', 
+                                { 
+                                    style: { 
+                                        textAlign: 'center', 
+                                        padding: '40px', 
+                                        color: '#666' 
+                                    } 
+                                },
+                                React.createElement('h3', null, 'Cargando favoritos...'),
+                                React.createElement('p', null, 'El componente de favoritos se está cargando...')
+                            );
+                    }
+                    
                     if (currentView === 'checkout') {
                         // Checkout requiere autenticación
                         if (!currentUser) {
