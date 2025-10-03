@@ -32,6 +32,16 @@ Este documento proporciona un índice completo de toda la documentación del pro
 - Endpoints del API
 - Enlaces a documentación backend
 
+### 🖼️ Para Gestión de Imágenes de Productos (NUEVO)
+👉 **[QUICK_START_GOOGLE_DRIVE.md](./QUICK_START_GOOGLE_DRIVE.md)** - ⚡ Guía rápida (3 pasos simples)
+👉 **[GUIA_IMAGENES_GOOGLE_DRIVE.md](./GUIA_IMAGENES_GOOGLE_DRIVE.md)** - 📚 Guía completa y técnica
+👉 **[demo-google-drive-images.html](./demo-google-drive-images.html)** - 🧪 Demostración interactiva
+- Cómo usar Google Drive para imágenes de productos
+- Transformación automática de URLs
+- Mejores prácticas y optimización
+- Migración futura a Cloudinary/S3
+- Script SQL de ejemplo
+
 ### Para DevOps
 👉 Comienza con: **[SCRIPTS_README.md](./SCRIPTS_README.md)** y **[AMBIENTES.md](./AMBIENTES.md)**
 - Scripts de inicialización
