@@ -405,7 +405,7 @@ function FavoritesView() {
                             style: {
                                 height: '200px',
                                 background: favorite.image 
-                                    ? `url(${favorite.image}) center/cover` 
+                                    ? `url(${window.transformImageUrl ? window.transformImageUrl(favorite.image) : favorite.image}) center/cover` 
                                     : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                                 display: 'flex',
                                 alignItems: 'center',

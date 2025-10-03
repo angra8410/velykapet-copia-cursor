@@ -283,8 +283,12 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
             // Imagen del producto o placeholder mejorado
             React.createElement('img',
                 {
-                    src: !imageError && (product.image || product.ImageUrl || product.imageUrl) ? 
-                        (product.image || product.ImageUrl || product.imageUrl) : 
+                    src: !imageError && (product.image || product.ImageUrl || product.URLImagen || product.imageUrl) ? 
+                        // Transformar URL de Google Drive u otros servicios a formato directo
+                        (window.transformImageUrl ? 
+                            window.transformImageUrl(product.image || product.ImageUrl || product.URLImagen || product.imageUrl) :
+                            (product.image || product.ImageUrl || product.URLImagen || product.imageUrl)
+                        ) : 
                         // Placeholder mejorado con imagen de mascota
                         'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE1MCIgdmlld0JveD0iMCAwIDIwMCAxNTAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTUwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM0QTkwRTI7c3RvcC1vcGFjaXR5OjEiIC8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzM1N0FCRDtzdG9wLW9wYWNpdHk6MSIgLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8Y2lyY2xlIGN4PSIxMDAiIGN5PSI3NSIgcj0iMzAiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOSIvPgo8Y2lyY2xlIGN4PSI5MCIgY3k9IjY1IiByPSI4IiBmaWxsPSIjMzMzIi8+CjxjaXJjbGUgY3g9IjExMCIgY3k9IjY1IiByPSI4IiBmaWxsPSIjMzMzIi8+CjxwYXRoIGQ9Ik0xMDAgODVDMTA1IDkwIDk1IDkwIDEwMCA4NSIgZmlsbD0iIzMzMyIvPgo8dGV4dCB4PSIxMDAiIHk9IjEzMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEyIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+4p2M77iPPC90ZXh0Pgo8L3N2Zz4=',
                     alt: product.name || product.Name,
