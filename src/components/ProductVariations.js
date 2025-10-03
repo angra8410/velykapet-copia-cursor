@@ -65,6 +65,9 @@ window.ProductVariationsComponent = function({ product, onVariationChange, selec
 
     
     const handleVariationSelect = (e) => {
+        // Prevenir que el evento de cambio de variación navegue a la vista de producto
+        e.stopPropagation();
+        
         const selectedId = parseInt(e.target.value);
         const variation = variations.find(v => v.id === selectedId || v.idVariacion === selectedId);
         if (variation) {
@@ -88,6 +91,10 @@ window.ProductVariationsComponent = function({ product, onVariationChange, selec
     return React.createElement('div',
         {
             className: 'product-variations',
+            onClick: (e) => {
+                // Prevenir que el click en el dropdown navegue a la vista de producto
+                e.stopPropagation();
+            },
             style: {
                 marginBottom: '15px'
             }
@@ -112,6 +119,10 @@ window.ProductVariationsComponent = function({ product, onVariationChange, selec
             {
                 value: currentVariation?.id || currentVariation?.idVariacion || '',
                 onChange: handleVariationSelect,
+                onClick: (e) => {
+                    // Prevenir que el click en el dropdown navegue a la vista de producto
+                    e.stopPropagation();
+                },
                 style: {
                     width: '100%',
                     padding: '10px 12px',
