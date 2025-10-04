@@ -110,6 +110,45 @@ function transformOneDriveUrl(url) {
 }
 
 /**
+ * Valida si una URL es de Cloudflare R2
+ * @param {string} url - URL a validar
+ * @returns {boolean} true si es de Cloudflare R2
+ */
+function isCloudflareR2Url(url) {
+    if (!url || typeof url !== 'string') {
+        return false;
+    }
+    // R2.dev subdomain o dominio personalizado con R2
+    return url.includes('.r2.dev') || 
+           url.includes('r2.cloudflarestorage.com');
+}
+
+/**
+ * Transforma URL de Cloudflare R2 (principalmente para validación)
+ * @param {string} url - URL de Cloudflare R2
+ * @returns {string} URL de R2 (sin cambios, ya son directas)
+ * 
+ * @example
+ * // R2 URLs son directas y no requieren transformación
+ * // Entrada: https://pub-1234567890abcdef.r2.dev/producto.jpg
+ * // Salida: https://pub-1234567890abcdef.r2.dev/producto.jpg (sin cambios)
+ */
+function transformCloudflareR2Url(url) {
+    if (!url || typeof url !== 'string') {
+        return '';
+    }
+    
+    // Las URLs de R2 son directas y no requieren transformación
+    // Esta función existe principalmente para documentación y validación
+    if (isCloudflareR2Url(url)) {
+        console.log('📦 Cloudflare R2 URL detectada (no requiere transformación)');
+        return url;
+    }
+    
+    return url;
+}
+
+/**
  * Agrega parámetros de optimización a URLs de CDN conocidos
  * @param {string} url - URL de CDN
  * @param {object} options - Opciones de optimización
@@ -144,6 +183,14 @@ function addCdnOptimization(url, options = {}) {
     if (url.includes('cloudfront.net') || url.includes('s3.amazonaws.com')) {
         const separator = url.includes('?') ? '&' : '?';
         return `${url}${separator}w=${width}&h=${height}&q=${quality}`;
+    }
+    
+    // Cloudflare R2 - No soporta transformaciones nativas
+    // Las imágenes deben ser pre-optimizadas antes de subirlas
+    if (isCloudflareR2Url(url)) {
+        // R2 no tiene transformaciones de imagen integradas
+        // Retornar URL original
+        return url;
     }
     
     return url;
@@ -181,6 +228,8 @@ window.transformImageUrl = function(url, options = {}) {
         transformedUrl = transformDropboxUrl(url);
     } else if (url.includes('onedrive.live.com')) {
         transformedUrl = transformOneDriveUrl(url);
+    } else if (isCloudflareR2Url(url)) {
+        transformedUrl = transformCloudflareR2Url(url);
     }
     
     // Aplicar optimizaciones de CDN si corresponde
@@ -245,6 +294,15 @@ window.extractGoogleDriveId = function(url) {
     return null;
 };
 
+/**
+ * Función helper: Validar si una URL es de Cloudflare R2
+ * @param {string} url - URL a validar
+ * @returns {boolean} true si es de Cloudflare R2
+ */
+window.isCloudflareR2Url = function(url) {
+    return isCloudflareR2Url(url);
+};
+
 // Exportar funciones para uso interno (si se necesita en módulos)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
@@ -252,8 +310,10 @@ if (typeof module !== 'undefined' && module.exports) {
         transformGoogleDriveUrl,
         transformDropboxUrl,
         transformOneDriveUrl,
+        transformCloudflareR2Url,
         getImageUrlWithFallback: window.getImageUrlWithFallback,
         isGoogleDriveUrl: window.isGoogleDriveUrl,
+        isCloudflareR2Url: window.isCloudflareR2Url,
         extractGoogleDriveId: window.extractGoogleDriveId
     };
 }
@@ -263,4 +323,13 @@ console.log('📋 Funciones disponibles:');
 console.log('   - window.transformImageUrl(url, options)');
 console.log('   - window.getImageUrlWithFallback(url, fallback)');
 console.log('   - window.isGoogleDriveUrl(url)');
+console.log('   - window.isCloudflareR2Url(url)');
 console.log('   - window.extractGoogleDriveId(url)');
+console.log('📦 Servicios soportados:');
+console.log('   - Google Drive (transformación automática)');
+console.log('   - Dropbox (transformación automática)');
+console.log('   - OneDrive (transformación automática)');
+console.log('   - Cloudflare R2 (URLs directas)');
+console.log('   - Cloudinary (optimización CDN)');
+console.log('   - Amazon S3/CloudFront (optimización CDN)');
+console.log('   - Imgix (optimización CDN)');
