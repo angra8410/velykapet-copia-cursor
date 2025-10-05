@@ -123,6 +123,25 @@ function addCdnOptimization(url, options = {}) {
         format = 'auto'
     } = options;
     
+    // Cloudflare R2 con dominio propio (velykapet.com)
+    // Las transformaciones de Cloudflare Images requieren configuración específica
+    // Si se usa Cloudflare Image Resizing, la URL debe seguir el formato:
+    // https://example.com/cdn-cgi/image/width=800,quality=80/image.jpg
+    if (url.includes('velykapet.com') && url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+        // Verificar si ya tiene transformaciones de Cloudflare
+        if (!url.includes('/cdn-cgi/image/')) {
+            // Extraer la ruta de la imagen después del dominio
+            const urlParts = url.split('velykapet.com');
+            if (urlParts.length === 2) {
+                const imagePath = urlParts[1];
+                // Construir URL con transformaciones de Cloudflare Image Resizing
+                // Nota: Esto requiere que Cloudflare Image Resizing esté habilitado
+                const transformations = `width=${width},quality=${quality},format=auto`;
+                return `${urlParts[0]}velykapet.com/cdn-cgi/image/${transformations}${imagePath}`;
+            }
+        }
+    }
+    
     // Cloudinary
     if (url.includes('cloudinary.com/')) {
         if (url.includes('/upload/')) {
@@ -245,6 +264,40 @@ window.extractGoogleDriveId = function(url) {
     return null;
 };
 
+/**
+ * Función helper: Validar si una URL es de Cloudflare R2 con dominio propio
+ * @param {string} url - URL a validar
+ * @returns {boolean} true si es de Cloudflare R2 (velykapet.com)
+ */
+window.isCloudflareR2Url = function(url) {
+    return url && typeof url === 'string' && url.includes('velykapet.com') && 
+           url.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i);
+};
+
+/**
+ * Función helper: Normalizar URL de imagen de Cloudflare R2
+ * @param {string} url - URL de imagen
+ * @returns {string} URL normalizada
+ */
+window.normalizeCloudflareR2Url = function(url) {
+    if (!window.isCloudflareR2Url(url)) {
+        return url;
+    }
+    
+    // Asegurar que la URL use HTTPS
+    if (url.startsWith('http://')) {
+        url = url.replace('http://', 'https://');
+    }
+    
+    // Remover parámetros de query innecesarios si existen
+    // (manteniendo solo los de transformación de Cloudflare)
+    if (url.includes('?') && !url.includes('/cdn-cgi/image/')) {
+        url = url.split('?')[0];
+    }
+    
+    return url;
+};
+
 // Exportar funciones para uso interno (si se necesita en módulos)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = {
@@ -264,3 +317,5 @@ console.log('   - window.transformImageUrl(url, options)');
 console.log('   - window.getImageUrlWithFallback(url, fallback)');
 console.log('   - window.isGoogleDriveUrl(url)');
 console.log('   - window.extractGoogleDriveId(url)');
+console.log('   - window.isCloudflareR2Url(url)');
+console.log('   - window.normalizeCloudflareR2Url(url)');

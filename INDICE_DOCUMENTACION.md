@@ -32,14 +32,28 @@ Este documento proporciona un índice completo de toda la documentación del pro
 - Endpoints del API
 - Enlaces a documentación backend
 
-### 🖼️ Para Gestión de Imágenes de Productos (NUEVO)
+### 🖼️ Para Gestión de Imágenes de Productos
+
+#### Cloudflare R2 con Dominio Propio (RECOMENDADO PARA PRODUCCIÓN) 🌟
+👉 **[CLOUDFLARE_R2_QUICK_REFERENCE.md](./CLOUDFLARE_R2_QUICK_REFERENCE.md)** - ⚡ Referencia rápida para uso diario
+👉 **[GUIA_CLOUDFLARE_R2_IMAGENES.md](./GUIA_CLOUDFLARE_R2_IMAGENES.md)** - 📚 Guía completa de integración
+👉 **[CLOUDFLARE_R2_CONFIGURATION.md](./CLOUDFLARE_R2_CONFIGURATION.md)** - ⚙️ Configuración detallada
+👉 **[EJEMPLOS_PRODUCTOS_R2.json](./EJEMPLOS_PRODUCTOS_R2.json)** - 📝 Ejemplos de productos con URLs R2
+- ✅ URLs profesionales con dominio propio (velykapet.com)
+- ✅ Sin costo de egreso (ahorro vs S3)
+- ✅ CDN global incluido
+- ✅ Transformaciones de imagen opcionales
+- ✅ Configuración de cache y optimización
+- ✅ Migración desde Google Drive
+- ✅ Mejores prácticas de naming y estructura
+
+#### Google Drive (DESARROLLO/PROTOTIPO)
 👉 **[QUICK_START_GOOGLE_DRIVE.md](./QUICK_START_GOOGLE_DRIVE.md)** - ⚡ Guía rápida (3 pasos simples)
 👉 **[GUIA_IMAGENES_GOOGLE_DRIVE.md](./GUIA_IMAGENES_GOOGLE_DRIVE.md)** - 📚 Guía completa y técnica
 👉 **[demo-google-drive-images.html](./demo-google-drive-images.html)** - 🧪 Demostración interactiva
 - Cómo usar Google Drive para imágenes de productos
 - Transformación automática de URLs
 - Mejores prácticas y optimización
-- Migración futura a Cloudinary/S3
 - Script SQL de ejemplo
 
 ### Para DevOps
