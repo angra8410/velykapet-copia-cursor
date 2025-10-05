@@ -16,6 +16,49 @@
  * node validate-r2-images.js
  * node validate-r2-images.js --export-json
  * node validate-r2-images.js --verbose
+ * 
+ * PATHWAYS DE EJECUCIÓN:
+ * ----------------------
+ * 1. Ejecución desde el directorio raíz:
+ *    cd /home/runner/work/velykapet-copia-cursor/velykapet-copia-cursor
+ *    node backend-config/Scripts/validate-r2-images.js
+ * 
+ * 2. Ejecución desde el directorio Scripts:
+ *    cd /home/runner/work/velykapet-copia-cursor/velykapet-copia-cursor/backend-config/Scripts
+ *    node validate-r2-images.js
+ * 
+ * 3. Con exportación de resultados:
+ *    node backend-config/Scripts/validate-r2-images.js --export-json
+ *    (Genera: r2-image-validation-report.json)
+ * 
+ * INSTALACIÓN DE DEPENDENCIAS:
+ * ----------------------------
+ * Primero, instala las dependencias necesarias:
+ *    cd /home/runner/work/velykapet-copia-cursor/velykapet-copia-cursor
+ *    npm install
+ * 
+ * Esto instalará:
+ * - mssql: Para conectar a SQL Server
+ * - node-fetch: Para validar URLs HTTP
+ * 
+ * TROUBLESHOOTING:
+ * ---------------
+ * Si el script se queda "detenido" tras conectar a SQL Server:
+ * 
+ * 1. Verifica que SQL Server esté ejecutándose:
+ *    - Windows: Servicios > SQL Server (SQLEXPRESS o MSSQLSERVER)
+ *    - Estado debe ser "Ejecutándose"
+ * 
+ * 2. Verifica que la base de datos existe:
+ *    sqlcmd -S localhost -E -Q "SELECT name FROM sys.databases"
+ *    (Debe aparecer VentasPet_Nueva en la lista)
+ * 
+ * 3. Prueba la conexión manualmente:
+ *    sqlcmd -S localhost -d VentasPet_Nueva -E -Q "SELECT COUNT(*) FROM Productos"
+ * 
+ * 4. Si persiste el problema, revisa los timeouts configurados en este script
+ *    (connectionTimeout: 15000ms, requestTimeout: 30000ms)
+ * 
  * ============================================================================
  */
 
@@ -32,8 +75,11 @@ const config = {
     options: {
         trustedConnection: true,
         trustServerCertificate: true,
-        enableArithAbort: true
-    }
+        enableArithAbort: true,
+        encrypt: false
+    },
+    connectionTimeout: 15000, // 15 segundos timeout para conexión
+    requestTimeout: 30000     // 30 segundos timeout para queries
 };
 
 // Colores para consola
@@ -110,13 +156,58 @@ async function main() {
         // Conectar a SQL Server
         log('📡 Conectando a SQL Server...', colors.cyan);
         log(`   Servidor: ${config.server}`, colors.gray);
-        log(`   Base de datos: ${config.database}\n`, colors.gray);
+        log(`   Base de datos: ${config.database}`, colors.gray);
+        log(`   Timeout de conexión: ${config.connectionTimeout / 1000} segundos\n`, colors.gray);
 
-        pool = await sql.connect(config);
-        log('   ✅ Conexión establecida exitosamente\n', colors.green);
+        // Intentar conexión con manejo detallado de errores
+        try {
+            pool = await sql.connect(config);
+            log('   ✅ Conexión establecida exitosamente\n', colors.green);
+        } catch (connectionError) {
+            log('\n   ❌ Error al conectar a SQL Server\n', colors.red);
+            
+            // Diagnosticar el tipo de error
+            if (connectionError.message.includes('ECONNREFUSED')) {
+                log('   💡 DIAGNÓSTICO:', colors.yellow);
+                log('      - SQL Server no está ejecutándose o no acepta conexiones', colors.gray);
+                log('      - Verifica que SQL Server esté iniciado', colors.gray);
+                log('      - Puerto por defecto: 1433\n', colors.gray);
+            } else if (connectionError.message.includes('timeout')) {
+                log('   💡 DIAGNÓSTICO:', colors.yellow);
+                log('      - La conexión excedió el tiempo de espera', colors.gray);
+                log('      - SQL Server puede estar sobrecargado o no responde', colors.gray);
+                log('      - Verifica el estado del servicio SQL Server\n', colors.gray);
+            } else if (connectionError.message.includes('Login failed')) {
+                log('   💡 DIAGNÓSTICO:', colors.yellow);
+                log('      - Problema de autenticación', colors.gray);
+                log('      - Verifica las credenciales de Windows Authentication', colors.gray);
+                log('      - El usuario debe tener permisos en la base de datos\n', colors.gray);
+            } else if (connectionError.message.includes('Cannot open database')) {
+                log('   💡 DIAGNÓSTICO:', colors.yellow);
+                log('      - La base de datos no existe o no es accesible', colors.gray);
+                log('      - Verifica que VentasPet_Nueva existe en SQL Server', colors.gray);
+                log('      - Ejecuta: SELECT name FROM sys.databases\n', colors.gray);
+            } else {
+                log('   💡 DIAGNÓSTICO:', colors.yellow);
+                log(`      - Error: ${connectionError.message}`, colors.gray);
+                log('      - Verifica los logs de SQL Server para más detalles\n', colors.gray);
+            }
+            
+            log('   📝 PASOS PARA RESOLVER:\n', colors.cyan);
+            log('      1. Verifica que SQL Server esté ejecutándose:', colors.gray);
+            log('         Windows: Servicios > SQL Server (SQLEXPRESS o MSSQLSERVER)', colors.gray);
+            log('\n      2. Verifica la base de datos:', colors.gray);
+            log('         sqlcmd -S localhost -E -Q "SELECT name FROM sys.databases"', colors.gray);
+            log('\n      3. Prueba la conexión:', colors.gray);
+            log('         sqlcmd -S localhost -d VentasPet_Nueva -E -Q "SELECT @@VERSION"', colors.gray);
+            log('\n      4. Revisa los permisos del usuario de Windows\n', colors.gray);
+            
+            throw connectionError;
+        }
 
         // Obtener URLs de productos
         log('📋 Obteniendo URLs de productos...', colors.cyan);
+        log('   Ejecutando consulta SQL...', colors.gray);
 
         const result = await pool.request().query(`
             SELECT 
@@ -133,6 +224,7 @@ async function main() {
         `);
 
         const productos = result.recordset;
+        log(`   ✅ Consulta ejecutada exitosamente`, colors.green);
         log(`   ✅ ${productos.length} productos encontrados con URLs de R2\n`, colors.green);
 
         if (productos.length === 0) {
