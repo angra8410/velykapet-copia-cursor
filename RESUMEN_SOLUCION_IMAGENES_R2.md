@@ -56,36 +56,71 @@ Database        Backend API      Frontend
 
 ## 💊 SOLUCIÓN
 
-### Paso 1: Ejecutar Script SQL ⚙️
+### ⚠️ IMPORTANTE: Verificar Estado de la Base de Datos Primero
 
-Ejecuta el script que **YA ESTÁ CREADO** en:
+**Antes de ejecutar cualquier script**, verifica si tienes productos:
+
+```bash
+sqlcmd -S localhost -d VentasPet_Nueva -E -i backend-config/Scripts/VerifyDatabaseState.sql
 ```
-backend-config/Scripts/AddSampleProductImages.sql
+
+Este script te dirá exactamente qué necesitas hacer.
+
+### Escenario A: Tabla Productos Vacía (0 productos)
+
+Si obtienes `(0 rows affected)` al verificar productos, **PRIMERO** debes poblar la base de datos:
+
+#### Opción 1: Setup Automático Completo (Recomendado - Windows)
+
+```bash
+cd backend-config\Scripts
+SetupCompleteDatabase.bat
+```
+
+Este batch ejecuta TODO automáticamente:
+1. ✅ Crea categorías, proveedores, productos y variaciones
+2. ✅ Agrega URLs de imágenes R2
+
+#### Opción 2: Manual Paso a Paso
+
+**Paso 1.1 - Poblar Productos:**
+```bash
+sqlcmd -S localhost -d VentasPet_Nueva -E -i backend-config/Scripts/SeedInitialProducts.sql
+```
+
+**Paso 1.2 - Agregar Imágenes:**
+```bash
+sqlcmd -S localhost -d VentasPet_Nueva -E -i backend-config/Scripts/AddSampleProductImages.sql
+```
+
+#### Opción 3: Usar Migraciones de Entity Framework
+
+```bash
+cd backend-config
+dotnet ef database update
+```
+
+Las migraciones ya incluyen seed de productos en `VentasPetDbContext.cs`.
+
+### Escenario B: Ya Tienes Productos (5+ productos)
+
+Si ya tienes productos, solo ejecuta el script de imágenes:
+
+```bash
+sqlcmd -S localhost -d VentasPet_Nueva -E -i backend-config/Scripts/AddSampleProductImages.sql
 ```
 
 Este script agrega URLs de R2 a los primeros 5 productos:
 
 ```sql
 UPDATE Productos 
-SET URLImagen = 'https://www.velykapet.com/CHURU_ATUN_4_PIEZAS_56_GR.jpg'
+SET URLImagen = 'https://www.velykapet.com/productos/alimentos/gatos/CHURU_ATUN_4_PIEZAS_56_GR.jpg'
 WHERE IdProducto = 1;
 
 UPDATE Productos 
-SET URLImagen = 'https://www.velykapet.com/ROYAL_CANIN_ADULT.jpg'
+SET URLImagen = 'https://www.velykapet.com/productos/alimentos/perros/ROYAL_CANIN_ADULT.jpg'
 WHERE IdProducto = 2;
 -- ... etc para productos 3, 4, 5
-```
-
-**Cómo ejecutar:**
-```bash
-# Opción 1: SQL Server Management Studio (SSMS)
-# - Abrir SSMS
-# - Conectar a localhost
-# - Abrir el archivo AddSampleProductImages.sql
-# - Ejecutar (F5)
-
-# Opción 2: Línea de comandos
-sqlcmd -S localhost -d VentasPet_Nueva -E -i backend-config/Scripts/AddSampleProductImages.sql
 ```
 
 ### Paso 2: Verificar en Base de Datos 🔍
@@ -173,13 +208,21 @@ Documentación paso a paso con troubleshooting
 
 Antes de reportar que "no funciona", verificar:
 
-- [ ] ✅ Script SQL fue ejecutado exitosamente
-- [ ] ✅ Base de datos tiene valores en URLImagen (SELECT query)
+- [ ] ✅ Ejecuté VerifyDatabaseState.sql para diagnosticar
+- [ ] ✅ La tabla Productos NO está vacía (tiene al menos 5 productos)
+- [ ] ✅ Script SeedInitialProducts.sql fue ejecutado (si tabla estaba vacía)
+- [ ] ✅ Script AddSampleProductImages.sql fue ejecutado exitosamente
+- [ ] ✅ Base de datos tiene valores en URLImagen (SELECT query muestra URLs)
 - [ ] ✅ Backend está corriendo (http://localhost:5135/api/Productos devuelve JSON)
 - [ ] ✅ Frontend está corriendo (http://localhost:3333)
 - [ ] ✅ Console muestra "Products with URLImagen: 5" (no 0)
 - [ ] ✅ Console muestra las URLs completas de las imágenes
 - [ ] ⚠️ Imágenes existen en R2 (o esperas ver 404)
+
+## 📚 Documentación Adicional
+
+Para una guía completa sobre configuración de base de datos, ver:
+- **backend-config/Scripts/README_DATABASE_SETUP.md** - Guía detallada con troubleshooting
 
 ## 🎓 LECCIONES APRENDIDAS
 
