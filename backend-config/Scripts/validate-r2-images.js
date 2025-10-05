@@ -68,7 +68,7 @@ const fs = require('fs').promises;
 
 // Configuración
 const config = {
-    server: 'localhost',
+    server: 'localhost\\SQLEXPRESS',
  //   port: 49670,
     database: 'VentasPet_Nueva',
  //   driver: 'msnodesqlv8', // <- importante
@@ -78,8 +78,8 @@ const config = {
         enableArithAbort: true,
         encrypt: false
     },
-    connectionTimeout: 15000, // 15 segundos timeout para conexión
-    requestTimeout: 30000     // 30 segundos timeout para queries
+    connectionTimeout: 30000, // 15 segundos timeout para conexión
+    requestTimeout: 60000     // 30 segundos timeout para queries
 };
 
 // Colores para consola
