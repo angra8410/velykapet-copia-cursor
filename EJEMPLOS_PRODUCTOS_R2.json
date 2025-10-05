@@ -1,0 +1,232 @@
+{
+  "ejemplos_productos_cloudflare_r2": [
+    {
+      "titulo": "Ejemplo 1: Producto con imagen de Cloudflare R2",
+      "producto": {
+        "IdProducto": 1,
+        "NombreBase": "Churu Atún 4 Piezas 56gr",
+        "Descripcion": "Snack cremoso para gatos sabor atún, presentación 4 piezas de 56 gramos",
+        "URLImagen": "https://www.velykapet.com/productos/alimentos/gatos/CHURU_ATUN_4_PIEZAS_56_GR.jpg",
+        "Precio": 8500,
+        "Stock": 25,
+        "Categoria": "Alimentos",
+        "Subcategoria": "Snacks para Gatos",
+        "Marca": "Inaba",
+        "Activo": true
+      },
+      "notas": "URL directa desde R2 con dominio propio. Automáticamente optimizada por Cloudflare CDN."
+    },
+    {
+      "titulo": "Ejemplo 2: Producto con múltiples variaciones",
+      "producto": {
+        "IdProducto": 2,
+        "NombreBase": "Royal Canin Indoor Cat",
+        "Descripcion": "Alimento premium para gatos de interior",
+        "URLImagen": "https://www.velykapet.com/productos/alimentos/gatos/ROYAL_CANIN_INDOOR_CAT_1_5KG.jpg",
+        "Precio": 45000,
+        "Stock": 10,
+        "Categoria": "Alimentos",
+        "Subcategoria": "Alimento Seco Gatos",
+        "Marca": "Royal Canin",
+        "Activo": true,
+        "Variaciones": [
+          {
+            "IdVariacion": 1,
+            "Peso": "1.5kg",
+            "URLImagen": "https://www.velykapet.com/productos/alimentos/gatos/ROYAL_CANIN_INDOOR_CAT_1_5KG.jpg",
+            "Precio": 45000,
+            "Stock": 10
+          },
+          {
+            "IdVariacion": 2,
+            "Peso": "3kg",
+            "URLImagen": "https://www.velykapet.com/productos/alimentos/gatos/ROYAL_CANIN_INDOOR_CAT_3KG.jpg",
+            "Precio": 82000,
+            "Stock": 5
+          },
+          {
+            "IdVariacion": 3,
+            "Peso": "7.5kg",
+            "URLImagen": "https://www.velykapet.com/productos/alimentos/gatos/ROYAL_CANIN_INDOOR_CAT_7_5KG.jpg",
+            "Precio": 185000,
+            "Stock": 3
+          }
+        ]
+      },
+      "notas": "Cada variación tiene su propia imagen en R2. Nomenclatura incluye peso en el nombre."
+    },
+    {
+      "titulo": "Ejemplo 3: Producto con placeholder cuando no hay imagen",
+      "producto": {
+        "IdProducto": 3,
+        "NombreBase": "Collar Antipulgas para Gato",
+        "Descripcion": "Collar antipulgas de larga duración, hasta 8 meses de protección",
+        "URLImagen": "https://www.velykapet.com/sistema/placeholders/producto-sin-imagen.jpg",
+        "Precio": 15000,
+        "Stock": 20,
+        "Categoria": "Accesorios",
+        "Subcategoria": "Collares",
+        "Marca": "Genérico",
+        "Activo": true
+      },
+      "notas": "Usa placeholder del sistema cuando no hay imagen específica del producto."
+    },
+    {
+      "titulo": "Ejemplo 4: Juguete con imagen en alta resolución",
+      "producto": {
+        "IdProducto": 4,
+        "NombreBase": "Pelota de Caucho para Perro - Mediana",
+        "Descripcion": "Pelota resistente de caucho natural, tamaño mediano, ideal para perros de 10-25kg",
+        "URLImagen": "https://www.velykapet.com/productos/juguetes/perros/PELOTA_CAUCHO_PERRO_MEDIANO.jpg",
+        "Precio": 12000,
+        "Stock": 30,
+        "Categoria": "Juguetes",
+        "Subcategoria": "Juguetes para Perros",
+        "Marca": "Kong",
+        "Activo": true
+      },
+      "notas": "Imagen optimizada en R2, servida automáticamente en WebP por Cloudflare Image Resizing."
+    }
+  ],
+  
+  "estructura_urls": {
+    "descripcion": "Estructura recomendada de URLs para imágenes en Cloudflare R2",
+    "patron_base": "https://www.velykapet.com/{categoria}/{subcategoria}/{NOMBRE_ARCHIVO}.{extension}",
+    "ejemplos": {
+      "productos": [
+        "https://www.velykapet.com/productos/alimentos/gatos/CHURU_ATUN_4_PIEZAS_56_GR.jpg",
+        "https://www.velykapet.com/productos/juguetes/perros/PELOTA_CAUCHO_PERRO_MEDIANO.jpg",
+        "https://www.velykapet.com/productos/accesorios/collares/COLLAR_ANTIPULGAS_GATO_ROJO.jpg"
+      ],
+      "categorias": [
+        "https://www.velykapet.com/categorias/gatos-banner-main.jpg",
+        "https://www.velykapet.com/categorias/perros-banner-main.jpg",
+        "https://www.velykapet.com/categorias/promociones-navidad-2024.jpg"
+      ],
+      "sistema": [
+        "https://www.velykapet.com/sistema/placeholders/producto-sin-imagen.jpg",
+        "https://www.velykapet.com/sistema/logos/logo-principal.png",
+        "https://www.velykapet.com/sistema/iconos/cart-icon.svg"
+      ]
+    }
+  },
+  
+  "naming_convention": {
+    "descripcion": "Convención de nombres para archivos de imagen",
+    "reglas": [
+      "Solo usar caracteres: A-Z, 0-9, guión bajo (_), punto (.)",
+      "Preferir MAYÚSCULAS para consistencia",
+      "Separar palabras con guión bajo (_)",
+      "Incluir atributos importantes (peso, tamaño, color, cantidad)",
+      "Mantener nombres descriptivos pero concisos",
+      "Evitar espacios y caracteres especiales (ñ, á, é, etc.)"
+    ],
+    "ejemplos_correctos": [
+      "CHURU_ATUN_4_PIEZAS_56_GR.jpg",
+      "ROYAL_CANIN_INDOOR_CAT_1_5KG.jpg",
+      "PELOTA_CAUCHO_PERRO_MEDIANO_ROJA.jpg",
+      "COLLAR_ANTIPULGAS_GATO_ADULTO.jpg",
+      "SHAMPOO_PERRO_PELO_LARGO_500ML.jpg"
+    ],
+    "ejemplos_incorrectos": [
+      "imagen1.jpg (no descriptivo)",
+      "Producto Con Espacios.jpg (tiene espacios)",
+      "producto-ñandú.jpg (caracteres especiales)",
+      "IMG_20231215_123456.jpg (nombre genérico)",
+      "royal-canin.jpg (falta información)"
+    ]
+  },
+  
+  "optimizacion_con_image_resizing": {
+    "descripcion": "Si Cloudflare Image Resizing está activado, puedes agregar transformaciones on-the-fly",
+    "sintaxis": "https://www.velykapet.com/cdn-cgi/image/{opciones}/{ruta-imagen}",
+    "ejemplos": {
+      "thumbnail_300x300": "https://www.velykapet.com/cdn-cgi/image/width=300,height=300,fit=cover,quality=80/productos/alimentos/gatos/CHURU_ATUN_4_PIEZAS_56_GR.jpg",
+      "producto_800x800": "https://www.velykapet.com/cdn-cgi/image/width=800,height=800,fit=contain,quality=90/productos/alimentos/gatos/CHURU_ATUN_4_PIEZAS_56_GR.jpg",
+      "auto_format_webp": "https://www.velykapet.com/cdn-cgi/image/format=auto,quality=85/productos/alimentos/gatos/CHURU_ATUN_4_PIEZAS_56_GR.jpg"
+    },
+    "opciones_disponibles": {
+      "width": "Ancho en píxeles (ej: 300)",
+      "height": "Alto en píxeles (ej: 300)",
+      "quality": "Calidad 1-100 (ej: 85)",
+      "format": "auto, webp, avif, jpeg, png",
+      "fit": "cover, contain, scale-down, crop, pad",
+      "gravity": "auto, left, right, top, bottom, center",
+      "sharpen": "Nitidez 0-10 (ej: 1.0)"
+    },
+    "nota": "Image Resizing requiere plan de pago ($5/mes por 100k transformaciones). La URL original sin transformaciones siempre funciona."
+  },
+  
+  "uso_en_frontend": {
+    "react_component": {
+      "basico": "<img src={product.URLImagen} alt={product.NombreBase} loading=\"lazy\" />",
+      "con_fallback": "<img src={product.URLImagen} alt={product.NombreBase} loading=\"lazy\" onError={(e) => e.target.src = 'https://www.velykapet.com/sistema/placeholders/producto-sin-imagen.jpg'} />",
+      "responsive": "<img src={product.URLImagen} srcSet={`${product.URLImagen} 1x, ${product.URLImagen} 2x`} alt={product.NombreBase} loading=\"lazy\" />"
+    },
+    "con_transformImageUrl": {
+      "descripcion": "La función window.transformImageUrl() ya reconoce URLs de velykapet.com",
+      "ejemplo": "const imageUrl = window.transformImageUrl(product.URLImagen, { width: 300, quality: 80 });"
+    }
+  },
+  
+  "migracion_desde_google_drive": {
+    "descripcion": "Proceso para migrar URLs de Google Drive a Cloudflare R2",
+    "pasos": [
+      "1. Descargar imágenes desde Google Drive",
+      "2. Renombrar según convención (MAYUSCULAS_CON_GUION_BAJO.jpg)",
+      "3. Optimizar imágenes (< 200KB, 800x800px para productos)",
+      "4. Subir a R2 en la carpeta correspondiente",
+      "5. Actualizar URLImagen en la base de datos",
+      "6. Validar que todas las imágenes cargan correctamente",
+      "7. Mantener backup de Google Drive por 1 mes"
+    ],
+    "script_sql_ejemplo": "UPDATE Productos SET URLImagen = REPLACE(URLImagen, 'https://drive.google.com/uc?export=view&id=ABC123', 'https://www.velykapet.com/productos/alimentos/gatos/PRODUCTO.jpg') WHERE IdProducto = 1;"
+  },
+  
+  "ventajas_cloudflare_r2": [
+    "✅ URLs profesionales con dominio propio (velykapet.com)",
+    "✅ Sin costo de egreso/transferencia (ahorro significativo vs S3)",
+    "✅ CDN global incluido (baja latencia en todo el mundo)",
+    "✅ Cache automático en edge (performance ultrarrápida)",
+    "✅ SSL/TLS incluido y renovación automática",
+    "✅ Compatible con API de S3 (fácil migración)",
+    "✅ Transformaciones de imagen opcionales (Image Resizing)",
+    "✅ Escalable sin límites",
+    "✅ 99.9% uptime garantizado",
+    "✅ Configuración simple comparado con S3+CloudFront"
+  ],
+  
+  "mejores_practicas": {
+    "seguridad": [
+      "Usar HTTPS siempre (forzado por Cloudflare)",
+      "Configurar CORS apropiadamente",
+      "Habilitar hotlink protection",
+      "Mantener bucket público solo para imágenes de productos",
+      "Usar API tokens con permisos mínimos necesarios"
+    ],
+    "performance": [
+      "Optimizar imágenes antes de subir (< 200KB)",
+      "Usar lazy loading para imágenes below the fold",
+      "Implementar srcset para responsive images",
+      "Aprovechar cache de Cloudflare (TTL apropiados)",
+      "Preload imágenes críticas above the fold",
+      "Usar formatos modernos (WebP) cuando sea posible"
+    ],
+    "mantenimiento": [
+      "Mantener estructura de carpetas consistente",
+      "Seguir convención de nombres estrictamente",
+      "Documentar cada cambio importante",
+      "Monitorear métricas semanalmente (cache hit, errores)",
+      "Hacer backup regular de imágenes originales",
+      "Validar nuevas imágenes después de subir"
+    ]
+  },
+  
+  "recursos": {
+    "documentacion_completa": "GUIA_CLOUDFLARE_R2_IMAGENES.md",
+    "referencia_rapida": "CLOUDFLARE_R2_QUICK_REFERENCE.md",
+    "configuracion": "CLOUDFLARE_R2_CONFIGURATION.md",
+    "cloudflare_docs": "https://developers.cloudflare.com/r2/",
+    "image_resizing_docs": "https://developers.cloudflare.com/images/"
+  }
+}

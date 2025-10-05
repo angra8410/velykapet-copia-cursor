@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VentasPetApi.Data;
 
@@ -10,9 +11,11 @@ using VentasPetApi.Data;
 namespace VentasPetApi.Migrations
 {
     [DbContext(typeof(VentasPetDbContext))]
-    partial class VentasPetDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251005020450_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
@@ -647,8 +650,6 @@ namespace VentasPetApi.Migrations
                             Stock = 35
                         });
                 });
-
-            // Relaciones
 
             modelBuilder.Entity("VentasPetApi.Models.CarritoCompras", b =>
                 {
