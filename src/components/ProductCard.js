@@ -285,11 +285,17 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
                 {
                     src: (() => {
                         // Debug: Log image URL detection
-                        const imageUrl = product.image || product.ImageUrl || product.URLImagen || product.imageUrl;
+                        // Check for Images array first (new format), then fallback to single URL fields
+                        const imageUrl = (product.Images && product.Images.length > 0 ? product.Images[0] : null) ||
+                                        product.image || 
+                                        product.ImageUrl || 
+                                        product.URLImagen || 
+                                        product.imageUrl;
                         console.log('🖼️ ProductCard - Image URL for', product.name || product.Name || product.NombreBase, ':', {
                             imageUrl: imageUrl,
                             hasError: imageError,
                             fields: {
+                                Images: product.Images,
                                 image: product.image,
                                 ImageUrl: product.ImageUrl,
                                 URLImagen: product.URLImagen,
