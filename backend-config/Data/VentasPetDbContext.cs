@@ -263,11 +263,11 @@ namespace VentasPetApi.Data
                 new Producto
                 {
                     IdProducto = 2,
-                    NombreBase = "BR FOR CAT VET CONTROL DE PESO",
-                    Descripcion = "Alimento con balance adecuado de nutrientes que ayuda a reducir la formación de bolas de pelo",
-                    IdCategoria = 2,
+                    NombreBase = "Churu Atún 4 Piezas 56gr",
+                    Descripcion = "Snack cremoso para gatos sabor atún, presentación 4 piezas de 56 gramos. Irresistible para tu felino.",
+                    IdCategoria = 3,
                     TipoMascota = "Gatos",
-                    URLImagen = "/images/productos/royal-canin-cat-weight.jpg",
+                    URLImagen = "https://www.velykapet.com/CHURU_ATUN_4_PIEZAS_56_GR.jpg",
                     Activo = true,
                     FechaCreacion = DateTime.Now,
                     FechaActualizacion = DateTime.Now
@@ -343,13 +343,13 @@ namespace VentasPetApi.Data
                     Activa = true,
                     FechaCreacion = DateTime.Now
                 },
-                // BR FOR CAT VET variaciones
+                // Churu Atún variaciones
                 new VariacionProducto
                 {
                     IdVariacion = 4,
                     IdProducto = 2,
-                    Peso = "500 GR",
-                    Precio = 204.00m,
+                    Peso = "56 GR",
+                    Precio = 85.00m,
                     Stock = 50,
                     Activa = true,
                     FechaCreacion = DateTime.Now
@@ -358,8 +358,8 @@ namespace VentasPetApi.Data
                 {
                     IdVariacion = 5,
                     IdProducto = 2,
-                    Peso = "1.5 KG",
-                    Precio = 582.00m,
+                    Peso = "112 GR",
+                    Precio = 160.00m,
                     Stock = 30,
                     Activa = true,
                     FechaCreacion = DateTime.Now
@@ -368,8 +368,8 @@ namespace VentasPetApi.Data
                 {
                     IdVariacion = 6,
                     IdProducto = 2,
-                    Peso = "3 KG",
-                    Precio = 1108.00m,
+                    Peso = "224 GR",
+                    Precio = 295.00m,
                     Stock = 20,
                     Activa = true,
                     FechaCreacion = DateTime.Now
