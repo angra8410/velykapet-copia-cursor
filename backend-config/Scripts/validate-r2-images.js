@@ -19,14 +19,16 @@
  * ============================================================================
  */
 
-const sql = require('mssql');
+const sql = require('mssql/msnodesqlv8');
 const fetch = require('node-fetch');
 const fs = require('fs').promises;
 
 // Configuración
 const config = {
     server: 'localhost',
+ //   port: 49670,
     database: 'VentasPet_Nueva',
+ //   driver: 'msnodesqlv8', // <- importante
     options: {
         trustedConnection: true,
         trustServerCertificate: true,
