@@ -10,7 +10,8 @@
     "start:env": "node -e \"process.argv.length > 2 && (process.env.NODE_ENV = process.argv[2]); require('./simple-server.cjs');\""
   },
   "dependencies": {
-    "node-fetch": "^3.3.2",
+    "mssql": "^10.0.2",
+    "node-fetch": "^2.7.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   }
