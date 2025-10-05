@@ -93,6 +93,9 @@ window.PrivacyPolicyComponent = function() {
 console.log('✅ PrivacyPolicyComponent registrado exitosamente');
 console.log('📝 Tipo:', typeof window.PrivacyPolicyComponent);
 console.log('🔍 Disponible:', !!window.PrivacyPolicyComponent);
+
+// Componente completo con navegación
+window.PrivacyPolicyComponent = function() {
     const [activeSection, setActiveSection] = React.useState('overview');
     
     const sections = [

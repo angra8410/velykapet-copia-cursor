@@ -491,8 +491,11 @@ window.CacheManager = {
         console.log(`🧹 Limpieza agresiva completada: ${cleanedItems} elementos removidos`);
     },
     
-    // Configurar cache de Service Worker
+    // Configurar cache de Service Worker - DESACTIVADO TEMPORALMENTE
     setupServiceWorkerCache() {
+        console.log('⚠️ Service Worker cache DESACTIVADO para evitar problemas de caché');
+        // COMENTADO: Causaba problemas con endpoints cacheados incorrectamente
+        /*
         if ('serviceWorker' in navigator && 'caches' in window) {
             // Registrar service worker para cache de recursos estáticos
             navigator.serviceWorker.register('/sw.js')
@@ -503,6 +506,7 @@ window.CacheManager = {
                     console.log('⚠️ Service Worker no disponible');
                 });
         }
+        */
     },
     
     // Formatear bytes para display

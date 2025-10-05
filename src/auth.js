@@ -1,7 +1,7 @@
 // VentasPet - Sistema de Autenticación
 // Componentes de Login, Registro y gestión de usuarios
 
-console.log('🔐 Cargando sistema de autenticación...');
+console.log('Cargando sistema de autenticación...');
 
 // ======================
 // GESTIÓN DE ESTADO DE USUARIO
@@ -670,6 +670,6 @@ function AuthComponent() {
 window.AuthComponent = AuthComponent;
 window.authManager = authManager;
 
-console.log('✅ Sistema de autenticación cargado');
-console.log('🔐 Componentes disponibles: AuthComponent');
-console.log('👤 AuthManager disponible globalmente');
+console.log('Sistema de autenticacion cargado');
+console.log('AuthManager disponible globalmente');
+console.log('Funciones disponibles: login, register, logout, etc.');

@@ -1,7 +1,7 @@
 // VentasPet - Utilidades de Moneda Colombiana (COP)
 // Funciones para formatear y manejar pesos colombianos
 
-console.log('💰 Cargando utilidades de moneda colombiana...');
+console.log('Cargando utilidades de moneda colombiana...');
 
 // ======================
 // CONFIGURACIÓN DE MONEDA COLOMBIANA
@@ -206,15 +206,13 @@ window.CurrencyUtils = {
 window.formatCOP = formatCOP;
 window.calculateIVA = calculateIVA;
 
-console.log('✅ Utilidades de moneda colombiana cargadas');
-console.log('💰 Configuración:', CURRENCY_CONFIG);
-console.log('🧮 Funciones disponibles: formatCOP, calculateIVA, etc.');
+console.log('Utilidades de moneda colombiana cargadas');
+console.log('Configuracion:', CURRENCY_CONFIG);
+console.log('Funciones disponibles: formatCOP, calculateIVA, etc.');
 
-// Ejemplos de uso para testing
-if (typeof console !== 'undefined') {
-    console.log('📝 Ejemplos de formato:');
-    console.log('  $1234 →', formatCOP(1234));
-    console.log('  $45000 →', formatCOP(45000));
-    console.log('  $1234567 →', formatCOP(1234567));
-    console.log('  IVA de $100000 →', formatCOP(calculateIVA(100000)));
-}
+// Ejemplos de uso
+console.log('Ejemplos de formato:');
+console.log('  $1234 →', formatCOP(1234));
+console.log('  $45000 →', formatCOP(45000));
+console.log('  $1234567 →', formatCOP(1234567));
+console.log('  IVA de $100000 →', formatCOP(calculateIVA(100000)));

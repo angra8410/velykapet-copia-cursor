@@ -145,9 +145,9 @@ function HeroCategoriesComponent() {
                             transition: 'all var(--transition-normal)',
                             color: 'white',
                             minHeight: '160px',
-                             display: 'flex',
-                             flexDirection: 'column',
-                             maxWidth: '380px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            maxWidth: '380px',
                             justifyContent: 'space-between'
                         },
                         

@@ -273,11 +273,10 @@ window.LazyLoader = {
     
     // Optimizar orden de carga de scripts
     optimizeScriptLoading() {
-        // Scripts críticos (deben cargarse primero)
+        // Scripts críticos ya están cargados en index.html (currency.js, api.js, auth.js)
+        // Solo cargar scripts de componentes que no estén ya cargados
         const criticalScripts = [
-            'src/currency.js',
-            'src/api.js',
-            'src/auth.js'
+            // Removidos currency.js, api.js, auth.js para evitar duplicados
         ];
         
         // Scripts de componentes (pueden cargarse después)
