@@ -39,13 +39,17 @@ if exist "..\ventas_pet\ventas_pet_api_dotnet\VentasPetApi.csproj" (
 )
 
 echo.
-echo 🔧 Iniciando Backend API...
+echo 🔧 Iniciando Backend API en modo Development...
 echo 💡 URLs disponibles:
-echo    Backend: http://localhost:5135
-echo    Swagger: http://localhost:5135/swagger
+echo    📡 Backend: http://localhost:5135
+echo    📚 Swagger: http://localhost:5135
+echo    🔗 Frontend esperado: http://localhost:3333
 echo.
 echo ⏹️  Para detener: Ctrl+C
 echo.
+
+REM Configurar el entorno a Development para usar SQLite
+set ASPNETCORE_ENVIRONMENT=Development
 
 cd /d "%BACKEND_PATH%"
 dotnet run

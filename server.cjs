@@ -84,19 +84,7 @@ const server = http.createServer(async (req, res) => {
             
             async function forwardRequest() {
                 try {
-                    // Cargar node-fetch correctamente
-                    let fetch;
-                    try {
-                        fetch = require('node-fetch');
-                    } catch (err) {
-                        console.error('❌ Error loading node-fetch:', err.message);
-                        res.writeHead(500, { 
-                            'Content-Type': 'application/json',
-                            'Access-Control-Allow-Origin': '*'
-                        });
-                        res.end(JSON.stringify({ error: 'node-fetch not available' }));
-                        return;
-                    }
+                    // Usar el fetch nativo de Node.js (disponible en Node 18+)
                     const response = await fetch(backendUrl, options);
                     
                     console.log(`📨 Backend response: ${response.status} ${response.statusText}`);
