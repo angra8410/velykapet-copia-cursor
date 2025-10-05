@@ -101,6 +101,21 @@ namespace VentasPetApi.Models
         public string? URLImagen { get; set; }
         public bool Activo { get; set; }
         public List<VariacionProductoDto> Variaciones { get; set; } = new List<VariacionProductoDto>();
+        
+        // Images collection - populated with URLImagen for backward compatibility
+        // Allows frontend to access image(s) via both Images and URLImagen fields
+        public List<string> Images 
+        { 
+            get 
+            {
+                var imagesList = new List<string>();
+                if (!string.IsNullOrWhiteSpace(URLImagen))
+                {
+                    imagesList.Add(URLImagen);
+                }
+                return imagesList;
+            }
+        }
     }
 
     public class VariacionProductoDto

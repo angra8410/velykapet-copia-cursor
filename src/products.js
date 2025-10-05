@@ -142,6 +142,7 @@ function ProductCard({ product, onAddToCart }) {
             image: product.URLImagen,
             ImageUrl: product.URLImagen,
             URLImagen: product.URLImagen,
+            Images: product.Images || [], // New Images field
             description: product.Descripcion,
             Description: product.Descripcion,
             Descripcion: product.Descripcion,
