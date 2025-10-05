@@ -559,6 +559,12 @@ function ProductCatalog() {
             console.log('🔍 DEBUG - Primer producto:', data[0]);
             console.log('🔍 DEBUG - Todos los productos:', data);
             
+            // DEBUG: Check which products have URLImagen
+            const productsWithImages = data.filter(p => p.URLImagen && p.URLImagen.trim() !== '');
+            const productsWithoutImages = data.filter(p => !p.URLImagen || p.URLImagen.trim() === '');
+            console.log('✅ Products with URLImagen:', productsWithImages.length, productsWithImages.map(p => ({ id: p.IdProducto, name: p.NombreBase, url: p.URLImagen })));
+            console.log('❌ Products without URLImagen:', productsWithoutImages.length, productsWithoutImages.map(p => ({ id: p.IdProducto, name: p.NombreBase })));
+            
             setProducts(data);
             setFilteredProducts(data);
         } catch (error) {
