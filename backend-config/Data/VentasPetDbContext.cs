@@ -255,7 +255,7 @@ namespace VentasPetApi.Data
                     Descripcion = "Alimento balanceado para perros adultos de todas las razas",
                     IdCategoria = 1,
                     TipoMascota = "Perros",
-                    URLImagen = "/images/productos/royal-canin-adult.jpg",
+                    URLImagen = "https://www.velykapet.com/productos/alimentos/perros/ROYAL_CANIN_ADULT.jpg",
                     Activo = true,
                     FechaCreacion = DateTime.Now,
                     FechaActualizacion = DateTime.Now
@@ -279,7 +279,7 @@ namespace VentasPetApi.Data
                     Descripcion = "Nutrición científicamente formulada para cachorros",
                     IdCategoria = 1,
                     TipoMascota = "Perros",
-                    URLImagen = "/images/productos/hills-puppy.jpg",
+                    URLImagen = "https://www.velykapet.com/productos/alimentos/perros/HILLS_SCIENCE_DIET_PUPPY.jpg",
                     Activo = true,
                     FechaCreacion = DateTime.Now,
                     FechaActualizacion = DateTime.Now
@@ -291,7 +291,7 @@ namespace VentasPetApi.Data
                     Descripcion = "Alimento completo y balanceado para gatos adultos",
                     IdCategoria = 2,
                     TipoMascota = "Gatos",
-                    URLImagen = "/images/productos/purina-cat.jpg",
+                    URLImagen = "https://www.velykapet.com/productos/alimentos/gatos/PURINA_PRO_PLAN_ADULT_CAT.jpg",
                     Activo = true,
                     FechaCreacion = DateTime.Now,
                     FechaActualizacion = DateTime.Now
@@ -303,7 +303,7 @@ namespace VentasPetApi.Data
                     Descripcion = "Premios naturales para perros y gatos",
                     IdCategoria = 3,
                     TipoMascota = "Ambos",
-                    URLImagen = "/images/productos/snacks.jpg",
+                    URLImagen = "https://www.velykapet.com/productos/snacks/SNACKS_NATURALES.jpg",
                     Activo = true,
                     FechaCreacion = DateTime.Now,
                     FechaActualizacion = DateTime.Now

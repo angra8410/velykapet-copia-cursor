@@ -278,20 +278,20 @@ namespace VentasPetApi.Migrations
                             IdProducto = 1,
                             Activo = true,
                             Descripcion = "Alimento balanceado para perros adultos de todas las razas",
-                            FechaActualizacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6309),
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6309),
+                            FechaActualizacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2500),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2499),
                             IdCategoria = 1,
                             NombreBase = "Royal Canin Adult",
                             TipoMascota = "Perros",
-                            URLImagen = "/images/productos/royal-canin-adult.jpg"
+                            URLImagen = "https://www.velykapet.com/productos/alimentos/perros/ROYAL_CANIN_ADULT.jpg"
                         },
                         new
                         {
                             IdProducto = 2,
                             Activo = true,
                             Descripcion = "Snack cremoso para gatos sabor atún, presentación 4 piezas de 56 gramos. Irresistible para tu felino.",
-                            FechaActualizacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6313),
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6312),
+                            FechaActualizacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2504),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2504),
                             IdCategoria = 3,
                             NombreBase = "Churu Atún 4 Piezas 56gr",
                             TipoMascota = "Gatos",
@@ -302,36 +302,36 @@ namespace VentasPetApi.Migrations
                             IdProducto = 3,
                             Activo = true,
                             Descripcion = "Nutrición científicamente formulada para cachorros",
-                            FechaActualizacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6316),
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6316),
+                            FechaActualizacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2508),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2507),
                             IdCategoria = 1,
                             NombreBase = "Hill's Science Diet Puppy",
                             TipoMascota = "Perros",
-                            URLImagen = "/images/productos/hills-puppy.jpg"
+                            URLImagen = "https://www.velykapet.com/productos/alimentos/perros/HILLS_SCIENCE_DIET_PUPPY.jpg"
                         },
                         new
                         {
                             IdProducto = 4,
                             Activo = true,
                             Descripcion = "Alimento completo y balanceado para gatos adultos",
-                            FechaActualizacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6320),
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6319),
+                            FechaActualizacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2511),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2511),
                             IdCategoria = 2,
                             NombreBase = "Purina Pro Plan Adult Cat",
                             TipoMascota = "Gatos",
-                            URLImagen = "/images/productos/purina-cat.jpg"
+                            URLImagen = "https://www.velykapet.com/productos/alimentos/gatos/PURINA_PRO_PLAN_ADULT_CAT.jpg"
                         },
                         new
                         {
                             IdProducto = 5,
                             Activo = true,
                             Descripcion = "Premios naturales para perros y gatos",
-                            FechaActualizacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6323),
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6322),
+                            FechaActualizacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2514),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2514),
                             IdCategoria = 3,
                             NombreBase = "Snacks Naturales",
                             TipoMascota = "Ambos",
-                            URLImagen = "/images/productos/snacks.jpg"
+                            URLImagen = "https://www.velykapet.com/productos/snacks/SNACKS_NATURALES.jpg"
                         });
                 });
 
@@ -398,8 +398,8 @@ namespace VentasPetApi.Migrations
                             Activo = true,
                             Direccion = "Av. Insurgentes Sur 1234, Ciudad de México",
                             Email = "contacto@royalcanin.com.mx",
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6242),
-                            FechaModificacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6260),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2428),
+                            FechaModificacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2448),
                             NIT = "900123456-7",
                             Nombre = "Royal Canin",
                             Notas = "Proveedor principal de alimento premium",
@@ -414,8 +414,8 @@ namespace VentasPetApi.Migrations
                             Activo = true,
                             Direccion = "Blvd. Ávila Camacho 567, Estado de México",
                             Email = "ventas@hills.com.mx",
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6267),
-                            FechaModificacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6267),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2455),
+                            FechaModificacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2455),
                             NIT = "900987654-3",
                             Nombre = "Hill's Science Diet",
                             Notas = "Especialistas en nutrición veterinaria",
@@ -430,8 +430,8 @@ namespace VentasPetApi.Migrations
                             Activo = true,
                             Direccion = "Carretera México-Toluca Km 15.5, Estado de México",
                             Email = "distribuidores@purina.com.mx",
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6270),
-                            FechaModificacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6270),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2458),
+                            FechaModificacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2458),
                             NIT = "900456789-1",
                             Nombre = "Purina Pro Plan",
                             Notas = "Alimento de alta calidad para mascotas",
@@ -530,7 +530,7 @@ namespace VentasPetApi.Migrations
                         {
                             IdVariacion = 1,
                             Activa = true,
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6366),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2561),
                             IdProducto = 1,
                             Peso = "3 KG",
                             Precio = 450.00m,
@@ -540,7 +540,7 @@ namespace VentasPetApi.Migrations
                         {
                             IdVariacion = 2,
                             Activa = true,
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6369),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2564),
                             IdProducto = 1,
                             Peso = "7.5 KG",
                             Precio = 980.00m,
@@ -550,7 +550,7 @@ namespace VentasPetApi.Migrations
                         {
                             IdVariacion = 3,
                             Activa = true,
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6372),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2566),
                             IdProducto = 1,
                             Peso = "15 KG",
                             Precio = 1850.00m,
@@ -560,7 +560,7 @@ namespace VentasPetApi.Migrations
                         {
                             IdVariacion = 4,
                             Activa = true,
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6374),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2568),
                             IdProducto = 2,
                             Peso = "56 GR",
                             Precio = 85.00m,
@@ -570,7 +570,7 @@ namespace VentasPetApi.Migrations
                         {
                             IdVariacion = 5,
                             Activa = true,
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6376),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2571),
                             IdProducto = 2,
                             Peso = "112 GR",
                             Precio = 160.00m,
@@ -580,7 +580,7 @@ namespace VentasPetApi.Migrations
                         {
                             IdVariacion = 6,
                             Activa = true,
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6379),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2573),
                             IdProducto = 2,
                             Peso = "224 GR",
                             Precio = 295.00m,
@@ -590,7 +590,7 @@ namespace VentasPetApi.Migrations
                         {
                             IdVariacion = 7,
                             Activa = true,
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6381),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2575),
                             IdProducto = 3,
                             Peso = "2 KG",
                             Precio = 380.00m,
@@ -600,7 +600,7 @@ namespace VentasPetApi.Migrations
                         {
                             IdVariacion = 8,
                             Activa = true,
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6383),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2577),
                             IdProducto = 3,
                             Peso = "6 KG",
                             Precio = 920.00m,
@@ -610,7 +610,7 @@ namespace VentasPetApi.Migrations
                         {
                             IdVariacion = 9,
                             Activa = true,
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6385),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2579),
                             IdProducto = 4,
                             Peso = "1 KG",
                             Precio = 185.00m,
@@ -620,7 +620,7 @@ namespace VentasPetApi.Migrations
                         {
                             IdVariacion = 10,
                             Activa = true,
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6445),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2642),
                             IdProducto = 4,
                             Peso = "3 KG",
                             Precio = 495.00m,
@@ -630,7 +630,7 @@ namespace VentasPetApi.Migrations
                         {
                             IdVariacion = 11,
                             Activa = true,
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6447),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2645),
                             IdProducto = 5,
                             Peso = "200 GR",
                             Precio = 85.00m,
@@ -640,15 +640,13 @@ namespace VentasPetApi.Migrations
                         {
                             IdVariacion = 12,
                             Activa = true,
-                            FechaCreacion = new DateTime(2025, 10, 5, 2, 4, 50, 45, DateTimeKind.Local).AddTicks(6449),
+                            FechaCreacion = new DateTime(2025, 10, 6, 1, 11, 24, 857, DateTimeKind.Local).AddTicks(2647),
                             IdProducto = 5,
                             Peso = "500 GR",
                             Precio = 195.00m,
                             Stock = 35
                         });
                 });
-
-            // Relaciones
 
             modelBuilder.Entity("VentasPetApi.Models.CarritoCompras", b =>
                 {
