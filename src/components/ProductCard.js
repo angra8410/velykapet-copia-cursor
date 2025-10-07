@@ -7,7 +7,6 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
     const [isImageLoading, setIsImageLoading] = React.useState(true);
     const [imageError, setImageError] = React.useState(false);
     const [isAddingToCart, setIsAddingToCart] = React.useState(false);
-    const [showQuickView, setShowQuickView] = React.useState(false);
     const [selectedVariation, setSelectedVariation] = React.useState(null);
     const [productVariations, setProductVariations] = React.useState([]);
     const [isFavorite, setIsFavorite] = React.useState(false);
@@ -139,35 +138,27 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
             onClick: handleCardClick,
             style: {
                 background: 'white',
-                borderRadius: '18px', // Bordes más redondeados
+                borderRadius: '18px',
                 overflow: 'hidden',
                 cursor: 'pointer',
-                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', // Transición más suave
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 border: '1px solid rgba(0, 0, 0, 0.08)',
                 position: 'relative',
                 height: '100%',
-                minHeight: '360px', // Altura compacta para 4-5 columnas
+                minHeight: '360px',
                 display: 'flex',
                 flexDirection: 'column',
-                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)' // Sombra sutil inicial
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)'
             },
             onMouseEnter: (e) => {
-                e.target.style.transform = 'translateY(-12px) scale(1.02)';
-                e.target.style.boxShadow = '0 25px 50px rgba(74, 144, 226, 0.15), 0 10px 30px rgba(0, 0, 0, 0.1)';
+                e.target.style.transform = 'translateY(-8px)';
+                e.target.style.boxShadow = '0 12px 24px rgba(74, 144, 226, 0.15), 0 6px 12px rgba(0, 0, 0, 0.1)';
                 e.target.style.borderColor = '#4A90E2';
-                
-                // Activar Quick View con un pequeño delay para mejor UX
-                setTimeout(() => {
-                    if (e.target.matches(':hover')) {
-                        setShowQuickView(true);
-                    }
-                }, 300);
             },
             onMouseLeave: (e) => {
-                e.target.style.transform = 'translateY(0) scale(1)';
+                e.target.style.transform = 'translateY(0)';
                 e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.08)';
                 e.target.style.borderColor = 'rgba(0, 0, 0, 0.08)';
-                setShowQuickView(false);
             }
         },
         
@@ -255,7 +246,7 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
                 className: 'product-image-container',
                 style: {
                     position: 'relative',
-                    paddingTop: '60%', // Aspect ratio más compacto
+                    paddingTop: '75%', // Aspect ratio 4:3 para mejor visualización de las imágenes
                     background: '#f8f9fa',
                     overflow: 'hidden'
                 }
@@ -284,7 +275,6 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
             React.createElement('img',
                 {
                     src: (() => {
-                        // Debug: Log image URL detection
                         // Check for Images array first (new format), then fallback to single URL fields
                         const imageUrl = (product.Images && product.Images.length > 0 ? product.Images[0] : null) ||
                                         product.image || 
@@ -326,97 +316,10 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
                         width: '100%',
                         height: '100%',
                         objectFit: 'cover',
-                        transition: 'all 0.3s ease',
+                        transition: 'opacity 0.3s ease',
                         opacity: isImageLoading ? 0 : 1
                     }
                 }
-            ),
-            
-            // Quick view overlay - Solo información, sin botón de agregar
-            showQuickView && stockStatus.available && React.createElement('div',
-                {
-                    className: 'quick-view-overlay',
-                    style: {
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        background: 'rgba(228, 90, 132, 0.9)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        opacity: showQuickView ? 1 : 0,
-                        transition: 'opacity 0.3s ease',
-                        backdropFilter: 'blur(2px)'
-                    }
-                },
-React.createElement('div',
-                    {
-                        onClick: (e) => e.stopPropagation(),
-                        style: {
-                            background: 'white',
-                            borderRadius: '15px',
-                            padding: '15px',
-                            minWidth: '200px',
-                            transform: showQuickView ? 'scale(1)' : 'scale(0.8)',
-                            transition: 'transform 0.3s ease',
-                            boxShadow: '0 8px 25px rgba(0, 0, 0, 0.2)',
-                            textAlign: 'center'
-                        }
-                    },
-                    
-                    // Nombre del producto
-                    React.createElement('h4',
-                        {
-                            style: {
-                                margin: '0 0 8px 0',
-                                fontSize: '16px',
-                                fontWeight: '600',
-                                color: '#333'
-                            }
-                        },
-                        product.name
-                    ),
-                    
-                    // Precio destacado
-                    React.createElement('div',
-                        {
-                            style: {
-                                fontSize: '18px',
-                                fontWeight: '700',
-                                color: '#4A90E2',
-                                marginBottom: '8px'
-                            }
-                        },
-                        formatPrice(getCurrentPrice())
-                    ),
-                    
-                    // Stock
-                    React.createElement('div',
-                        {
-                            style: {
-                                fontSize: '12px',
-                                color: '#666',
-                                marginBottom: '10px'
-                            }
-                        },
-                        `Stock: ${product.stock} disponibles`
-                    ),
-                    
-                    // Indicador de acción
-                    React.createElement('div',
-                        {
-                            style: {
-                                fontSize: '12px',
-                                color: '#4A90E2',
-                                fontWeight: '500',
-                                opacity: 0.8
-                            }
-                        },
-                        '👆 Haz clic abajo para agregar'
-                    )
-                )
             )
         ),
         
@@ -425,7 +328,7 @@ React.createElement('div',
             {
                 className: 'product-content',
                 style: {
-                    padding: '16px',
+                    padding: '12px',
                     flex: 1,
                     display: 'flex',
                     flexDirection: 'column'
@@ -437,20 +340,27 @@ React.createElement('div',
                 {
                     className: 'product-category caption',
                     style: {
-                        color: '#666',
-                        marginBottom: '4px'
+                        color: '#999',
+                        marginBottom: '4px',
+                        fontSize: '11px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.5px',
+                        fontWeight: '500'
                     }
                 },
                 product.category
             ),
             
-            // Nombre del producto
+            // Nombre del producto - tamaño reducido y posición secundaria
             React.createElement('h3',
                 {
                     className: 'product-name heading-4',
                     style: {
                         color: '#333',
                         margin: '0 0 8px 0',
+                        fontSize: '14px',
+                        fontWeight: '500',
+                        lineHeight: '1.4',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
@@ -460,13 +370,15 @@ React.createElement('div',
                 product.name
             ),
             
-            // Descripción corta
+            // Descripción corta - reducida
             product.description && React.createElement('p',
                 {
                     className: 'product-description body-small',
                     style: {
-                        color: '#666',
-                        margin: '0 0 12px 0',
+                        color: '#777',
+                        margin: '0 0 8px 0',
+                        fontSize: '12px',
+                        lineHeight: '1.4',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
