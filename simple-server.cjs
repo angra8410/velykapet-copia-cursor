@@ -82,6 +82,12 @@ const server = http.createServer((req, res) => {
     
     // Servir archivos estáticos
     let filePath = req.url === '/' ? '/index.html' : req.url;
+    
+    // Mapear /images/* a /public/images/* para servir íconos y recursos estáticos
+    if (filePath.startsWith('/images/')) {
+        filePath = '/public' + filePath;
+    }
+    
     const fullPath = path.join(__dirname, filePath);
     
     fs.readFile(fullPath, (err, data) => {

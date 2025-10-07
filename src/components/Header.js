@@ -215,7 +215,7 @@ window.HeaderComponent = function() {
                             },
                             React.createElement('img',
                                 {
-                                    src: 'public/images/Logo_VelykaPet.png',
+                                    src: '/images/Logo_VelykaPet.png',
                                     alt: 'VelyKapet Logo',
                                     style: {
                                     height: '70px', // Aumentado para hacer el logo más grande
@@ -232,7 +232,7 @@ window.HeaderComponent = function() {
                                     console.warn('⚠️ Logo nuevo no encontrado, usando logo antiguo');
                                     if (!e.target.dataset.fallback) {
                                         e.target.dataset.fallback = 'true';
-                                        e.target.src = 'public/images/velykapet_letras-removebg-preview.png';
+                                        e.target.src = '/images/velykapet_letras-removebg-preview.png';
                                     } else {
                                         e.target.style.display = 'none';
                                         const fallbackDiv = document.createElement('div');
@@ -410,7 +410,7 @@ window.HeaderComponent = function() {
                             }
                         },
                         React.createElement('img', {
-                            src: 'public/images/instagram.svg',
+                            src: '/images/instagram.svg',
                             alt: 'Instagram',
                             style: {
                                 width: '24px',
@@ -422,7 +422,7 @@ window.HeaderComponent = function() {
                                 e.target.onerror = null;
                                 // Intentar con PNG si SVG falla
                                 if (e.target.src.endsWith('.svg')) {
-                                    e.target.src = 'public/images/instagram.png';
+                                    e.target.src = '/images/instagram.png';
                                 } else {
                                     // Reemplazar la imagen con texto
                                     const parent = e.target.parentNode;
@@ -460,7 +460,7 @@ window.HeaderComponent = function() {
                             }
                         },
                         React.createElement('img', {
-                            src: 'public/images/whatsapp.svg',
+                            src: '/images/whatsapp.svg',
                             alt: 'WhatsApp',
                             style: {
                                 width: '24px',
@@ -472,7 +472,7 @@ window.HeaderComponent = function() {
                                 e.target.onerror = null;
                                 // Intentar con PNG si SVG falla
                                 if (e.target.src.endsWith('.svg')) {
-                                    e.target.src = 'public/images/whatsapp.png';
+                                    e.target.src = '/images/whatsapp.png';
                                 } else {
                                     // Reemplazar la imagen con texto
                                     const parent = e.target.parentNode;
