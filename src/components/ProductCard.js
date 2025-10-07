@@ -469,6 +469,67 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
                 )
             ),
             
+            // WhatsApp Contact Section
+            React.createElement('div',
+                {
+                    className: 'whatsapp-contact',
+                    style: {
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '8px',
+                        padding: '8px 12px',
+                        marginBottom: '12px',
+                        background: 'linear-gradient(135deg, #25D366 0%, #128C7E 100%)',
+                        borderRadius: '8px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        boxShadow: '0 2px 8px rgba(37, 211, 102, 0.2)'
+                    },
+                    onClick: () => {
+                        window.open('https://wa.me/573247770793', '_blank');
+                    },
+                    onMouseEnter: (e) => {
+                        e.currentTarget.style.transform = 'scale(1.02)';
+                        e.currentTarget.style.boxShadow = '0 4px 12px rgba(37, 211, 102, 0.4)';
+                    },
+                    onMouseLeave: (e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(37, 211, 102, 0.2)';
+                    }
+                },
+                // WhatsApp Icon
+                React.createElement('img', {
+                    src: '/public/images/whatsapp.svg',
+                    alt: 'WhatsApp',
+                    style: {
+                        width: '20px',
+                        height: '20px',
+                        objectFit: 'contain',
+                        filter: 'brightness(0) invert(1)' // Make icon white
+                    },
+                    onError: (e) => {
+                        // Fallback to emoji if image fails to load
+                        e.target.style.display = 'none';
+                        const parent = e.target.parentNode;
+                        const emoji = document.createTextNode('📱 ');
+                        parent.insertBefore(emoji, parent.firstChild);
+                    }
+                }),
+                // Contact Text
+                React.createElement('span',
+                    {
+                        style: {
+                            color: 'white',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            letterSpacing: '0.3px'
+                        }
+                    },
+                    'Contactar: 324-7770793'
+                )
+            ),
+            
             // Botón de acción
             React.createElement('button',
                 {
