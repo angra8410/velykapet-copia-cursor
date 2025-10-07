@@ -240,13 +240,13 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
             stockStatus.text
         ),
         
-        // Contenedor de imagen
+        // Contenedor de imagen - Optimizado para dar más protagonismo a la imagen
         React.createElement('div',
             {
                 className: 'product-image-container',
                 style: {
                     position: 'relative',
-                    paddingTop: '75%', // Aspect ratio 4:3 para mejor visualización de las imágenes
+                    paddingTop: '100%', // Aspect ratio 1:1 para que la imagen ocupe más espacio
                     background: '#f8f9fa',
                     overflow: 'hidden'
                 }
@@ -317,32 +317,34 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
                         height: '100%',
                         objectFit: 'cover',
                         transition: 'opacity 0.3s ease',
-                        opacity: isImageLoading ? 0 : 1
+                        opacity: isImageLoading ? 0 : 1,
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                        border: '1px solid rgba(0, 0, 0, 0.04)'
                     }
                 }
             )
         ),
         
-        // Contenido de la tarjeta
+        // Contenido de la tarjeta - padding reducido para dar más espacio a la imagen
         React.createElement('div',
             {
                 className: 'product-content',
                 style: {
-                    padding: '12px',
+                    padding: '10px',
                     flex: 1,
                     display: 'flex',
                     flexDirection: 'column'
                 }
             },
             
-            // Categoría
+            // Categoría - más sutil
             product.category && React.createElement('div',
                 {
                     className: 'product-category caption',
                     style: {
-                        color: '#999',
-                        marginBottom: '4px',
-                        fontSize: '11px',
+                        color: '#aaa',
+                        marginBottom: '3px',
+                        fontSize: '10px',
                         textTransform: 'uppercase',
                         letterSpacing: '0.5px',
                         fontWeight: '500'
@@ -351,16 +353,16 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
                 product.category
             ),
             
-            // Nombre del producto - tamaño reducido y posición secundaria
+            // Nombre del producto - tamaño más reducido y color más sutil para no competir con la imagen
             React.createElement('h3',
                 {
                     className: 'product-name heading-4',
                     style: {
-                        color: '#333',
-                        margin: '0 0 8px 0',
-                        fontSize: '14px',
-                        fontWeight: '500',
-                        lineHeight: '1.4',
+                        color: '#666',
+                        margin: '0 0 6px 0',
+                        fontSize: '12px',
+                        fontWeight: '400',
+                        lineHeight: '1.3',
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
@@ -370,17 +372,17 @@ window.ProductCardComponent = function({ product, onAddToCart, onViewDetails }) 
                 product.name
             ),
             
-            // Descripción corta - reducida
+            // Descripción corta - muy reducida para dar más espacio a la imagen
             product.description && React.createElement('p',
                 {
                     className: 'product-description body-small',
                     style: {
-                        color: '#777',
-                        margin: '0 0 8px 0',
-                        fontSize: '12px',
-                        lineHeight: '1.4',
+                        color: '#888',
+                        margin: '0 0 6px 0',
+                        fontSize: '11px',
+                        lineHeight: '1.3',
                         display: '-webkit-box',
-                        WebkitLineClamp: 2,
+                        WebkitLineClamp: 1,
                         WebkitBoxOrient: 'vertical',
                         overflow: 'hidden'
                     }

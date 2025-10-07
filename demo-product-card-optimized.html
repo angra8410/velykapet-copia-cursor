@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimized Product Card Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛍️ Product Card - Optimización Completa</h1>
+        <p class="subtitle">Imagen protagonista • Nombre reducido • Diseño limpio</p>
+        <div id="root" class="product-grid"></div>
+    </div>
+    
+    <script src="lib/react.production.min.js"></script>
+    <script src="lib/react-dom.production.min.js"></script>
+    
+    <script>
+        // Mock utilities
+        window.formatCOP = (price) => `$ ${price?.toLocaleString('es-CO') || '0'}`;
+        window.transformImageUrl = (url) => url;
+        
+        // Sample products
+        const products = [
+            {
+                Id: 1,
+                name: 'Royal Canin Adult Premium para Perros Grandes',
+                category: 'ALIMENTO PERROS',
+                Price: 125000,
+                Stock: 15,
+                description: 'Nutrición completa para perros adultos de razas grandes',
+                Images: ['https://www.velykapet.com/productos/alimentos/perros/ROYAL_CANIN_ADULT.jpg'],
+                rating: 4.5
+            },
+            {
+                Id: 2,
+                name: 'Hills Science Diet Puppy',
+                category: 'ALIMENTO PERROS',
+                Price: 95000,
+                Stock: 3,
+                description: 'Alimento especial para cachorros en crecimiento',
+                Images: ['https://www.velykapet.com/productos/alimentos/perros/HILLS_PUPPY.jpg']
+            },
+            {
+                Id: 3,
+                name: 'Pro Plan Adult Cat',
+                category: 'ALIMENTO GATOS',
+                Price: 78000,
+                Stock: 0,
+                description: 'Nutrición balanceada para gatos adultos',
+                Images: ['https://www.velykapet.com/productos/alimentos/gatos/PROPLAN_ADULT.jpg'],
+                rating: 4.8
+            },
+            {
+                Id: 4,
+                name: 'Whiskas Adult Pouch Salmon',
+                category: 'ALIMENTO GATOS',
+                Price: 52000,
+                Stock: 20,
+                discount: 15,
+                originalPrice: 61000,
+                description: 'Alimento húmedo sabor salmón para gatos adultos',
+                Images: ['https://www.velykapet.com/productos/alimentos/gatos/WHISKAS_SALMON.jpg']
+            }
+        ];
+    </script>
+    <script src="src/components/ProductCard.js"></script>
+    <script>
+        const rootElement = document.getElementById('root');
+        const root = ReactDOM.createRoot(rootElement);
+        
+        root.render(
+            React.createElement(React.Fragment, null,
+                products.map(product => 
+                    React.createElement(window.ProductCardComponent, {
+                        key: product.Id,
+                        product: product,
+                        onAddToCart: (p) => {
+                            alert(`✅ ${p.name} agregado al carrito!`);
+                        },
+                        onViewDetails: (p) => {
+                            alert(`👁️ Viendo detalles de: ${p.name}`);
+                        }
+                    })
+                )
+            )
+        );
+    </script>
+</body>
+</html>
