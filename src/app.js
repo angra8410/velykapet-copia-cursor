@@ -1040,6 +1040,189 @@ if (typeof React === 'undefined') {
                         }
                     }
                     
+                    if (currentView === 'product' && selectedProduct) {
+                        // Vista de producto individual
+                        return React.createElement('div', 
+                            { 
+                                className: 'product-detail-view',
+                                style: { 
+                                    maxWidth: '1200px', 
+                                    margin: '0 auto', 
+                                    padding: '20px',
+                                    backgroundColor: '#fff',
+                                    borderRadius: '12px',
+                                    boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                                    minHeight: 'calc(100vh - 80px)'
+                                } 
+                            },
+                            // Botón para volver al catálogo
+                            React.createElement('button', 
+                                {
+                                    onClick: () => setCurrentView('catalog'),
+                                    style: {
+                                        padding: '8px 16px',
+                                        background: '#f8f9fa',
+                                        border: '1px solid #dee2e6',
+                                        borderRadius: '5px',
+                                        cursor: 'pointer',
+                                        marginBottom: '20px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        fontSize: '14px'
+                                    }
+                                },
+                                '← Volver al catálogo'
+                            ),
+                            
+                            // Contenido del producto
+                            React.createElement('div', 
+                                {
+                                    className: 'product-content',
+                                    style: {
+                                        display: 'grid',
+                                        gridTemplateColumns: 'minmax(300px, 40%) 1fr',
+                                        gap: '30px',
+                                        marginBottom: '30px'
+                                    }
+                                },
+                                // Imagen del producto
+                                React.createElement('div', 
+                                    {
+                                        className: 'product-image',
+                                        style: {
+                                            borderRadius: '8px',
+                                            overflow: 'hidden'
+                                        }
+                                    },
+                                    React.createElement('img', 
+                                        {
+                                            src: (selectedProduct.Images && selectedProduct.Images.length > 0 ? selectedProduct.Images[0] : null) || 
+                                                 selectedProduct.image || 
+                                                 selectedProduct.ImageUrl ||
+                                                 'https://via.placeholder.com/400x400?text=Sin+imagen',
+                                            alt: selectedProduct.Name || selectedProduct.name || 'Producto',
+                                            style: {
+                                                width: '100%',
+                                                height: 'auto',
+                                                objectFit: 'cover'
+                                            }
+                                        }
+                                    )
+                                ),
+                                
+                                // Información del producto
+                                React.createElement('div', 
+                                    { className: 'product-info' },
+                                    // Categoría
+                                    React.createElement('div', 
+                                        {
+                                            style: {
+                                                color: '#6c757d',
+                                                fontSize: '0.9rem',
+                                                marginBottom: '8px'
+                                            }
+                                        },
+                                        selectedProduct.Categoria || selectedProduct.category || 'Sin categoría'
+                                    ),
+                                    
+                                    // Nombre del producto
+                                    React.createElement('h1', 
+                                        {
+                                            style: {
+                                                fontSize: '2rem',
+                                                margin: '0 0 16px 0',
+                                                color: '#212529'
+                                            }
+                                        },
+                                        selectedProduct.Name || selectedProduct.name || 'Producto sin nombre'
+                                    ),
+                                    
+                                    // Precio
+                                    React.createElement('div', 
+                                        {
+                                            style: {
+                                                fontSize: '1.5rem',
+                                                fontWeight: 'bold',
+                                                color: '#007bff',
+                                                marginBottom: '16px'
+                                            }
+                                        },
+                                        window.formatCOP ? window.formatCOP(selectedProduct.Price || selectedProduct.price || 0) : `$${(selectedProduct.Price || selectedProduct.price || 0).toLocaleString()}`
+                                    ),
+                                    
+                                    // Descripción
+                                    (selectedProduct.Descripcion || selectedProduct.description) && React.createElement('p', 
+                                        {
+                                            style: {
+                                                lineHeight: '1.6',
+                                                color: '#495057',
+                                                marginBottom: '24px'
+                                            }
+                                        },
+                                        selectedProduct.Descripcion || selectedProduct.description
+                                    ),
+                                    
+                                    // Stock
+                                    React.createElement('div', 
+                                        {
+                                            style: {
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                marginBottom: '24px',
+                                                padding: '8px 12px',
+                                                backgroundColor: (selectedProduct.Stock || selectedProduct.stock || 0) > 0 ? '#e8f5e9' : '#ffebee',
+                                                borderRadius: '4px',
+                                                width: 'fit-content'
+                                            }
+                                        },
+                                        React.createElement('span', null, (selectedProduct.Stock || selectedProduct.stock || 0) > 0 ? '✅ En stock' : '❌ Sin stock'),
+                                        (selectedProduct.Stock || selectedProduct.stock || 0) > 0 && React.createElement('span', 
+                                            { style: { color: '#2e7d32', fontWeight: 'bold' } },
+                                            `(${selectedProduct.Stock || selectedProduct.stock} disponibles)`
+                                        )
+                                    ),
+                                    
+                                    // Botón de agregar al carrito
+                                    React.createElement('button', 
+                                        {
+                                            onClick: () => {
+                                                if (window.cartManager) {
+                                                    window.cartManager.addItem(selectedProduct, 1);
+                                                    alert(`✅ ${selectedProduct.Name || selectedProduct.name} agregado al carrito!`);
+                                                }
+                                            },
+                                            disabled: (selectedProduct.Stock || selectedProduct.stock || 0) <= 0,
+                                            style: {
+                                                padding: '12px 24px',
+                                                backgroundColor: (selectedProduct.Stock || selectedProduct.stock || 0) > 0 ? '#007bff' : '#6c757d',
+                                                color: 'white',
+                                                border: 'none',
+                                                borderRadius: '8px',
+                                                fontSize: '1rem',
+                                                fontWeight: 'bold',
+                                                cursor: (selectedProduct.Stock || selectedProduct.stock || 0) > 0 ? 'pointer' : 'not-allowed',
+                                                width: '100%',
+                                                maxWidth: '300px'
+                                            }
+                                        },
+                                        (selectedProduct.Stock || selectedProduct.stock || 0) > 0 ? '🛒 Agregar al carrito' : '❌ No disponible'
+                                    )
+                                )
+                            ),
+                            
+                            // Componente de reseñas
+                            window.ProductReviewsWrapper ? 
+                                React.createElement(window.ProductReviewsWrapper, { productId: selectedProduct.Id || selectedProduct.id }) :
+                                React.createElement('div', 
+                                    { style: { textAlign: 'center', padding: '40px', color: '#666' } },
+                                    React.createElement('h3', null, 'Cargando reseñas...'),
+                                    React.createElement('p', null, 'El componente de reseñas se está cargando...')
+                                )
+                        );
+                    }
+                    
                     return React.createElement('div', 
                         { style: { textAlign: 'center', padding: '40px' } },
                         React.createElement('h2', null, '❓ Vista no encontrada'),
