@@ -129,7 +129,7 @@ function HeroCategoriesComponent() {
                         onMouseEnter: () => handleMouseEnter(category.id),
                         onMouseLeave: handleMouseLeave,
                         style: {
-                            backgroundImage: `linear-gradient(${category.gradient.replace('linear-gradient(', '').replace(')', '')}, rgba(0,0,0,0.4)), url(${category.image}), url(http://localhost:3000${category.image.replace('./', '/')}), url(${category.image.replace('./', 'public/images/')})`,
+                            backgroundImage: `linear-gradient(${category.gradient.replace('linear-gradient(', '').replace(')', '')}, rgba(0,0,0,0.4)), url(${category.image}), url(http://localhost:3000${category.image.replace('./', '/')}), url(${category.image.replace('./', '/images/')})`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat',
