@@ -427,7 +427,7 @@ window.HeaderComponent = function() {
                     // WhatsApp con imagen real
                     React.createElement('a',
                         {
-                            href: 'https://wa.me/message/VELYKAPET',
+                            href: 'https://wa.me/573247770793',
                             target: '_blank',
                             rel: 'noopener noreferrer',
                             style: {
@@ -468,6 +468,20 @@ window.HeaderComponent = function() {
                                 parent.style.fontWeight = 'bold';
                             }
                         })
+                    ),
+                    // Phone number display
+                    React.createElement('span',
+                        {
+                            style: {
+                                color: 'white',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                marginLeft: '5px',
+                                letterSpacing: '0.3px',
+                                textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                            }
+                        },
+                        '324-7770793'
                     )
                 ),
                 
