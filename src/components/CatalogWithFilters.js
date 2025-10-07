@@ -617,7 +617,14 @@ function CatalogWithFilters() {
                             key: `${product.Id}-${Math.random()}`, // Key único para evitar duplicados
                             product: product,
                             onAddToCart: handleAddToCart,
-                            onViewDetails: (prod) => console.log('Ver detalles:', prod.Name)
+                            onViewDetails: (prod) => {
+                                console.log('Ver detalles de producto:', prod.Name || prod.name);
+                                if (window.viewProductDetails) {
+                                    window.viewProductDetails(prod);
+                                } else {
+                                    console.error('❌ window.viewProductDetails no está disponible');
+                                }
+                            }
                         })
                     )
                 ),

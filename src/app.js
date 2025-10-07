@@ -1344,8 +1344,11 @@ if (typeof React === 'undefined') {
                                 },
                                 React.createElement('img', 
                                     {
-                                        src: selectedProduct.image || 'https://via.placeholder.com/400x400?text=Sin+imagen',
-                                        alt: selectedProduct.name,
+                                        src: (selectedProduct.Images && selectedProduct.Images.length > 0 ? selectedProduct.Images[0] : null) || 
+                                             selectedProduct.image || 
+                                             selectedProduct.ImageUrl ||
+                                             'https://via.placeholder.com/400x400?text=Sin+imagen',
+                                        alt: selectedProduct.Name || selectedProduct.name || 'Producto',
                                         style: {
                                             width: '100%',
                                             height: 'auto',
@@ -1367,7 +1370,7 @@ if (typeof React === 'undefined') {
                                             marginBottom: '8px'
                                         }
                                     },
-                                    selectedProduct.category
+                                    selectedProduct.Categoria || selectedProduct.category || 'Sin categoría'
                                 ),
                                 
                                 // Nombre del producto
@@ -1379,7 +1382,7 @@ if (typeof React === 'undefined') {
                                             color: '#212529'
                                         }
                                     },
-                                    selectedProduct.name
+                                    selectedProduct.Name || selectedProduct.name || 'Producto sin nombre'
                                 ),
                                 
                                 // Precio
@@ -1392,11 +1395,11 @@ if (typeof React === 'undefined') {
                                             marginBottom: '16px'
                                         }
                                     },
-                                    window.formatCOP ? window.formatCOP(selectedProduct.price) : `$${selectedProduct.price.toLocaleString()}`
+                                    window.formatCOP ? window.formatCOP(selectedProduct.Price || selectedProduct.price || 0) : `$${(selectedProduct.Price || selectedProduct.price || 0).toLocaleString()}`
                                 ),
                                 
                                 // Descripción
-                                selectedProduct.description && React.createElement('p', 
+                                (selectedProduct.Descripcion || selectedProduct.description) && React.createElement('p', 
                                     {
                                         style: {
                                             lineHeight: '1.6',
@@ -1404,7 +1407,7 @@ if (typeof React === 'undefined') {
                                             marginBottom: '24px'
                                         }
                                     },
-                                    selectedProduct.description
+                                    selectedProduct.Descripcion || selectedProduct.description
                                 ),
                                 
                                 // Stock
@@ -1416,15 +1419,15 @@ if (typeof React === 'undefined') {
                                             gap: '8px',
                                             marginBottom: '24px',
                                             padding: '8px 12px',
-                                            backgroundColor: selectedProduct.stock > 0 ? '#e8f5e9' : '#ffebee',
+                                            backgroundColor: (selectedProduct.Stock || selectedProduct.stock || 0) > 0 ? '#e8f5e9' : '#ffebee',
                                             borderRadius: '4px',
                                             width: 'fit-content'
                                         }
                                     },
-                                    React.createElement('span', null, selectedProduct.stock > 0 ? '✅ En stock' : '❌ Sin stock'),
-                                    selectedProduct.stock > 0 && React.createElement('span', 
+                                    React.createElement('span', null, (selectedProduct.Stock || selectedProduct.stock || 0) > 0 ? '✅ En stock' : '❌ Sin stock'),
+                                    (selectedProduct.Stock || selectedProduct.stock || 0) > 0 && React.createElement('span', 
                                         { style: { color: '#2e7d32', fontWeight: 'bold' } },
-                                        `(${selectedProduct.stock} disponibles)`
+                                        `(${selectedProduct.Stock || selectedProduct.stock} disponibles)`
                                     )
                                 ),
                                 
@@ -1434,31 +1437,31 @@ if (typeof React === 'undefined') {
                                         onClick: () => {
                                             if (window.cartManager) {
                                                 window.cartManager.addItem(selectedProduct, 1);
-                                                alert(`✅ ${selectedProduct.name} agregado al carrito!`);
+                                                alert(`✅ ${selectedProduct.Name || selectedProduct.name} agregado al carrito!`);
                                             }
                                         },
-                                        disabled: selectedProduct.stock <= 0,
+                                        disabled: (selectedProduct.Stock || selectedProduct.stock || 0) <= 0,
                                         style: {
                                             padding: '12px 24px',
-                                            backgroundColor: selectedProduct.stock > 0 ? '#007bff' : '#6c757d',
+                                            backgroundColor: (selectedProduct.Stock || selectedProduct.stock || 0) > 0 ? '#007bff' : '#6c757d',
                                             color: 'white',
                                             border: 'none',
                                             borderRadius: '8px',
                                             fontSize: '1rem',
                                             fontWeight: 'bold',
-                                            cursor: selectedProduct.stock > 0 ? 'pointer' : 'not-allowed',
+                                            cursor: (selectedProduct.Stock || selectedProduct.stock || 0) > 0 ? 'pointer' : 'not-allowed',
                                             width: '100%',
                                             maxWidth: '300px'
                                         }
                                     },
-                                    selectedProduct.stock > 0 ? '🛒 Agregar al carrito' : '❌ No disponible'
+                                    (selectedProduct.Stock || selectedProduct.stock || 0) > 0 ? '🛒 Agregar al carrito' : '❌ No disponible'
                                 )
                             )
                         ),
                         
                         // Componente de reseñas
                         window.ProductReviewsWrapper ? 
-                            React.createElement(window.ProductReviewsWrapper, { productId: selectedProduct.id }) :
+                            React.createElement(window.ProductReviewsWrapper, { productId: selectedProduct.Id || selectedProduct.id }) :
                             React.createElement('div', 
                                 { style: { textAlign: 'center', padding: '40px', color: '#666' } },
                                 React.createElement('h3', null, 'Cargando reseñas...'),

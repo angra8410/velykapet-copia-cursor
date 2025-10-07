@@ -215,29 +215,34 @@ window.HeaderComponent = function() {
                             },
                             React.createElement('img',
                                 {
-                                    src: '/public/images/velykapet_letras-removebg-preview.png',
-                                    alt: 'VelyKapet Letras',
+                                    src: 'public/images/Logo_VelykaPet.png',
+                                    alt: 'VelyKapet Logo',
                                     style: {
                                     height: '70px', // Aumentado para hacer el logo más grande
                                     width: 'auto',
                                     maxWidth: 'none', // Mantener sin restricciones
                                     objectFit: 'contain',
-                                    filter: 'brightness(1.2) contrast(1.2)', // Aumentado para mejor visibilidad
+                                    filter: 'brightness(1.1) contrast(1.1)',
                                     dropShadow: '0 2px 4px rgba(0, 0, 0, 0.3)',
-                                    transform: 'scale(1.8)', // Aumentado aún más la escala a 1.8
+                                    transform: 'scale(1.2)',
                                     transformOrigin: 'left center' // Asegurar que la transformación se aplique desde la izquierda
                                 },
                                 onError: (e) => {
-                                    // Fallback si no carga la imagen de letras
-                                    console.warn('⚠️ Letras VelyKapet no encontradas, usando texto');
-                                    e.target.style.display = 'none';
-                                    const fallbackDiv = document.createElement('div');
-                                    fallbackDiv.innerHTML = 'VelyKapet';
-                                    fallbackDiv.style.color = '#333';
-                                    fallbackDiv.style.fontSize = '2.5rem'; // Aumentado aún más
-                                    fallbackDiv.style.fontWeight = '700';
-                                    fallbackDiv.style.textShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
-                                    e.target.parentElement.appendChild(fallbackDiv);
+                                    // Fallback si no carga el nuevo logo, intentar con el antiguo
+                                    console.warn('⚠️ Logo nuevo no encontrado, usando logo antiguo');
+                                    if (!e.target.dataset.fallback) {
+                                        e.target.dataset.fallback = 'true';
+                                        e.target.src = 'public/images/velykapet_letras-removebg-preview.png';
+                                    } else {
+                                        e.target.style.display = 'none';
+                                        const fallbackDiv = document.createElement('div');
+                                        fallbackDiv.innerHTML = 'VelyKapet';
+                                        fallbackDiv.style.color = '#333';
+                                        fallbackDiv.style.fontSize = '2.5rem';
+                                        fallbackDiv.style.fontWeight = '700';
+                                        fallbackDiv.style.textShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+                                        e.target.parentElement.appendChild(fallbackDiv);
+                                    }
                                 }
                             }
                         )
@@ -405,7 +410,7 @@ window.HeaderComponent = function() {
                             }
                         },
                         React.createElement('img', {
-                            src: '/public/images/instagram.png',
+                            src: 'public/images/instagram.svg',
                             alt: 'Instagram',
                             style: {
                                 width: '24px',
@@ -415,12 +420,17 @@ window.HeaderComponent = function() {
                             onError: (e) => {
                                 console.error('Error al cargar imagen de Instagram');
                                 e.target.onerror = null;
-                                // Reemplazar la imagen con texto
-                                const parent = e.target.parentNode;
-                                parent.innerHTML = 'IG';
-                                parent.style.color = '#E45A84';
-                                parent.style.fontSize = '16px';
-                                parent.style.fontWeight = 'bold';
+                                // Intentar con PNG si SVG falla
+                                if (e.target.src.endsWith('.svg')) {
+                                    e.target.src = 'public/images/instagram.png';
+                                } else {
+                                    // Reemplazar la imagen con texto
+                                    const parent = e.target.parentNode;
+                                    parent.innerHTML = 'IG';
+                                    parent.style.color = '#E45A84';
+                                    parent.style.fontSize = '16px';
+                                    parent.style.fontWeight = 'bold';
+                                }
                             }
                         })
                     ),
@@ -450,7 +460,7 @@ window.HeaderComponent = function() {
                             }
                         },
                         React.createElement('img', {
-                            src: '/public/images/whatsapp.png',
+                            src: 'public/images/whatsapp.svg',
                             alt: 'WhatsApp',
                             style: {
                                 width: '24px',
@@ -460,12 +470,17 @@ window.HeaderComponent = function() {
                             onError: (e) => {
                                 console.error('Error al cargar imagen de WhatsApp');
                                 e.target.onerror = null;
-                                // Reemplazar la imagen con texto
-                                const parent = e.target.parentNode;
-                                parent.innerHTML = 'WA';
-                                parent.style.color = '#25D366';
-                                parent.style.fontSize = '16px';
-                                parent.style.fontWeight = 'bold';
+                                // Intentar con PNG si SVG falla
+                                if (e.target.src.endsWith('.svg')) {
+                                    e.target.src = 'public/images/whatsapp.png';
+                                } else {
+                                    // Reemplazar la imagen con texto
+                                    const parent = e.target.parentNode;
+                                    parent.innerHTML = 'WA';
+                                    parent.style.color = '#25D366';
+                                    parent.style.fontSize = '16px';
+                                    parent.style.fontWeight = 'bold';
+                                }
                             }
                         })
                     ),
@@ -473,12 +488,15 @@ window.HeaderComponent = function() {
                     React.createElement('span',
                         {
                             style: {
-                                color: 'white',
+                                color: '#333',
                                 fontSize: '14px',
                                 fontWeight: '600',
                                 marginLeft: '5px',
                                 letterSpacing: '0.3px',
-                                textShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                                textShadow: 'none',
+                                padding: '4px 8px',
+                                background: '#f0f0f0',
+                                borderRadius: '4px'
                             }
                         },
                         '324-7770793'
