@@ -1,102 +1,17 @@
-// Privacy Policy - Política de Privacidad para VelyKapet - VERSIÓN SIMPLE
+// Privacy Policy - Política de Privacidad Profesional para VelyKapet
 console.log('🔒 Iniciando carga de Privacy Policy Component...');
 
-// Componente simple y funcional
-window.PrivacyPolicyComponent = function() {
-    console.log('✅ PrivacyPolicyComponent ejecutándose correctamente');
-    
-    return React.createElement('div',
-        {
-            style: {
-                maxWidth: '1000px',
-                margin: '0 auto',
-                padding: '40px 20px',
-                backgroundColor: 'white',
-                minHeight: 'calc(100vh - 120px)'
-            }
-        },
-        
-        // Header simple
-        React.createElement('div',
-            {
-                style: {
-                    textAlign: 'center',
-                    marginBottom: '40px',
-                    padding: '30px',
-                    backgroundColor: '#f8f9fa',
-                    borderRadius: '15px'
-                }
-            },
-            React.createElement('h1', 
-                { style: { color: '#333', fontSize: '2.5rem', margin: '0 0 10px 0' } },
-                '🔒 Política de Privacidad'
-            ),
-            React.createElement('p',
-                { style: { color: '#666', fontSize: '1.1rem', margin: 0 } },
-                'VelyKapet - Protección de tu Información Personal'
-            )
-        ),
-        
-        // Contenido principal
-        React.createElement('div',
-            {
-                style: {
-                    backgroundColor: 'white',
-                    padding: '40px',
-                    borderRadius: '15px',
-                    boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
-                    lineHeight: '1.6',
-                    color: '#333'
-                }
-            },
-            
-            React.createElement('h2', { style: { color: '#007bff' } }, 'Resumen'),
-            React.createElement('p', null, 
-                'En VelyKapet, valoramos tu privacidad y estamos comprometidos con la protección de tu información personal. Esta política explica cómo recopilamos, utilizamos y protegemos tu información.'
-            ),
-            
-            React.createElement('h2', { style: { color: '#007bff', marginTop: '30px' } }, 'Información que Recopilamos'),
-            React.createElement('ul', null,
-                React.createElement('li', null, 'Información de cuenta: nombre, email, teléfono, dirección'),
-                React.createElement('li', null, 'Historial de compras y preferencias de productos'),
-                React.createElement('li', null, 'Información de navegación y cookies'),
-                React.createElement('li', null, 'Información de mascotas (opcional para recomendaciones)')
-            ),
-            
-            React.createElement('h2', { style: { color: '#007bff', marginTop: '30px' } }, 'Cómo Utilizamos tu Información'),
-            React.createElement('ul', null,
-                React.createElement('li', null, 'Procesar y entregar tus pedidos'),
-                React.createElement('li', null, 'Proporcionar servicio al cliente'),
-                React.createElement('li', null, 'Mejorar nuestros productos y servicios'),
-                React.createElement('li', null, 'Personalizar tu experiencia de compra')
-            ),
-            
-            React.createElement('h2', { style: { color: '#007bff', marginTop: '30px' } }, 'Protección de Datos'),
-            React.createElement('p', null,
-                'Utilizamos medidas de seguridad avanzadas incluyendo cifrado SSL, servidores seguros y acceso limitado para proteger tu información personal.'
-            ),
-            
-            React.createElement('h2', { style: { color: '#007bff', marginTop: '30px' } }, 'Tus Derechos'),
-            React.createElement('p', null,
-                'Tienes derecho a acceder, corregir, eliminar o transferir tu información personal. Puedes ejercer estos derechos contactándonos en privacidad@velykapet.com'
-            ),
-            
-            React.createElement('h2', { style: { color: '#007bff', marginTop: '30px' } }, 'Contacto'),
-            React.createElement('p', null,
-                'Para preguntas sobre esta política, contáctanos en privacidad@velykapet.com o +57 (1) 555-PRIVACY'
-            )
-        )
-    );
-};
-
-// Confirmar que el componente se registró correctamente
-console.log('✅ PrivacyPolicyComponent registrado exitosamente');
-console.log('📝 Tipo:', typeof window.PrivacyPolicyComponent);
-console.log('🔍 Disponible:', !!window.PrivacyPolicyComponent);
-
-// Componente completo con navegación
+// Componente profesional y completo con navegación
 window.PrivacyPolicyComponent = function() {
     const [activeSection, setActiveSection] = React.useState('overview');
+    const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
+    
+    // Manejar cambios de tamaño de ventana para responsividad
+    React.useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
     
     const sections = [
         { id: 'overview', title: 'Resumen', icon: '📋' },
@@ -360,47 +275,118 @@ window.PrivacyPolicyComponent = function() {
         {
             className: 'privacy-policy-container',
             style: {
-                maxWidth: '1000px',
+                maxWidth: '1200px',
                 margin: '0 auto',
-                padding: '20px'
+                padding: isMobile ? '15px' : '30px 20px',
+                minHeight: 'calc(100vh - 100px)'
             }
         },
         
-        // Header
+        // Header profesional con gradiente
         React.createElement('div',
             {
                 style: {
-                    background: 'linear-gradient(135deg, #E45A84, #D94876)',
+                    background: 'linear-gradient(135deg, #E45A84 0%, #D94876 50%, #C43E6B 100%)',
                     color: 'white',
-                    padding: '40px 30px',
-                    borderRadius: '15px',
+                    padding: isMobile ? '30px 20px' : '50px 40px',
+                    borderRadius: '20px',
                     marginBottom: '30px',
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    boxShadow: '0 10px 30px rgba(228, 90, 132, 0.3)',
+                    position: 'relative',
+                    overflow: 'hidden'
                 }
             },
-            React.createElement('div', { style: { fontSize: '3rem', marginBottom: '15px' } }, '🔒'),
-            React.createElement('h1', { style: { margin: '0 0 10px 0', fontSize: '2.5rem' } }, 'Política de Privacidad'),
-            React.createElement('p', { style: { margin: 0, opacity: 0.9, fontSize: '1.1rem' } }, 
-                'VelyKapet - Protección de tu Información Personal'
-            ),
-            React.createElement('p', { style: { margin: '10px 0 0 0', opacity: 0.8, fontSize: '0.9rem' } }, 
-                'Última actualización: ' + new Date().toLocaleDateString()
+            // Decoración de fondo
+            React.createElement('div', {
+                style: {
+                    position: 'absolute',
+                    top: '-50%',
+                    right: '-5%',
+                    width: '300px',
+                    height: '300px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '50%',
+                    filter: 'blur(60px)'
+                }
+            }),
+            React.createElement('div', {
+                style: {
+                    position: 'absolute',
+                    bottom: '-30%',
+                    left: '-5%',
+                    width: '250px',
+                    height: '250px',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    borderRadius: '50%',
+                    filter: 'blur(50px)'
+                }
+            }),
+            // Contenido del header
+            React.createElement('div', { 
+                style: { 
+                    position: 'relative', 
+                    zIndex: 1 
+                } 
+            },
+                React.createElement('div', { 
+                    style: { 
+                        fontSize: isMobile ? '2.5rem' : '3.5rem', 
+                        marginBottom: '15px',
+                        animation: 'pulse 2s ease-in-out infinite'
+                    } 
+                }, '🔒'),
+                React.createElement('h1', { 
+                    style: { 
+                        margin: '0 0 15px 0', 
+                        fontSize: isMobile ? '1.8rem' : '2.8rem',
+                        fontWeight: '700',
+                        letterSpacing: '-0.5px'
+                    } 
+                }, 'Política de Privacidad'),
+                React.createElement('p', { 
+                    style: { 
+                        margin: 0, 
+                        opacity: 0.95, 
+                        fontSize: isMobile ? '1rem' : '1.2rem',
+                        fontWeight: '500'
+                    } 
+                }, 
+                    'VelyKapet - Protección de tu Información Personal'
+                ),
+                React.createElement('p', { 
+                    style: { 
+                        margin: '15px 0 0 0', 
+                        opacity: 0.85, 
+                        fontSize: isMobile ? '0.85rem' : '0.95rem',
+                        fontWeight: '400'
+                    } 
+                }, 
+                    'Última actualización: ' + new Date().toLocaleDateString('es-ES', { 
+                        day: 'numeric', 
+                        month: 'long', 
+                        year: 'numeric' 
+                    })
+                )
             )
         ),
         
-        // Navegación por secciones
+        // Navegación por secciones con tabs profesionales
         React.createElement('div',
             {
                 className: 'policy-navigation',
+                role: 'navigation',
+                'aria-label': 'Navegación de secciones de política',
                 style: {
                     display: 'flex',
                     flexWrap: 'wrap',
                     gap: '10px',
                     marginBottom: '30px',
                     background: 'white',
-                    padding: '20px',
-                    borderRadius: '12px',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                    padding: isMobile ? '15px' : '20px',
+                    borderRadius: '15px',
+                    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.08)',
+                    border: '1px solid rgba(228, 90, 132, 0.1)'
                 }
             },
             ...sections.map(section =>
@@ -408,74 +394,139 @@ window.PrivacyPolicyComponent = function() {
                     {
                         key: section.id,
                         onClick: () => setActiveSection(section.id),
+                        'aria-label': `Ver sección: ${section.title}`,
+                        'aria-pressed': activeSection === section.id,
+                        role: 'tab',
+                        tabIndex: 0,
+                        onKeyDown: (e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                setActiveSection(section.id);
+                            }
+                        },
                         style: {
-                            padding: '10px 15px',
-                            background: activeSection === section.id ? '#E45A84' : 'transparent',
+                            padding: isMobile ? '8px 12px' : '12px 18px',
+                            background: activeSection === section.id 
+                                ? 'linear-gradient(135deg, #E45A84, #D94876)' 
+                                : 'transparent',
                             color: activeSection === section.id ? 'white' : '#666',
-                            border: activeSection === section.id ? 'none' : '1px solid #ddd',
-                            borderRadius: '25px',
+                            border: activeSection === section.id ? 'none' : '2px solid #e0e0e0',
+                            borderRadius: '30px',
                             cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: activeSection === section.id ? '600' : '400',
+                            fontSize: isMobile ? '13px' : '14px',
+                            fontWeight: activeSection === section.id ? '600' : '500',
                             display: 'flex',
                             alignItems: 'center',
                             gap: '8px',
-                            transition: 'all 0.3s ease',
-                            minWidth: 'auto'
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            minWidth: 'auto',
+                            outline: 'none',
+                            boxShadow: activeSection === section.id 
+                                ? '0 4px 12px rgba(228, 90, 132, 0.3)' 
+                                : 'none',
+                            transform: activeSection === section.id ? 'translateY(-2px)' : 'translateY(0)'
                         },
                         onMouseEnter: (e) => {
                             if (activeSection !== section.id) {
-                                e.target.style.background = '#f8f9fa';
+                                e.currentTarget.style.background = '#f8f9fa';
+                                e.currentTarget.style.borderColor = '#E45A84';
+                                e.currentTarget.style.transform = 'translateY(-2px)';
                             }
                         },
                         onMouseLeave: (e) => {
                             if (activeSection !== section.id) {
-                                e.target.style.background = 'transparent';
+                                e.currentTarget.style.background = 'transparent';
+                                e.currentTarget.style.borderColor = '#e0e0e0';
+                                e.currentTarget.style.transform = 'translateY(0)';
+                            }
+                        },
+                        onFocus: (e) => {
+                            e.currentTarget.style.boxShadow = '0 0 0 3px rgba(228, 90, 132, 0.2)';
+                        },
+                        onBlur: (e) => {
+                            if (activeSection !== section.id) {
+                                e.currentTarget.style.boxShadow = 'none';
                             }
                         }
                     },
-                    React.createElement('span', null, section.icon),
-                    React.createElement('span', null, section.title)
+                    React.createElement('span', { 
+                        style: { 
+                            fontSize: isMobile ? '1.1rem' : '1.2rem',
+                            lineHeight: 1 
+                        } 
+                    }, section.icon),
+                    !isMobile && React.createElement('span', null, section.title)
                 )
             )
         ),
         
-        // Contenido de la sección activa
+        // Contenido de la sección activa con animación
         React.createElement('div',
             {
                 className: 'policy-content',
+                role: 'region',
+                'aria-live': 'polite',
+                'aria-label': `Contenido de ${sections.find(s => s.id === activeSection)?.title || 'sección'}`,
                 style: {
                     background: 'white',
-                    padding: '30px',
-                    borderRadius: '12px',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                    minHeight: '500px',
+                    padding: isMobile ? '20px' : '40px',
+                    borderRadius: '15px',
+                    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
+                    minHeight: isMobile ? '400px' : '500px',
                     color: '#333',
-                    fontSize: '15px'
+                    fontSize: isMobile ? '14px' : '16px',
+                    lineHeight: '1.8',
+                    border: '1px solid rgba(228, 90, 132, 0.1)',
+                    animation: 'fadeIn 0.4s ease-in-out'
                 }
             },
             renderSectionContent()
         ),
         
-        // Footer de compromiso
+        // Footer de compromiso con diseño mejorado
         React.createElement('div',
             {
                 style: {
-                    background: '#d4edda',
-                    padding: '25px',
-                    borderRadius: '12px',
-                    border: '1px solid #c3e6cb',
+                    background: 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)',
+                    padding: isMobile ? '20px' : '30px',
+                    borderRadius: '15px',
+                    border: '2px solid #a3d9b1',
                     marginTop: '30px',
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.08)'
                 }
             },
+            React.createElement('div', {
+                style: {
+                    fontSize: '2.5rem',
+                    marginBottom: '15px'
+                }
+            }, '🛡️'),
             React.createElement('p',
-                { style: { margin: '0 0 15px 0', color: '#155724', fontWeight: '600' } },
-                '🛡️ Nuestro Compromiso: Tu privacidad es nuestra prioridad'
+                { 
+                    style: { 
+                        margin: '0 0 15px 0', 
+                        color: '#155724', 
+                        fontWeight: '700',
+                        fontSize: isMobile ? '1.1rem' : '1.3rem',
+                        letterSpacing: '-0.3px'
+                    } 
+                },
+                'Nuestro Compromiso: Tu privacidad es nuestra prioridad'
             ),
             React.createElement('p',
-                { style: { margin: 0, color: '#155724', fontSize: '14px' } },
-                'Trabajamos continuamente para proteger tu información y ser transparentes sobre nuestras prácticas.'
+                { 
+                    style: { 
+                        margin: 0, 
+                        color: '#155724', 
+                        fontSize: isMobile ? '0.9rem' : '1rem',
+                        opacity: 0.9,
+                        maxWidth: '700px',
+                        marginLeft: 'auto',
+                        marginRight: 'auto'
+                    } 
+                },
+                'Trabajamos continuamente para proteger tu información y ser transparentes sobre nuestras prácticas. Si tienes alguna pregunta, no dudes en contactarnos.'
             )
         )
     );
@@ -493,3 +544,91 @@ if (window.PrivacyPolicyComponent) {
 } else {
     console.error('❌ ERROR: PrivacyPolicyComponent no se registró');
 }
+
+// Inyectar estilos CSS para animaciones y mejoras visuales
+if (typeof document !== 'undefined' && !document.getElementById('privacy-policy-styles')) {
+    const style = document.createElement('style');
+    style.id = 'privacy-policy-styles';
+    style.textContent = `
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+        
+        /* Mejoras de accesibilidad para lectores de pantalla */
+        .privacy-policy-container *:focus {
+            outline: 2px solid #E45A84;
+            outline-offset: 2px;
+        }
+        
+        /* Scroll suave para navegación entre secciones */
+        .privacy-policy-container {
+            scroll-behavior: smooth;
+        }
+        
+        /* Estilos adicionales para mejorar la tipografía */
+        .policy-content h3 {
+            font-weight: 700;
+            margin-top: 0;
+            line-height: 1.3;
+        }
+        
+        .policy-content h4 {
+            font-weight: 600;
+            line-height: 1.4;
+            color: #333;
+        }
+        
+        .policy-content p {
+            margin-bottom: 15px;
+        }
+        
+        .policy-content ul, .policy-content ol {
+            margin-bottom: 20px;
+        }
+        
+        .policy-content li {
+            margin-bottom: 8px;
+        }
+        
+        /* Mejora de contraste para accesibilidad */
+        .policy-content strong {
+            font-weight: 600;
+            color: #222;
+        }
+        
+        /* Responsividad adicional */
+        @media (max-width: 768px) {
+            .policy-navigation {
+                justify-content: center;
+            }
+            
+            .policy-content {
+                padding: 20px !important;
+            }
+        }
+        
+        /* Transiciones suaves para botones */
+        .policy-navigation button {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+    `;
+    document.head.appendChild(style);
+    console.log('✅ Estilos CSS de Privacy Policy inyectados');
+}
+
