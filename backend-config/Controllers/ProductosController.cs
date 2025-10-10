@@ -21,25 +21,54 @@ namespace VentasPetApi.Controllers
         public async Task<ActionResult<IEnumerable<ProductoDto>>> GetProductos(
             [FromQuery] string? categoria = null,
             [FromQuery] string? tipoMascota = null,
-            [FromQuery] string? busqueda = null)
+            [FromQuery] string? busqueda = null,
+            [FromQuery] int? idMascotaTipo = null,
+            [FromQuery] int? idCategoriaAlimento = null,
+            [FromQuery] int? idSubcategoria = null,
+            [FromQuery] int? idPresentacion = null)
         {
             try
             {
                 var query = _context.Productos
                     .Include(p => p.Categoria)
                     .Include(p => p.Variaciones.Where(v => v.Activa))
+                    .Include(p => p.MascotaTipo)
+                    .Include(p => p.CategoriaAlimento)
+                    .Include(p => p.Subcategoria)
+                    .Include(p => p.Presentacion)
                     .Where(p => p.Activo);
 
-                // Filtrar por categoría
+                // Filtro por categoría (existente, para compatibilidad)
                 if (!string.IsNullOrEmpty(categoria))
                 {
                     query = query.Where(p => p.Categoria.Nombre.ToLower().Contains(categoria.ToLower()));
                 }
 
-                // Filtrar por tipo de mascota
+                // Filtro por tipo de mascota (existente, para compatibilidad)
                 if (!string.IsNullOrEmpty(tipoMascota))
                 {
                     query = query.Where(p => p.TipoMascota.ToLower() == tipoMascota.ToLower());
+                }
+
+                // Nuevos filtros avanzados
+                if (idMascotaTipo.HasValue)
+                {
+                    query = query.Where(p => p.IdMascotaTipo == idMascotaTipo.Value);
+                }
+
+                if (idCategoriaAlimento.HasValue)
+                {
+                    query = query.Where(p => p.IdCategoriaAlimento == idCategoriaAlimento.Value);
+                }
+
+                if (idSubcategoria.HasValue)
+                {
+                    query = query.Where(p => p.IdSubcategoria == idSubcategoria.Value);
+                }
+
+                if (idPresentacion.HasValue)
+                {
+                    query = query.Where(p => p.IdPresentacion == idPresentacion.Value);
                 }
 
                 // Buscar por nombre
@@ -61,6 +90,15 @@ namespace VentasPetApi.Controllers
                     TipoMascota = p.TipoMascota,
                     URLImagen = p.URLImagen,
                     Activo = p.Activo,
+                    // Nuevos campos para filtros avanzados
+                    IdMascotaTipo = p.IdMascotaTipo,
+                    NombreMascotaTipo = p.MascotaTipo?.Nombre,
+                    IdCategoriaAlimento = p.IdCategoriaAlimento,
+                    NombreCategoriaAlimento = p.CategoriaAlimento?.Nombre,
+                    IdSubcategoria = p.IdSubcategoria,
+                    NombreSubcategoria = p.Subcategoria?.Nombre,
+                    IdPresentacion = p.IdPresentacion,
+                    NombrePresentacion = p.Presentacion?.Nombre,
                     Variaciones = p.Variaciones.Select(v => new VariacionProductoDto
                     {
                         IdVariacion = v.IdVariacion,
@@ -98,6 +136,10 @@ namespace VentasPetApi.Controllers
             var producto = await _context.Productos
                 .Include(p => p.Categoria)
                 .Include(p => p.Variaciones.Where(v => v.Activa))
+                .Include(p => p.MascotaTipo)
+                .Include(p => p.CategoriaAlimento)
+                .Include(p => p.Subcategoria)
+                .Include(p => p.Presentacion)
                 .FirstOrDefaultAsync(p => p.IdProducto == id && p.Activo);
 
             if (producto == null)
@@ -115,6 +157,15 @@ namespace VentasPetApi.Controllers
                 TipoMascota = producto.TipoMascota,
                 URLImagen = producto.URLImagen,
                 Activo = producto.Activo,
+                // Nuevos campos para filtros avanzados
+                IdMascotaTipo = producto.IdMascotaTipo,
+                NombreMascotaTipo = producto.MascotaTipo?.Nombre,
+                IdCategoriaAlimento = producto.IdCategoriaAlimento,
+                NombreCategoriaAlimento = producto.CategoriaAlimento?.Nombre,
+                IdSubcategoria = producto.IdSubcategoria,
+                NombreSubcategoria = producto.Subcategoria?.Nombre,
+                IdPresentacion = producto.IdPresentacion,
+                NombrePresentacion = producto.Presentacion?.Nombre,
                 Variaciones = producto.Variaciones.Select(v => new VariacionProductoDto
                 {
                     IdVariacion = v.IdVariacion,
@@ -180,6 +231,10 @@ namespace VentasPetApi.Controllers
             var productos = await _context.Productos
                 .Include(p => p.Categoria)
                 .Include(p => p.Variaciones.Where(v => v.Activa))
+                .Include(p => p.MascotaTipo)
+                .Include(p => p.CategoriaAlimento)
+                .Include(p => p.Subcategoria)
+                .Include(p => p.Presentacion)
                 .Where(p => p.Activo && 
                            (p.NombreBase.ToLower().Contains(q.ToLower()) ||
                             p.Descripcion.ToLower().Contains(q.ToLower()) ||
@@ -196,6 +251,15 @@ namespace VentasPetApi.Controllers
                 TipoMascota = p.TipoMascota,
                 URLImagen = p.URLImagen,
                 Activo = p.Activo,
+                // Nuevos campos para filtros avanzados
+                IdMascotaTipo = p.IdMascotaTipo,
+                NombreMascotaTipo = p.MascotaTipo?.Nombre,
+                IdCategoriaAlimento = p.IdCategoriaAlimento,
+                NombreCategoriaAlimento = p.CategoriaAlimento?.Nombre,
+                IdSubcategoria = p.IdSubcategoria,
+                NombreSubcategoria = p.Subcategoria?.Nombre,
+                IdPresentacion = p.IdPresentacion,
+                NombrePresentacion = p.Presentacion?.Nombre,
                 Variaciones = p.Variaciones.Select(v => new VariacionProductoDto
                 {
                     IdVariacion = v.IdVariacion,
@@ -208,6 +272,94 @@ namespace VentasPetApi.Controllers
             }).ToList();
 
             return Ok(productosDto);
+        }
+
+        // GET: api/Productos/filtros/mascotas
+        [HttpGet("filtros/mascotas")]
+        public async Task<ActionResult<IEnumerable<MascotaTipoDto>>> GetMascotaTipos()
+        {
+            var mascotas = await _context.MascotaTipos
+                .Where(m => m.Activo)
+                .Select(m => new MascotaTipoDto
+                {
+                    IdMascotaTipo = m.IdMascotaTipo,
+                    Nombre = m.Nombre,
+                    Activo = m.Activo
+                })
+                .ToListAsync();
+
+            return Ok(mascotas);
+        }
+
+        // GET: api/Productos/filtros/categorias-alimento
+        [HttpGet("filtros/categorias-alimento")]
+        public async Task<ActionResult<IEnumerable<CategoriaAlimentoDto>>> GetCategoriasAlimento([FromQuery] int? idMascotaTipo = null)
+        {
+            var query = _context.CategoriasAlimento
+                .Include(c => c.MascotaTipo)
+                .Where(c => c.Activa);
+
+            if (idMascotaTipo.HasValue)
+            {
+                query = query.Where(c => c.IdMascotaTipo == idMascotaTipo.Value || c.IdMascotaTipo == null);
+            }
+
+            var categorias = await query
+                .Select(c => new CategoriaAlimentoDto
+                {
+                    IdCategoriaAlimento = c.IdCategoriaAlimento,
+                    Nombre = c.Nombre,
+                    IdMascotaTipo = c.IdMascotaTipo,
+                    NombreMascotaTipo = c.MascotaTipo != null ? c.MascotaTipo.Nombre : null,
+                    Activa = c.Activa
+                })
+                .ToListAsync();
+
+            return Ok(categorias);
+        }
+
+        // GET: api/Productos/filtros/subcategorias
+        [HttpGet("filtros/subcategorias")]
+        public async Task<ActionResult<IEnumerable<SubcategoriaAlimentoDto>>> GetSubcategorias([FromQuery] int? idCategoriaAlimento = null)
+        {
+            var query = _context.SubcategoriasAlimento
+                .Include(s => s.CategoriaAlimento)
+                .Where(s => s.Activa);
+
+            if (idCategoriaAlimento.HasValue)
+            {
+                query = query.Where(s => s.IdCategoriaAlimento == idCategoriaAlimento.Value);
+            }
+
+            var subcategorias = await query
+                .Select(s => new SubcategoriaAlimentoDto
+                {
+                    IdSubcategoria = s.IdSubcategoria,
+                    Nombre = s.Nombre,
+                    IdCategoriaAlimento = s.IdCategoriaAlimento,
+                    NombreCategoriaAlimento = s.CategoriaAlimento.Nombre,
+                    Activa = s.Activa
+                })
+                .ToListAsync();
+
+            return Ok(subcategorias);
+        }
+
+        // GET: api/Productos/filtros/presentaciones
+        [HttpGet("filtros/presentaciones")]
+        public async Task<ActionResult<IEnumerable<PresentacionEmpaqueDto>>> GetPresentaciones()
+        {
+            var presentaciones = await _context.PresentacionesEmpaque
+                .Where(p => p.Activa)
+                .Select(p => new PresentacionEmpaqueDto
+                {
+                    IdPresentacion = p.IdPresentacion,
+                    Nombre = p.Nombre,
+                    Activa = p.Activa
+                })
+                .ToListAsync();
+
+            return Ok(presentaciones);
         }
     }
 }
