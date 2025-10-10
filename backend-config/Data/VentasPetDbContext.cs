@@ -20,6 +20,12 @@ namespace VentasPetApi.Data
         public DbSet<Pago> Pagos { get; set; }
         public DbSet<CarritoCompras> CarritoCompras { get; set; }
 
+        // Tablas maestras para filtros avanzados
+        public DbSet<MascotaTipo> MascotaTipos { get; set; }
+        public DbSet<CategoriaAlimento> CategoriasAlimento { get; set; }
+        public DbSet<SubcategoriaAlimento> SubcategoriasAlimento { get; set; }
+        public DbSet<PresentacionEmpaque> PresentacionesEmpaque { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -58,6 +64,42 @@ namespace VentasPetApi.Data
                 entity.Property(e => e.Notas).HasMaxLength(1000);
             });
 
+            // Configuración de tablas maestras para filtros avanzados
+            modelBuilder.Entity<MascotaTipo>(entity =>
+            {
+                entity.HasKey(e => e.IdMascotaTipo);
+                entity.Property(e => e.Nombre).IsRequired().HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<CategoriaAlimento>(entity =>
+            {
+                entity.HasKey(e => e.IdCategoriaAlimento);
+                entity.Property(e => e.Nombre).IsRequired().HasMaxLength(100);
+
+                entity.HasOne(d => d.MascotaTipo)
+                    .WithMany(p => p.Categorias)
+                    .HasForeignKey(d => d.IdMascotaTipo)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(false);
+            });
+
+            modelBuilder.Entity<SubcategoriaAlimento>(entity =>
+            {
+                entity.HasKey(e => e.IdSubcategoria);
+                entity.Property(e => e.Nombre).IsRequired().HasMaxLength(100);
+
+                entity.HasOne(d => d.CategoriaAlimento)
+                    .WithMany(p => p.Subcategorias)
+                    .HasForeignKey(d => d.IdCategoriaAlimento)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<PresentacionEmpaque>(entity =>
+            {
+                entity.HasKey(e => e.IdPresentacion);
+                entity.Property(e => e.Nombre).IsRequired().HasMaxLength(50);
+            });
+
             // Configuración de Productos
             modelBuilder.Entity<Producto>(entity =>
             {
@@ -67,11 +109,36 @@ namespace VentasPetApi.Data
                 entity.Property(e => e.TipoMascota).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.URLImagen).HasMaxLength(500);
 
-                // Relaciones
+                // Relaciones existentes
                 entity.HasOne(d => d.Categoria)
                     .WithMany(p => p.Productos)
                     .HasForeignKey(d => d.IdCategoria)
                     .OnDelete(DeleteBehavior.Restrict);
+
+                // Relaciones para filtros avanzados
+                entity.HasOne(d => d.MascotaTipo)
+                    .WithMany(p => p.Productos)
+                    .HasForeignKey(d => d.IdMascotaTipo)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(false);
+
+                entity.HasOne(d => d.CategoriaAlimento)
+                    .WithMany(p => p.Productos)
+                    .HasForeignKey(d => d.IdCategoriaAlimento)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(false);
+
+                entity.HasOne(d => d.Subcategoria)
+                    .WithMany(p => p.Productos)
+                    .HasForeignKey(d => d.IdSubcategoria)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(false);
+
+                entity.HasOne(d => d.Presentacion)
+                    .WithMany(p => p.Productos)
+                    .HasForeignKey(d => d.IdPresentacion)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(false);
             });
 
             // Configuración de Variaciones de Producto
@@ -164,7 +231,58 @@ namespace VentasPetApi.Data
 
         private void SeedData(ModelBuilder modelBuilder)
         {
-            // Categorías iniciales
+            // ========================================
+            // Seed para tablas maestras de filtros
+            // ========================================
+
+            // Tipos de Mascota
+            modelBuilder.Entity<MascotaTipo>().HasData(
+                new MascotaTipo { IdMascotaTipo = 1, Nombre = "GATO", Activo = true },
+                new MascotaTipo { IdMascotaTipo = 2, Nombre = "PERRO", Activo = true }
+            );
+
+            // Categorías de Alimento
+            modelBuilder.Entity<CategoriaAlimento>().HasData(
+                new CategoriaAlimento { IdCategoriaAlimento = 1, Nombre = "ALIMENTO SECO", IdMascotaTipo = 2, Activa = true },
+                new CategoriaAlimento { IdCategoriaAlimento = 2, Nombre = "ALIMENTO SECO", IdMascotaTipo = 1, Activa = true },
+                new CategoriaAlimento { IdCategoriaAlimento = 3, Nombre = "ALIMENTO HÚMEDO", IdMascotaTipo = 2, Activa = true },
+                new CategoriaAlimento { IdCategoriaAlimento = 4, Nombre = "ALIMENTO HÚMEDO", IdMascotaTipo = 1, Activa = true },
+                new CategoriaAlimento { IdCategoriaAlimento = 5, Nombre = "SNACKS Y PREMIOS", IdMascotaTipo = null, Activa = true }
+            );
+
+            // Subcategorías de Alimento
+            modelBuilder.Entity<SubcategoriaAlimento>().HasData(
+                // Subcategorías de Alimento Seco para Perros
+                new SubcategoriaAlimento { IdSubcategoria = 1, Nombre = "DIETA SECA PRESCRITA", IdCategoriaAlimento = 1, Activa = true },
+                new SubcategoriaAlimento { IdSubcategoria = 2, Nombre = "ADULT", IdCategoriaAlimento = 1, Activa = true },
+                new SubcategoriaAlimento { IdSubcategoria = 3, Nombre = "PUPPY", IdCategoriaAlimento = 1, Activa = true },
+                new SubcategoriaAlimento { IdSubcategoria = 4, Nombre = "SENIOR", IdCategoriaAlimento = 1, Activa = true },
+                // Subcategorías de Alimento Seco para Gatos
+                new SubcategoriaAlimento { IdSubcategoria = 5, Nombre = "DIETA SECA PRESCRITA", IdCategoriaAlimento = 2, Activa = true },
+                new SubcategoriaAlimento { IdSubcategoria = 6, Nombre = "ADULT", IdCategoriaAlimento = 2, Activa = true },
+                new SubcategoriaAlimento { IdSubcategoria = 7, Nombre = "KITTEN", IdCategoriaAlimento = 2, Activa = true },
+                new SubcategoriaAlimento { IdSubcategoria = 8, Nombre = "INDOOR", IdCategoriaAlimento = 2, Activa = true },
+                // Subcategorías de Alimento Húmedo para Perros
+                new SubcategoriaAlimento { IdSubcategoria = 9, Nombre = "DIETA HÚMEDA PRESCRITA", IdCategoriaAlimento = 3, Activa = true },
+                new SubcategoriaAlimento { IdSubcategoria = 10, Nombre = "ADULT HÚMEDO", IdCategoriaAlimento = 3, Activa = true },
+                // Subcategorías de Alimento Húmedo para Gatos
+                new SubcategoriaAlimento { IdSubcategoria = 11, Nombre = "DIETA HÚMEDA PRESCRITA", IdCategoriaAlimento = 4, Activa = true },
+                new SubcategoriaAlimento { IdSubcategoria = 12, Nombre = "ADULT HÚMEDO", IdCategoriaAlimento = 4, Activa = true },
+                // Subcategorías de Snacks
+                new SubcategoriaAlimento { IdSubcategoria = 13, Nombre = "SNACKS NATURALES", IdCategoriaAlimento = 5, Activa = true },
+                new SubcategoriaAlimento { IdSubcategoria = 14, Nombre = "PREMIOS DE ENTRENAMIENTO", IdCategoriaAlimento = 5, Activa = true }
+            );
+
+            // Presentaciones de Empaque
+            modelBuilder.Entity<PresentacionEmpaque>().HasData(
+                new PresentacionEmpaque { IdPresentacion = 1, Nombre = "BOLSA", Activa = true },
+                new PresentacionEmpaque { IdPresentacion = 2, Nombre = "LATA", Activa = true },
+                new PresentacionEmpaque { IdPresentacion = 3, Nombre = "SOBRE", Activa = true },
+                new PresentacionEmpaque { IdPresentacion = 4, Nombre = "CAJA", Activa = true },
+                new PresentacionEmpaque { IdPresentacion = 5, Nombre = "TUBO", Activa = true }
+            );
+
+            // Categorías iniciales (existentes)
             modelBuilder.Entity<Categoria>().HasData(
                 new Categoria
                 {
@@ -258,7 +376,12 @@ namespace VentasPetApi.Data
                     URLImagen = "https://www.velykapet.com/productos/alimentos/perros/ROYAL_CANIN_ADULT.jpg",
                     Activo = true,
                     FechaCreacion = DateTime.Now,
-                    FechaActualizacion = DateTime.Now
+                    FechaActualizacion = DateTime.Now,
+                    // Nuevos campos para filtros avanzados
+                    IdMascotaTipo = 2, // PERRO
+                    IdCategoriaAlimento = 1, // ALIMENTO SECO - Perros
+                    IdSubcategoria = 2, // ADULT
+                    IdPresentacion = 1 // BOLSA
                 },
                 new Producto
                 {
@@ -270,7 +393,12 @@ namespace VentasPetApi.Data
                     URLImagen = "https://www.velykapet.com/CHURU_ATUN_4_PIEZAS_56_GR.jpg",
                     Activo = true,
                     FechaCreacion = DateTime.Now,
-                    FechaActualizacion = DateTime.Now
+                    FechaActualizacion = DateTime.Now,
+                    // Nuevos campos para filtros avanzados
+                    IdMascotaTipo = 1, // GATO
+                    IdCategoriaAlimento = 5, // SNACKS Y PREMIOS
+                    IdSubcategoria = 13, // SNACKS NATURALES
+                    IdPresentacion = 3 // SOBRE
                 },
                 new Producto
                 {
@@ -282,7 +410,12 @@ namespace VentasPetApi.Data
                     URLImagen = "https://www.velykapet.com/productos/alimentos/perros/HILLS_SCIENCE_DIET_PUPPY.jpg",
                     Activo = true,
                     FechaCreacion = DateTime.Now,
-                    FechaActualizacion = DateTime.Now
+                    FechaActualizacion = DateTime.Now,
+                    // Nuevos campos para filtros avanzados
+                    IdMascotaTipo = 2, // PERRO
+                    IdCategoriaAlimento = 1, // ALIMENTO SECO - Perros
+                    IdSubcategoria = 3, // PUPPY
+                    IdPresentacion = 1 // BOLSA
                 },
                 new Producto
                 {
@@ -294,7 +427,12 @@ namespace VentasPetApi.Data
                     URLImagen = "https://www.velykapet.com/productos/alimentos/gatos/PURINA_PRO_PLAN_ADULT_CAT.jpg",
                     Activo = true,
                     FechaCreacion = DateTime.Now,
-                    FechaActualizacion = DateTime.Now
+                    FechaActualizacion = DateTime.Now,
+                    // Nuevos campos para filtros avanzados
+                    IdMascotaTipo = 1, // GATO
+                    IdCategoriaAlimento = 2, // ALIMENTO SECO - Gatos
+                    IdSubcategoria = 6, // ADULT
+                    IdPresentacion = 1 // BOLSA
                 },
                 new Producto
                 {
@@ -306,7 +444,12 @@ namespace VentasPetApi.Data
                     URLImagen = "https://www.velykapet.com/productos/snacks/SNACKS_NATURALES.jpg",
                     Activo = true,
                     FechaCreacion = DateTime.Now,
-                    FechaActualizacion = DateTime.Now
+                    FechaActualizacion = DateTime.Now,
+                    // Nuevos campos para filtros avanzados
+                    IdMascotaTipo = null, // Ambos (nullable)
+                    IdCategoriaAlimento = 5, // SNACKS Y PREMIOS
+                    IdSubcategoria = 13, // SNACKS NATURALES
+                    IdPresentacion = 1 // BOLSA
                 }
             );
 
