@@ -7,7 +7,7 @@ Write-Host "===============================================" -ForegroundColor Cy
 Write-Host ""
 
 # Configuración
-$baseUrl = "http://localhost:5000"
+$baseUrl = "http://localhost:5135"
 $endpoint = "$baseUrl/api/Productos"
 
 # Función para mostrar respuesta de error
