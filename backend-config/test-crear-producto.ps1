@@ -49,7 +49,7 @@ $headers = @{
     "Content-Type" = "application/json"
 }
 
-$correctBody = @"
+$correctBody = @'
 {
   "nombreBase": "Test Producto PowerShell",
   "descripcion": "Producto de prueba creado con PowerShell",
@@ -74,7 +74,7 @@ $correctBody = @"
     }
   ]
 }
-"@
+'@
 
 Write-Host "Request body:" -ForegroundColor Cyan
 Write-Host $correctBody -ForegroundColor Gray
@@ -112,7 +112,7 @@ Write-Host "📝 Test 2: Request INCORRECTO - Usando wrapper 'productoDto'" -For
 Write-Host "   ❌ Este formato NO es soportado y causará error 400" -ForegroundColor Gray
 Write-Host ""
 
-$incorrectBody = @"
+$incorrectBody = @'
 {
   "productoDto": {
     "nombreBase": "Test Producto Incorrecto",
@@ -128,7 +128,7 @@ $incorrectBody = @"
     ]
   }
 }
-"@
+'@
 
 Write-Host "Request body:" -ForegroundColor Cyan
 Write-Host $incorrectBody -ForegroundColor Gray
@@ -161,7 +161,7 @@ Write-Host "📝 Test 3: Request INCORRECTO - Tipos de datos incorrectos" -Foreg
 Write-Host "   ❌ Strings donde deben ir números" -ForegroundColor Gray
 Write-Host ""
 
-$incorrectTypesBody = @"
+$incorrectTypesBody = @'
 {
   "nombreBase": "Test Producto Tipos Incorrectos",
   "descripcion": "Tipos de datos mal definidos",
@@ -175,7 +175,7 @@ $incorrectTypesBody = @"
     }
   ]
 }
-"@
+'@
 
 Write-Host "Request body:" -ForegroundColor Cyan
 Write-Host $incorrectTypesBody -ForegroundColor Gray
@@ -208,7 +208,7 @@ Write-Host "📝 Test 4: Request INCORRECTO - Sin variaciones" -ForegroundColor 
 Write-Host "   ❌ El array variacionesProducto está vacío" -ForegroundColor Gray
 Write-Host ""
 
-$noVariationsBody = @"
+$noVariationsBody = @'
 {
   "nombreBase": "Test Producto Sin Variaciones",
   "descripcion": "Este producto no tiene variaciones",
@@ -216,7 +216,7 @@ $noVariationsBody = @"
   "tipoMascota": "Gatos",
   "variacionesProducto": []
 }
-"@
+'@
 
 Write-Host "Request body:" -ForegroundColor Cyan
 Write-Host $noVariationsBody -ForegroundColor Gray
