@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VentasPetApi.Data;
 using VentasPetApi.Models;
+using CsvHelper;
+using CsvHelper.Configuration;
+using System.Globalization;
+using System.Text;
 
 namespace VentasPetApi.Controllers
 {
@@ -545,6 +549,255 @@ namespace VentasPetApi.Controllers
 
                 return StatusCode(500, new { 
                     error = "Error al crear el producto", 
+                    mensaje = ex.Message,
+                    detalles = ex.InnerException?.Message 
+                });
+            }
+        }
+
+        // POST: api/Productos/ImportarCsv
+        /// <summary>
+        /// Importa productos masivamente desde un archivo CSV
+        /// </summary>
+        /// <param name="file">Archivo CSV con los productos a importar</param>
+        /// <returns>Resultado de la importación con detalles de éxitos y errores</returns>
+        [HttpPost("ImportarCsv")]
+        public async Task<ActionResult<ImportResultDto>> ImportarCsv(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { error = "No se proporcionó ningún archivo o el archivo está vacío." });
+            }
+
+            if (!file.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest(new { error = "El archivo debe ser un CSV." });
+            }
+
+            var result = new ImportResultDto();
+            var productosProcessados = new List<ProductoCsvDto>();
+
+            try
+            {
+                // Leer el archivo CSV
+                using var reader = new StreamReader(file.OpenReadStream(), Encoding.UTF8);
+                var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+                {
+                    HasHeaderRecord = true,
+                    MissingFieldFound = null,
+                    BadDataFound = null,
+                    HeaderValidated = null,
+                    TrimOptions = TrimOptions.Trim
+                };
+
+                using var csv = new CsvReader(reader, config);
+                
+                // Leer todos los registros
+                productosProcessados = csv.GetRecords<ProductoCsvDto>().ToList();
+                result.TotalProcessed = productosProcessados.Count;
+
+                Console.WriteLine($"📄 Procesando {result.TotalProcessed} productos desde CSV...");
+
+                // Cargar datos de referencia una sola vez para optimizar
+                var categorias = await _context.Categorias.Where(c => c.Activa).ToListAsync();
+                var mascotaTipos = await _context.MascotaTipos.Where(m => m.Activo).ToListAsync();
+                var categoriasAlimento = await _context.CategoriasAlimento.Where(c => c.Activa).ToListAsync();
+                var subcategorias = await _context.SubcategoriasAlimento.Where(s => s.Activa).ToListAsync();
+                var presentaciones = await _context.PresentacionesEmpaque.Where(p => p.Activa).ToListAsync();
+                var proveedores = await _context.Proveedores.Where(p => p.Activo).ToListAsync();
+
+                // Procesar cada producto
+                for (int i = 0; i < productosProcessados.Count; i++)
+                {
+                    var productoCsv = productosProcessados[i];
+                    var lineNumber = i + 2; // +2 porque línea 1 es header y el índice empieza en 0
+
+                    try
+                    {
+                        // Validación básica
+                        if (string.IsNullOrWhiteSpace(productoCsv.NAME))
+                        {
+                            result.Errors.Add($"Línea {lineNumber}: El nombre del producto es obligatorio.");
+                            result.FailureCount++;
+                            continue;
+                        }
+
+                        // Mapear categoría
+                        var categoria = categorias.FirstOrDefault(c => 
+                            c.Nombre.Equals(productoCsv.CATEGORIA?.Trim(), StringComparison.OrdinalIgnoreCase));
+                        
+                        if (categoria == null)
+                        {
+                            result.Errors.Add($"Línea {lineNumber}: Categoría '{productoCsv.CATEGORIA}' no encontrada.");
+                            result.FailureCount++;
+                            continue;
+                        }
+
+                        // Mapear tipo de mascota
+                        MascotaTipo? mascotaTipo = null;
+                        if (!string.IsNullOrWhiteSpace(productoCsv.CATEGORIA))
+                        {
+                            mascotaTipo = mascotaTipos.FirstOrDefault(m => 
+                                m.Nombre.Equals(productoCsv.CATEGORIA.Trim(), StringComparison.OrdinalIgnoreCase));
+                        }
+
+                        // Mapear categoría de alimento
+                        CategoriaAlimento? categoriaAlimento = null;
+                        if (!string.IsNullOrWhiteSpace(productoCsv.CATEGORIA_ALIMENTOS))
+                        {
+                            categoriaAlimento = categoriasAlimento.FirstOrDefault(c => 
+                                c.Nombre.Equals(productoCsv.CATEGORIA_ALIMENTOS.Trim(), StringComparison.OrdinalIgnoreCase));
+                        }
+
+                        // Mapear subcategoría
+                        SubcategoriaAlimento? subcategoria = null;
+                        if (!string.IsNullOrWhiteSpace(productoCsv.SUBCATEGORIA))
+                        {
+                            subcategoria = subcategorias.FirstOrDefault(s => 
+                                s.Nombre.Equals(productoCsv.SUBCATEGORIA.Trim(), StringComparison.OrdinalIgnoreCase));
+                        }
+
+                        // Mapear presentación
+                        PresentacionEmpaque? presentacion = null;
+                        if (!string.IsNullOrWhiteSpace(productoCsv.PRESENTACION_EMPAQUE))
+                        {
+                            presentacion = presentaciones.FirstOrDefault(p => 
+                                p.Nombre.Equals(productoCsv.PRESENTACION_EMPAQUE.Trim(), StringComparison.OrdinalIgnoreCase));
+                        }
+
+                        // Mapear proveedor
+                        Proveedor? proveedor = null;
+                        if (!string.IsNullOrWhiteSpace(productoCsv.proveedor))
+                        {
+                            proveedor = proveedores.FirstOrDefault(p => 
+                                p.Nombre.Equals(productoCsv.proveedor.Trim(), StringComparison.OrdinalIgnoreCase));
+                        }
+
+                        // Verificar que no exista un producto con el mismo nombre
+                        var productoExiste = await _context.Productos.AnyAsync(p => p.NombreBase == productoCsv.NAME.Trim());
+                        if (productoExiste)
+                        {
+                            result.Errors.Add($"Línea {lineNumber}: El producto '{productoCsv.NAME}' ya existe.");
+                            result.FailureCount++;
+                            continue;
+                        }
+
+                        // Parsear precio
+                        decimal precio = 0;
+                        if (!string.IsNullOrWhiteSpace(productoCsv.PRICE))
+                        {
+                            var precioStr = productoCsv.PRICE.Replace("$", "").Replace(",", "").Replace(".", "").Trim();
+                            if (!decimal.TryParse(precioStr, out precio))
+                            {
+                                result.Errors.Add($"Línea {lineNumber}: Precio inválido '{productoCsv.PRICE}'.");
+                                result.FailureCount++;
+                                continue;
+                            }
+                        }
+
+                        // Parsear stock
+                        int stock = 0;
+                        if (!string.IsNullOrWhiteSpace(productoCsv.stock))
+                        {
+                            if (!int.TryParse(productoCsv.stock, out stock))
+                            {
+                                stock = 0;
+                            }
+                        }
+
+                        // Iniciar transacción para cada producto
+                        using var transaction = await _context.Database.BeginTransactionAsync();
+                        
+                        try
+                        {
+                            // Crear el producto
+                            var producto = new Producto
+                            {
+                                NombreBase = productoCsv.NAME.Trim(),
+                                Descripcion = productoCsv.description?.Trim() ?? productoCsv.presentacion?.Trim(),
+                                IdCategoria = categoria.IdCategoria,
+                                TipoMascota = productoCsv.CATEGORIA?.Trim() ?? "General",
+                                URLImagen = productoCsv.imageUrl?.Trim(),
+                                IdMascotaTipo = mascotaTipo?.IdMascotaTipo,
+                                IdCategoriaAlimento = categoriaAlimento?.IdCategoriaAlimento,
+                                IdSubcategoria = subcategoria?.IdSubcategoria,
+                                IdPresentacion = presentacion?.IdPresentacion,
+                                ProveedorId = proveedor?.ProveedorId,
+                                Activo = true,
+                                FechaCreacion = DateTime.Now,
+                                FechaActualizacion = DateTime.Now
+                            };
+
+                            _context.Productos.Add(producto);
+                            await _context.SaveChangesAsync();
+
+                            // Crear la variación si hay precio
+                            var variacionesCreadas = new List<VariacionCreadaDto>();
+                            if (precio > 0)
+                            {
+                                var variacion = new VariacionProducto
+                                {
+                                    IdProducto = producto.IdProducto,
+                                    Peso = productoCsv.presentacion?.Trim() ?? "1 UN",
+                                    Precio = precio,
+                                    Stock = stock,
+                                    Activa = true,
+                                    FechaCreacion = DateTime.Now
+                                };
+
+                                _context.VariacionesProducto.Add(variacion);
+                                await _context.SaveChangesAsync();
+
+                                variacionesCreadas.Add(new VariacionCreadaDto
+                                {
+                                    IdVariacion = variacion.IdVariacion,
+                                    Presentacion = variacion.Peso,
+                                    Precio = variacion.Precio,
+                                    Stock = variacion.Stock
+                                });
+                            }
+
+                            await transaction.CommitAsync();
+
+                            result.CreatedProducts.Add(new ProductoCreadoResponseDto
+                            {
+                                IdProducto = producto.IdProducto,
+                                NombreBase = producto.NombreBase,
+                                Variaciones = variacionesCreadas,
+                                Mensaje = $"Producto creado exitosamente"
+                            });
+
+                            result.SuccessCount++;
+                            Console.WriteLine($"✅ Línea {lineNumber}: Producto '{producto.NombreBase}' creado exitosamente.");
+                        }
+                        catch (Exception exTrans)
+                        {
+                            await transaction.RollbackAsync();
+                            result.Errors.Add($"Línea {lineNumber}: Error al crear producto '{productoCsv.NAME}' - {exTrans.Message}");
+                            result.FailureCount++;
+                            Console.WriteLine($"❌ Línea {lineNumber}: Error - {exTrans.Message}");
+                        }
+                    }
+                    catch (Exception exProd)
+                    {
+                        result.Errors.Add($"Línea {lineNumber}: Error procesando producto - {exProd.Message}");
+                        result.FailureCount++;
+                        Console.WriteLine($"❌ Línea {lineNumber}: Error - {exProd.Message}");
+                    }
+                }
+
+                result.Message = $"Importación completada: {result.SuccessCount} productos creados, {result.FailureCount} errores.";
+                Console.WriteLine($"📊 {result.Message}");
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error al procesar archivo CSV: {ex.Message}");
+                Console.WriteLine($"   StackTrace: {ex.StackTrace}");
+                
+                return StatusCode(500, new { 
+                    error = "Error al procesar el archivo CSV", 
                     mensaje = ex.Message,
                     detalles = ex.InnerException?.Message 
                 });

@@ -267,6 +267,41 @@ namespace VentasPetApi.Models
         public int Stock { get; set; }
     }
 
+    // DTOs para importación masiva desde CSV
+    public class ProductoCsvDto
+    {
+        public int? ID { get; set; }
+        public string? CATEGORIA { get; set; }
+        public string? CATEGORIA_ALIMENTOS { get; set; }
+        public string? SUBCATEGORIA { get; set; }
+        public string? PRESENTACION_EMPAQUE { get; set; }
+        public string? MARCA { get; set; }
+        public string? NAME { get; set; }
+        public string? PRECIO_ANTES_DE_GANANCIA_CDM { get; set; }
+        public string? ICONOPET { get; set; }
+        public string? MARGEN { get; set; }
+        public string? PRECIO_SUGERIDO_DE_VENTA { get; set; }
+        public string? description { get; set; }
+        public string? presentacion { get; set; }
+        public string? PRICE { get; set; }
+        public string? stock { get; set; }
+        public string? sku { get; set; }
+        public string? imageUrl { get; set; }
+        public string? proveedor { get; set; }
+        public string? creadoen { get; set; }
+        public string? actualizadoen { get; set; }
+    }
+
+    public class ImportResultDto
+    {
+        public int TotalProcessed { get; set; }
+        public int SuccessCount { get; set; }
+        public int FailureCount { get; set; }
+        public List<string> Errors { get; set; } = new List<string>();
+        public List<ProductoCreadoResponseDto> CreatedProducts { get; set; } = new List<ProductoCreadoResponseDto>();
+        public string Message { get; set; } = string.Empty;
+    }
+
     // Nuevas tablas maestras para filtros avanzados
     [Table("MascotaTipo")]
     public class MascotaTipo
