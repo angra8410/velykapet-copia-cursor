@@ -361,5 +361,194 @@ namespace VentasPetApi.Controllers
 
             return Ok(presentaciones);
         }
+
+        // POST: api/Productos
+        [HttpPost]
+        public async Task<ActionResult<ProductoCreadoResponseDto>> CrearProductoConVariaciones([FromBody] ProductoConVariacionesDto productoDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { 
+                    error = "Datos inválidos", 
+                    detalles = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList() 
+                });
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+                // Validar que la categoría existe
+                var categoriaExiste = await _context.Categorias.AnyAsync(c => c.IdCategoria == productoDto.IdCategoria && c.Activa);
+                if (!categoriaExiste)
+                {
+                    return BadRequest(new { 
+                        error = "Categoría inválida", 
+                        mensaje = $"La categoría con ID {productoDto.IdCategoria} no existe o está inactiva." 
+                    });
+                }
+
+                // Validar IdMascotaTipo si se proporciona
+                if (productoDto.IdMascotaTipo.HasValue)
+                {
+                    var mascotaTipoExiste = await _context.MascotaTipos.AnyAsync(m => m.IdMascotaTipo == productoDto.IdMascotaTipo.Value && m.Activo);
+                    if (!mascotaTipoExiste)
+                    {
+                        return BadRequest(new { 
+                            error = "Tipo de mascota inválido", 
+                            mensaje = $"El tipo de mascota con ID {productoDto.IdMascotaTipo.Value} no existe o está inactivo." 
+                        });
+                    }
+                }
+
+                // Validar IdCategoriaAlimento si se proporciona
+                if (productoDto.IdCategoriaAlimento.HasValue)
+                {
+                    var categoriaAlimentoExiste = await _context.CategoriasAlimento.AnyAsync(c => c.IdCategoriaAlimento == productoDto.IdCategoriaAlimento.Value && c.Activa);
+                    if (!categoriaAlimentoExiste)
+                    {
+                        return BadRequest(new { 
+                            error = "Categoría de alimento inválida", 
+                            mensaje = $"La categoría de alimento con ID {productoDto.IdCategoriaAlimento.Value} no existe o está inactiva." 
+                        });
+                    }
+                }
+
+                // Validar IdSubcategoria si se proporciona
+                if (productoDto.IdSubcategoria.HasValue)
+                {
+                    var subcategoriaExiste = await _context.SubcategoriasAlimento.AnyAsync(s => s.IdSubcategoria == productoDto.IdSubcategoria.Value && s.Activa);
+                    if (!subcategoriaExiste)
+                    {
+                        return BadRequest(new { 
+                            error = "Subcategoría inválida", 
+                            mensaje = $"La subcategoría con ID {productoDto.IdSubcategoria.Value} no existe o está inactiva." 
+                        });
+                    }
+                }
+
+                // Validar IdPresentacion si se proporciona
+                if (productoDto.IdPresentacion.HasValue)
+                {
+                    var presentacionExiste = await _context.PresentacionesEmpaque.AnyAsync(p => p.IdPresentacion == productoDto.IdPresentacion.Value && p.Activa);
+                    if (!presentacionExiste)
+                    {
+                        return BadRequest(new { 
+                            error = "Presentación inválida", 
+                            mensaje = $"La presentación con ID {productoDto.IdPresentacion.Value} no existe o está inactiva." 
+                        });
+                    }
+                }
+
+                // Validar ProveedorId si se proporciona
+                if (productoDto.ProveedorId.HasValue)
+                {
+                    var proveedorExiste = await _context.Proveedores.AnyAsync(p => p.ProveedorId == productoDto.ProveedorId.Value && p.Activo);
+                    if (!proveedorExiste)
+                    {
+                        return BadRequest(new { 
+                            error = "Proveedor inválido", 
+                            mensaje = $"El proveedor con ID {productoDto.ProveedorId.Value} no existe o está inactivo." 
+                        });
+                    }
+                }
+
+                // Verificar que no exista un producto con el mismo nombre
+                var productoExiste = await _context.Productos.AnyAsync(p => p.NombreBase == productoDto.NombreBase);
+                if (productoExiste)
+                {
+                    return Conflict(new { 
+                        error = "Producto duplicado", 
+                        mensaje = $"Ya existe un producto con el nombre '{productoDto.NombreBase}'." 
+                    });
+                }
+
+                // Crear el producto
+                var producto = new Producto
+                {
+                    NombreBase = productoDto.NombreBase,
+                    Descripcion = productoDto.Descripcion,
+                    IdCategoria = productoDto.IdCategoria,
+                    TipoMascota = productoDto.TipoMascota,
+                    URLImagen = productoDto.URLImagen,
+                    IdMascotaTipo = productoDto.IdMascotaTipo,
+                    IdCategoriaAlimento = productoDto.IdCategoriaAlimento,
+                    IdSubcategoria = productoDto.IdSubcategoria,
+                    IdPresentacion = productoDto.IdPresentacion,
+                    ProveedorId = productoDto.ProveedorId,
+                    Activo = true,
+                    FechaCreacion = DateTime.Now,
+                    FechaActualizacion = DateTime.Now
+                };
+
+                _context.Productos.Add(producto);
+                await _context.SaveChangesAsync();
+
+                // Verificar que el producto se creó correctamente
+                if (producto.IdProducto == 0)
+                {
+                    throw new Exception("Error al crear el producto: No se generó el ID del producto.");
+                }
+
+                // Crear las variaciones
+                var variacionesCreadas = new List<VariacionCreadaDto>();
+                foreach (var variacionDto in productoDto.VariacionesProducto)
+                {
+                    var variacion = new VariacionProducto
+                    {
+                        IdProducto = producto.IdProducto,
+                        Peso = variacionDto.Presentacion,
+                        Precio = variacionDto.Precio,
+                        Stock = variacionDto.Stock,
+                        Activa = true,
+                        FechaCreacion = DateTime.Now
+                    };
+
+                    _context.VariacionesProducto.Add(variacion);
+                    await _context.SaveChangesAsync();
+
+                    variacionesCreadas.Add(new VariacionCreadaDto
+                    {
+                        IdVariacion = variacion.IdVariacion,
+                        Presentacion = variacion.Peso,
+                        Precio = variacion.Precio,
+                        Stock = variacion.Stock
+                    });
+                }
+
+                // Commit de la transacción
+                await transaction.CommitAsync();
+
+                var response = new ProductoCreadoResponseDto
+                {
+                    IdProducto = producto.IdProducto,
+                    NombreBase = producto.NombreBase,
+                    Variaciones = variacionesCreadas,
+                    Mensaje = $"Producto '{producto.NombreBase}' creado exitosamente con {variacionesCreadas.Count} variación(es)."
+                };
+
+                Console.WriteLine($"✅ Producto creado exitosamente: ID={producto.IdProducto}, Nombre={producto.NombreBase}, Variaciones={variacionesCreadas.Count}");
+
+                return CreatedAtAction(nameof(GetProducto), new { id = producto.IdProducto }, response);
+            }
+            catch (Exception ex)
+            {
+                // Rollback de la transacción en caso de error
+                await transaction.RollbackAsync();
+
+                Console.WriteLine($"❌ Error al crear producto con variaciones: {ex.Message}");
+                Console.WriteLine($"   StackTrace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"   InnerException: {ex.InnerException.Message}");
+                }
+
+                return StatusCode(500, new { 
+                    error = "Error al crear el producto", 
+                    mensaje = ex.Message,
+                    detalles = ex.InnerException?.Message 
+                });
+            }
+        }
     }
 }
