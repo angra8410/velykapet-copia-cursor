@@ -19,7 +19,7 @@ echo "======================================================================"
 echo ""
 
 # Configuración
-API_URL="http://localhost:5122/api/Productos/ImportarCsv"
+API_URL="http://localhost:5135/api/Productos/ImportarCsv"
 CSV_FILE="sample-products.csv"
 
 # Verificar que el archivo CSV existe
@@ -107,7 +107,7 @@ echo "  Verificando productos creados en la base de datos..."
 echo "----------------------------------------------------------------------"
 echo ""
 
-VERIFY_RESPONSE=$(curl -s "http://localhost:5122/api/Productos")
+VERIFY_RESPONSE=$(curl -s "http://localhost:5135/api/Productos")
 PRODUCT_COUNT=$(echo "$VERIFY_RESPONSE" | jq 'length' 2>/dev/null || echo "N/A")
 
 echo "📊 Total de productos en la base de datos: $PRODUCT_COUNT"
