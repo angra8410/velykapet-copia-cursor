@@ -139,6 +139,12 @@ namespace VentasPetApi.Data
                     .HasForeignKey(d => d.IdPresentacion)
                     .OnDelete(DeleteBehavior.Restrict)
                     .IsRequired(false);
+
+                entity.HasOne(d => d.Proveedor)
+                    .WithMany(p => p.Productos)
+                    .HasForeignKey(d => d.ProveedorId)
+                    .OnDelete(DeleteBehavior.Restrict)
+                    .IsRequired(false);
             });
 
             // Configuración de Variaciones de Producto
