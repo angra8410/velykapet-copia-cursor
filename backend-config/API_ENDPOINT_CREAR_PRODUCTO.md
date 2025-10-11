@@ -1,5 +1,30 @@
 # API Endpoint: Crear Producto con Variaciones
 
+## Índice
+
+1. [Resumen](#resumen)
+2. [Detalles del Endpoint](#detalles-del-endpoint)
+3. [Request Body](#request-body)
+   - [Estructura del JSON](#️-importante-estructura-del-json)
+   - [Estructura del DTO](#estructura-del-dto)
+   - [Notas sobre Tipos de Datos](#notas-sobre-tipos-de-datos)
+   - [Ejemplo de Request](#ejemplo-de-request---caso-real)
+4. [Response](#response)
+   - [Success Response](#success-response-201-created)
+   - [Error Responses](#error-responses)
+5. [Validaciones Implementadas](#validaciones-implementadas)
+6. [Transaccionalidad](#transaccionalidad)
+7. [Logging](#logging)
+8. [IDs de Referencia](#ids-de-referencia---valores-seed)
+9. [Ejemplos de Uso](#ejemplos-de-uso-con-curl)
+   - [cURL](#ejemplos-de-uso-con-curl)
+   - [PowerShell](#ejemplos-de-uso-con-powershell)
+   - [Postman](#ejemplos-de-uso-con-postman)
+10. [Integración con Frontend](#integración-con-frontend)
+11. [Troubleshooting](#-troubleshooting---errores-comunes)
+12. [Buenas Prácticas](#buenas-prácticas-implementadas)
+13. [Mejoras Futuras](#mejoras-futuras)
+
 ## Resumen
 Este endpoint permite crear un producto con todas sus variaciones en una sola petición HTTP, garantizando consistencia transaccional.
 
@@ -15,6 +40,30 @@ Content-Type: application/json
 **Autenticación:** No requerida (agregar según necesidades del sistema)
 
 ## Request Body
+
+### ⚠️ IMPORTANTE: Estructura del JSON
+
+El endpoint espera recibir el objeto JSON **directamente en el body**, **SIN wrappers ni claves raíz adicionales**.
+
+**✅ CORRECTO:**
+```json
+{
+  "nombreBase": "BR FOR CAT VET CONTROL DE PESO",
+  "descripcion": "Alimento con un balance adecuado...",
+  "idCategoria": 2,
+  ...
+}
+```
+
+**❌ INCORRECTO (NO usar wrapper):**
+```json
+{
+  "productoDto": {
+    "nombreBase": "BR FOR CAT VET CONTROL DE PESO",
+    ...
+  }
+}
+```
 
 ### Estructura del DTO
 
@@ -40,6 +89,14 @@ Content-Type: application/json
   ]
 }
 ```
+
+### Notas sobre Tipos de Datos
+
+- **Cadenas (string):** Deben estar entre comillas dobles `"valor"`
+- **Números enteros (integer):** Sin comillas y sin decimales: `2`, `10`, `100`
+- **Números decimales (decimal):** Sin comillas, pueden tener decimales: `20400`, `58200.50`
+- **Arrays:** Deben estar entre corchetes `[]` y pueden contener múltiples objetos
+- **Campos opcionales:** Pueden omitirse o enviarse como `null`
 
 ### Ejemplo de Request - Caso Real
 
@@ -124,6 +181,35 @@ Location: /api/Productos/{idProducto}
 ```
 
 ### Error Responses
+
+#### 400 Bad Request - Validación de Modelo (ModelState)
+
+Este error ocurre cuando el JSON enviado no cumple con las reglas de validación del DTO.
+
+**Ejemplo de error cuando falta un campo requerido:**
+```json
+{
+  "error": "Datos inválidos",
+  "detalles": [
+    "El campo NombreBase es requerido.",
+    "El campo IdCategoria es requerido.",
+    "Debe incluir al menos una variación."
+  ]
+}
+```
+
+**Causas comunes:**
+- Campos requeridos faltantes (`nombreBase`, `idCategoria`, `tipoMascota`, `variacionesProducto`)
+- Campos que exceden la longitud máxima
+- Valores fuera del rango permitido (ej: `precio` <= 0, `stock` < 0)
+- Array `variacionesProducto` vacío
+
+**Ejemplo de JSON que causa este error:**
+```json
+{
+  "descripcion": "Solo descripción, faltan campos requeridos"
+}
+```
 
 #### 400 Bad Request - Datos Inválidos
 
@@ -351,6 +437,233 @@ curl -X POST "http://localhost:5000/api/Productos" \
 curl -X GET "http://localhost:5000/api/Productos/{idProducto}"
 ```
 
+## Ejemplos de Uso con PowerShell
+
+### Crear producto con Invoke-RestMethod
+
+**Método recomendado - Usando here-string:**
+
+```powershell
+# Definir headers
+$headers = @{
+    "Content-Type" = "application/json"
+}
+
+# Definir body como string JSON
+$body = @"
+{
+  "nombreBase": "BR FOR CAT VET CONTROL DE PESO",
+  "descripcion": "Alimento con un balance adecuado de nutrientes que ayuda a reducir la formación de bolas de pelo, brindándole máxima protección de piel y pelaje.",
+  "idCategoria": 2,
+  "tipoMascota": "Gatos",
+  "urlImagen": "https://www.velykapet.com/productos/alimentos/gatos/BR_FOR_CAT_VET_CONTROL_DE_PESO.jpg",
+  "idMascotaTipo": 1,
+  "idCategoriaAlimento": 2,
+  "idSubcategoria": 5,
+  "idPresentacion": 1,
+  "proveedorId": 1,
+  "variacionesProducto": [
+    {
+      "presentacion": "500 GR",
+      "precio": 20400,
+      "stock": 10
+    },
+    {
+      "presentacion": "1.5 KG",
+      "precio": 58200,
+      "stock": 10
+    },
+    {
+      "presentacion": "3 KG",
+      "precio": 110800,
+      "stock": 10
+    }
+  ]
+}
+"@
+
+# Realizar la petición
+try {
+    $response = Invoke-RestMethod `
+        -Uri "http://localhost:5000/api/Productos" `
+        -Method Post `
+        -Headers $headers `
+        -Body $body `
+        -ContentType "application/json"
+    
+    Write-Host "✅ Producto creado exitosamente" -ForegroundColor Green
+    Write-Host "   ID Producto: $($response.idProducto)" -ForegroundColor Cyan
+    Write-Host "   Nombre: $($response.nombreBase)" -ForegroundColor Cyan
+    Write-Host "   Variaciones creadas: $($response.variaciones.Count)" -ForegroundColor Cyan
+    
+    # Mostrar detalles de variaciones
+    foreach ($variacion in $response.variaciones) {
+        Write-Host "      - $($variacion.presentacion): `$$($variacion.precio) (Stock: $($variacion.stock))" -ForegroundColor Gray
+    }
+}
+catch {
+    Write-Host "❌ Error al crear producto:" -ForegroundColor Red
+    Write-Host $_.Exception.Message -ForegroundColor Red
+    
+    # Si hay respuesta del servidor, mostrarla
+    if ($_.Exception.Response) {
+        $reader = New-Object System.IO.StreamReader($_.Exception.Response.GetResponseStream())
+        $responseBody = $reader.ReadToEnd()
+        Write-Host "Respuesta del servidor:" -ForegroundColor Yellow
+        Write-Host $responseBody -ForegroundColor Yellow
+    }
+}
+```
+
+**Método alternativo - Usando ConvertTo-Json (⚠️ requiere cuidado con tipos):**
+
+```powershell
+# Solo usar si entiendes bien la serialización de PowerShell
+$producto = @{
+    nombreBase = "BR FOR CAT VET CONTROL DE PESO"
+    descripcion = "Alimento con un balance adecuado..."
+    idCategoria = 2  # Asegúrate que sea int, no string
+    tipoMascota = "Gatos"
+    idMascotaTipo = 1
+    idCategoriaAlimento = 2
+    idSubcategoria = 5
+    idPresentacion = 1
+    proveedorId = 1
+    variacionesProducto = @(
+        @{
+            presentacion = "500 GR"
+            precio = 20400  # Asegúrate que sea numérico
+            stock = 10
+        },
+        @{
+            presentacion = "1.5 KG"
+            precio = 58200
+            stock = 10
+        }
+    )
+}
+
+$body = $producto | ConvertTo-Json -Depth 10
+
+$response = Invoke-RestMethod `
+    -Uri "http://localhost:5000/api/Productos" `
+    -Method Post `
+    -Body $body `
+    -ContentType "application/json"
+```
+
+### Verificar producto creado (PowerShell)
+
+```powershell
+$idProducto = 123  # Reemplazar con el ID devuelto
+$producto = Invoke-RestMethod -Uri "http://localhost:5000/api/Productos/$idProducto"
+$producto | ConvertTo-Json -Depth 5
+```
+
+## Ejemplos de Uso con Postman
+
+### Configuración de la Request en Postman
+
+1. **Método:** `POST`
+2. **URL:** `http://localhost:5000/api/Productos`
+3. **Headers:**
+   - Key: `Content-Type`
+   - Value: `application/json`
+
+4. **Body:**
+   - Seleccionar: `raw`
+   - Tipo: `JSON`
+   - Contenido:
+
+```json
+{
+  "nombreBase": "BR FOR CAT VET CONTROL DE PESO",
+  "descripcion": "Alimento con un balance adecuado de nutrientes que ayuda a reducir la formación de bolas de pelo, brindándole máxima protección de piel y pelaje.",
+  "idCategoria": 2,
+  "tipoMascota": "Gatos",
+  "urlImagen": "https://www.velykapet.com/productos/alimentos/gatos/BR_FOR_CAT_VET_CONTROL_DE_PESO.jpg",
+  "idMascotaTipo": 1,
+  "idCategoriaAlimento": 2,
+  "idSubcategoria": 5,
+  "idPresentacion": 1,
+  "proveedorId": 1,
+  "variacionesProducto": [
+    {
+      "presentacion": "500 GR",
+      "precio": 20400,
+      "stock": 10
+    },
+    {
+      "presentacion": "1.5 KG",
+      "precio": 58200,
+      "stock": 10
+    },
+    {
+      "presentacion": "3 KG",
+      "precio": 110800,
+      "stock": 10
+    }
+  ]
+}
+```
+
+### Colección de Postman
+
+Puedes importar esta colección en Postman para probar el endpoint rápidamente:
+
+```json
+{
+  "info": {
+    "name": "VelyKapet API - Productos",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Crear Producto con Variaciones",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombreBase\": \"BR FOR CAT VET CONTROL DE PESO\",\n  \"descripcion\": \"Alimento con un balance adecuado de nutrientes que ayuda a reducir la formación de bolas de pelo, brindándole máxima protección de piel y pelaje.\",\n  \"idCategoria\": 2,\n  \"tipoMascota\": \"Gatos\",\n  \"urlImagen\": \"https://www.velykapet.com/productos/alimentos/gatos/BR_FOR_CAT_VET_CONTROL_DE_PESO.jpg\",\n  \"idMascotaTipo\": 1,\n  \"idCategoriaAlimento\": 2,\n  \"idSubcategoria\": 5,\n  \"idPresentacion\": 1,\n  \"proveedorId\": 1,\n  \"variacionesProducto\": [\n    {\n      \"presentacion\": \"500 GR\",\n      \"precio\": 20400,\n      \"stock\": 10\n    },\n    {\n      \"presentacion\": \"1.5 KG\",\n      \"precio\": 58200,\n      \"stock\": 10\n    },\n    {\n      \"presentacion\": \"3 KG\",\n      \"precio\": 110800,\n      \"stock\": 10\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/Productos",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "Productos"]
+        }
+      }
+    },
+    {
+      "name": "Obtener Producto por ID",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:5000/api/Productos/{{productId}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "Productos", "{{productId}}"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "productId",
+      "value": "1"
+    }
+  ]
+}
+```
+
 ## Integración con Frontend
 
 ### Ejemplo en JavaScript/React
@@ -411,6 +724,174 @@ Este endpoint está diseñado para ser fácilmente extensible:
 2. **Nuevas validaciones:** Agregar validaciones antes de crear el producto
 3. **Nuevos tipos de variaciones:** Ampliar el modelo de variaciones sin romper la API
 4. **Webhooks/Eventos:** Agregar notificaciones después de crear el producto
+
+## 🔧 Troubleshooting - Errores Comunes
+
+### Error 400: "The productoDto field is required"
+
+**Causa:** Estás enviando el JSON con un wrapper innecesario.
+
+**Error recibido:**
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "errors": {
+    "productoDto": ["The productoDto field is required."]
+  }
+}
+```
+
+**Solución:** Envía el JSON directamente, **sin** envolver en `{ "productoDto": { ... } }`.
+
+**Ejemplo de JSON INCORRECTO:**
+```json
+{
+  "productoDto": {
+    "nombreBase": "Mi Producto",
+    "descripcion": "Descripción del producto",
+    ...
+  }
+}
+```
+
+**Ejemplo de JSON CORRECTO:**
+```json
+{
+  "nombreBase": "Mi Producto",
+  "descripcion": "Descripción del producto",
+  ...
+}
+```
+
+### Error 400: "The JSON value could not be converted to System.String"
+
+**Causa:** Algún campo de tipo string está siendo enviado con el tipo incorrecto (número, objeto, array, etc.).
+
+**Error recibido:**
+```json
+{
+  "errors": {
+    "$.descripcion": ["The JSON value could not be converted to System.String. Path: $.descripcion | LineNumber: 0 | BytePositionInLine: 110."]
+  }
+}
+```
+
+**Solución:** Asegúrate de que todos los campos de tipo string estén entre comillas dobles:
+
+**Incorrecto:**
+```json
+{
+  "nombreBase": BR FOR CAT,          // ❌ Falta comillas
+  "descripcion": 12345,               // ❌ Es un número, debería ser string
+  "tipoMascota": ["Gatos"]            // ❌ Es un array, debería ser string
+}
+```
+
+**Correcto:**
+```json
+{
+  "nombreBase": "BR FOR CAT",         // ✅ String con comillas
+  "descripcion": "Alimento para...",  // ✅ String con comillas
+  "tipoMascota": "Gatos"              // ✅ String con comillas
+}
+```
+
+### Error 400: "The JSON value could not be converted to System.Int32"
+
+**Causa:** Un campo numérico está siendo enviado como string u otro tipo.
+
+**Solución:** Los números deben enviarse sin comillas:
+
+**Incorrecto:**
+```json
+{
+  "idCategoria": "2",        // ❌ Es un string, debería ser número
+  "precio": "20400"          // ❌ Es un string, debería ser número
+}
+```
+
+**Correcto:**
+```json
+{
+  "idCategoria": 2,          // ✅ Número sin comillas
+  "precio": 20400            // ✅ Número sin comillas
+}
+```
+
+### Error 400: "Debe incluir al menos una variación"
+
+**Causa:** El array `variacionesProducto` está vacío o no fue enviado.
+
+**Solución:** Siempre incluye al menos una variación:
+
+```json
+{
+  "nombreBase": "Mi Producto",
+  "variacionesProducto": [
+    {
+      "presentacion": "500 GR",
+      "precio": 20400,
+      "stock": 10
+    }
+  ]
+}
+```
+
+### Error al usar PowerShell con Invoke-RestMethod
+
+**Problema:** PowerShell puede tener problemas con la serialización JSON de ciertos tipos de datos.
+
+**Solución recomendada:** Usa el parámetro `-Body` con un JSON string bien formado:
+
+```powershell
+$headers = @{
+    "Content-Type" = "application/json"
+}
+
+$body = @"
+{
+  "nombreBase": "BR FOR CAT VET CONTROL DE PESO",
+  "descripcion": "Alimento con un balance adecuado de nutrientes",
+  "idCategoria": 2,
+  "tipoMascota": "Gatos",
+  "urlImagen": "https://www.velykapet.com/productos/alimentos/gatos/BR_FOR_CAT_VET_CONTROL_DE_PESO.jpg",
+  "idMascotaTipo": 1,
+  "idCategoriaAlimento": 2,
+  "idSubcategoria": 5,
+  "idPresentacion": 1,
+  "proveedorId": 1,
+  "variacionesProducto": [
+    {
+      "presentacion": "500 GR",
+      "precio": 20400,
+      "stock": 10
+    },
+    {
+      "presentacion": "1.5 KG",
+      "precio": 58200,
+      "stock": 10
+    }
+  ]
+}
+"@
+
+$response = Invoke-RestMethod -Uri "http://localhost:5000/api/Productos" `
+    -Method Post `
+    -Headers $headers `
+    -Body $body
+
+Write-Host "Producto creado con ID: $($response.idProducto)"
+```
+
+**⚠️ Evitar:** No uses hashtables de PowerShell directamente con `-Body` ya que la serialización puede fallar.
+
+### Verificar el formato JSON
+
+Antes de enviar tu request, valida que el JSON sea válido usando herramientas online:
+- https://jsonlint.com/
+- https://jsonformatter.org/
 
 ## Buenas Prácticas Implementadas
 
