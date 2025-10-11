@@ -35,6 +35,7 @@ namespace VentasPetApi.Models
         public int? IdCategoriaAlimento { get; set; }
         public int? IdSubcategoria { get; set; }
         public int? IdPresentacion { get; set; }
+        public int? ProveedorId { get; set; }
 
         // Navegación existente
         [ForeignKey("IdCategoria")]
@@ -54,6 +55,9 @@ namespace VentasPetApi.Models
 
         [ForeignKey("IdPresentacion")]
         public virtual PresentacionEmpaque? Presentacion { get; set; }
+
+        [ForeignKey("ProveedorId")]
+        public virtual Proveedor? Proveedor { get; set; }
     }
 
     [Table("Categorias")]
@@ -197,6 +201,70 @@ namespace VentasPetApi.Models
         public int IdPresentacion { get; set; }
         public string Nombre { get; set; } = string.Empty;
         public bool Activa { get; set; }
+    }
+
+    // DTOs para creación de productos con variaciones
+    public class VariacionCrearDto
+    {
+        [Required]
+        [MaxLength(50)]
+        public string Presentacion { get; set; } = string.Empty; // Maps to Peso field: "500 GR", "1.5 KG", etc.
+
+        [Required]
+        [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser mayor a 0")]
+        public decimal Precio { get; set; }
+
+        [Range(0, int.MaxValue, ErrorMessage = "El stock no puede ser negativo")]
+        public int Stock { get; set; } = 0;
+
+        [MaxLength(500)]
+        public string? URLImagen { get; set; }
+    }
+
+    public class ProductoConVariacionesDto
+    {
+        [Required]
+        [MaxLength(200)]
+        public string NombreBase { get; set; } = string.Empty;
+
+        [MaxLength(1000)]
+        public string? Descripcion { get; set; }
+
+        [Required]
+        public int IdCategoria { get; set; }
+
+        [Required]
+        [MaxLength(50)]
+        public string TipoMascota { get; set; } = string.Empty;
+
+        [MaxLength(500)]
+        public string? URLImagen { get; set; }
+
+        public int? IdMascotaTipo { get; set; }
+        public int? IdCategoriaAlimento { get; set; }
+        public int? IdSubcategoria { get; set; }
+        public int? IdPresentacion { get; set; }
+        public int? ProveedorId { get; set; }
+
+        [Required]
+        [MinLength(1, ErrorMessage = "Debe incluir al menos una variación")]
+        public List<VariacionCrearDto> VariacionesProducto { get; set; } = new List<VariacionCrearDto>();
+    }
+
+    public class ProductoCreadoResponseDto
+    {
+        public int IdProducto { get; set; }
+        public string NombreBase { get; set; } = string.Empty;
+        public List<VariacionCreadaDto> Variaciones { get; set; } = new List<VariacionCreadaDto>();
+        public string Mensaje { get; set; } = string.Empty;
+    }
+
+    public class VariacionCreadaDto
+    {
+        public int IdVariacion { get; set; }
+        public string Presentacion { get; set; } = string.Empty;
+        public decimal Precio { get; set; }
+        public int Stock { get; set; }
     }
 
     // Nuevas tablas maestras para filtros avanzados
