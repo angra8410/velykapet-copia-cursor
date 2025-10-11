@@ -631,4 +631,3 @@ if (typeof document !== 'undefined' && !document.getElementById('privacy-policy-
     document.head.appendChild(style);
     console.log('✅ Estilos CSS de Privacy Policy inyectados');
 }
-
