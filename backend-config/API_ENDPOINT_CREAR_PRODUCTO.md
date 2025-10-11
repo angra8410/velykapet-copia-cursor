@@ -21,9 +21,11 @@
    - [PowerShell](#ejemplos-de-uso-con-powershell)
    - [Postman](#ejemplos-de-uso-con-postman)
 10. [Integración con Frontend](#integración-con-frontend)
-11. [Troubleshooting](#-troubleshooting---errores-comunes)
-12. [Buenas Prácticas](#buenas-prácticas-implementadas)
-13. [Mejoras Futuras](#mejoras-futuras)
+11. [Extensibilidad](#extensibilidad)
+12. [Scripts de Prueba](#-scripts-de-prueba)
+13. [Troubleshooting](#-troubleshooting---errores-comunes)
+14. [Buenas Prácticas](#buenas-prácticas-implementadas)
+15. [Mejoras Futuras](#mejoras-futuras)
 
 ## Resumen
 Este endpoint permite crear un producto con todas sus variaciones en una sola petición HTTP, garantizando consistencia transaccional.
@@ -724,6 +726,36 @@ Este endpoint está diseñado para ser fácilmente extensible:
 2. **Nuevas validaciones:** Agregar validaciones antes de crear el producto
 3. **Nuevos tipos de variaciones:** Ampliar el modelo de variaciones sin romper la API
 4. **Webhooks/Eventos:** Agregar notificaciones después de crear el producto
+
+## 🧪 Scripts de Prueba
+
+Para validar el correcto funcionamiento del endpoint y ver ejemplos de uso en acción, ejecuta los scripts de prueba incluidos:
+
+**PowerShell (Windows):**
+```powershell
+cd backend-config
+.\test-crear-producto.ps1
+```
+
+**Bash (Linux/macOS/WSL):**
+```bash
+cd backend-config
+./test-crear-producto.sh
+```
+
+Estos scripts demuestran:
+- ✅ El formato correcto de JSON esperado
+- ❌ Errores comunes y cómo evitarlos
+- 💡 Soluciones a problemas de integración
+- 🔍 Validación de respuestas del servidor
+
+**Qué testean:**
+1. Request correcto que crea un producto exitosamente
+2. Error común: usar wrapper `{ "productoDto": {...} }`
+3. Error común: tipos de datos incorrectos
+4. Error común: array de variaciones vacío
+
+Ver **`TEST_SCRIPTS_README.md`** para más detalles sobre los scripts de prueba.
 
 ## 🔧 Troubleshooting - Errores Comunes
 
