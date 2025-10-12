@@ -119,6 +119,22 @@ catch {
                 Write-Host "   • El endpoint no fue encontrado" -ForegroundColor Gray
                 Write-Host "   • Verifique la URL de la API: $ApiUrl" -ForegroundColor Gray
             }
+            405 {
+                Write-Host "   • ERROR 405: Método no permitido" -ForegroundColor Red
+                Write-Host "   • El endpoint no acepta el método POST o la ruta es incorrecta" -ForegroundColor Gray
+                Write-Host "   • Verifique que el backend tenga [HttpPost('ImportarCsv')] configurado" -ForegroundColor Gray
+                Write-Host "   • La ruta debe ser: /api/Productos/ImportarCsv" -ForegroundColor Gray
+            }
+            415 {
+                Write-Host "   • ERROR 415: Tipo de medio no soportado" -ForegroundColor Red
+                Write-Host "   • El Content-Type multipart/form-data no es aceptado" -ForegroundColor Gray
+                Write-Host "   • Verifique la configuración del backend" -ForegroundColor Gray
+            }
+            500 {
+                Write-Host "   • ERROR 500: Error interno del servidor" -ForegroundColor Red
+                Write-Host "   • Revise los logs del backend para más detalles" -ForegroundColor Gray
+                Write-Host "   • Puede haber problemas de base de datos o validación" -ForegroundColor Gray
+            }
             default {
                 Write-Host "   • Código de estado HTTP: $statusCode" -ForegroundColor Gray
             }
