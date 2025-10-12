@@ -58,11 +58,11 @@ $CsvFile = "sample-products.csv"
 # VALIDACIÓN DE PREREQUISITOS
 # ══════════════════════════════════════════════════════════════════════════════
 # BLOQUE IF: Verifica la existencia del archivo CSV antes de continuar
-# Apertura de llave: línea siguiente | Cierre de llave: 4 líneas después
 if (-not (Test-Path $CsvFile)) {
     Write-Host "Error: No se encontró el archivo $CsvFile" -ForegroundColor Red
     exit 1
-} # FIN del bloque if - Validación de archivo
+}
+# FIN del bloque if - Validación de archivo
 
 # ══════════════════════════════════════════════════════════════════════════════
 # BANNER DE INICIO
@@ -80,15 +80,8 @@ Write-Host "Enviando archivo CSV al endpoint..." -ForegroundColor Yellow
 # ══════════════════════════════════════════════════════════════════════════════
 # BLOQUE TRY-CATCH PRINCIPAL
 # ══════════════════════════════════════════════════════════════════════════════
-# Este es el bloque de control más externo que captura cualquier error durante:
-# - Construcción del request multipart/form-data
-# - Envío de la petición HTTP
-# - Procesamiento de la respuesta
-# IMPORTANTE: Cada 'try' DEBE tener su correspondiente 'catch'
-try { # APERTURA del bloque try principal (nivel 1)
-    # ──────────────────────────────────────────────────────────────────────────
+try {
     # Preparación del archivo para envío multipart/form-data
-    # ──────────────────────────────────────────────────────────────────────────
     $fileBin = [System.IO.File]::ReadAllBytes((Resolve-Path $CsvFile))
     $boundary = [System.Guid]::NewGuid().ToString()
     $LF = "`r`n"
@@ -104,30 +97,19 @@ try { # APERTURA del bloque try principal (nivel 1)
         ""
     ) -join $LF
     
-    # ──────────────────────────────────────────────────────────────────────────
     # Envío de petición HTTP POST con el archivo CSV
-    # ──────────────────────────────────────────────────────────────────────────
-    # -ErrorAction Stop: Asegura que cualquier error sea capturado por el catch
     $response = Invoke-WebRequest -Uri $ApiUrl -Method Post -ContentType "multipart/form-data; boundary=$boundary" -Body $bodyLines -ErrorAction Stop
     
-    # ──────────────────────────────────────────────────────────────────────────
     # Procesamiento de respuesta exitosa
-    # ──────────────────────────────────────────────────────────────────────────
     Write-Host "Importación completada con éxito" -ForegroundColor Green
     Write-Host "Respuesta del servidor:" -ForegroundColor Cyan
     
-    # ══════════════════════════════════════════════════════════════════════════
     # BLOQUE TRY-CATCH ANIDADO para parsing de JSON
-    # ══════════════════════════════════════════════════════════════════════════
-    # Este bloque interno maneja específicamente errores de parseo JSON
-    # sin interrumpir la ejecución principal (degradación elegante)
-    try { # APERTURA del bloque try anidado (nivel 2)
+    try {
         $jsonObject = $response.Content | ConvertFrom-Json
         
-        # ──────────────────────────────────────────────────────────────────────
         # BLOQUE IF-ELSE: Determina el formato de salida según datos disponibles
-        # ──────────────────────────────────────────────────────────────────────
-        if ($jsonObject.totalProcessed -or $jsonObject.TotalProcessed) { # APERTURA del bloque if
+        if ($jsonObject.totalProcessed -or $jsonObject.TotalProcessed) {
             # Normalización de nombres de propiedades (camelCase vs PascalCase)
             $totalProcessed = if ($jsonObject.totalProcessed) { $jsonObject.totalProcessed } else { $jsonObject.TotalProcessed }
             $successCount = if ($jsonObject.successCount) { $jsonObject.successCount } else { $jsonObject.SuccessCount }
@@ -143,27 +125,21 @@ try { # APERTURA del bloque try principal (nivel 1)
             Write-Host "   ❌ Fallidos:         " -NoNewline -ForegroundColor Gray
             Write-Host "$failureCount" -ForegroundColor $(if ($failureCount -gt 0) { "Red" } else { "Green" })
             Write-Host ""
-        } else { # APERTURA del bloque else
+        }
+        else {
             # Fallback: Si no hay estructura de resumen, mostrar JSON completo
             Write-Host $response.Content -ForegroundColor White
             Write-Host ""
-        } # CIERRE del bloque else
-    } # CIERRE del bloque try anidado (nivel 2)
-    catch { # APERTURA del bloque catch anidado (nivel 2)
+        }
+    }
+    catch {
         # Manejo elegante de error: Si el JSON no es parseable, mostrar texto plano
         Write-Host $response.Content -ForegroundColor White
         Write-Host ""
-    } # CIERRE del bloque catch anidado (nivel 2)
-} # CIERRE del bloque try principal (nivel 1)
-catch { # APERTURA del bloque catch principal (nivel 1)
-    # ══════════════════════════════════════════════════════════════════════════
+    }
+}
+catch {
     # MANEJO DE ERRORES PRINCIPAL
-    # ══════════════════════════════════════════════════════════════════════════
-    # Este catch captura cualquier error que ocurra en el try principal:
-    # - Errores de lectura de archivo
-    # - Errores de red (timeout, conexión rechazada)
-    # - Errores HTTP (400, 404, 500, etc.)
-    
     Write-Host "Error al realizar la petición: $_" -ForegroundColor Red
     
     # Sugerencias contextuales según el tipo de error
@@ -171,37 +147,32 @@ catch { # APERTURA del bloque catch principal (nivel 1)
     Write-Host "💡 SUGERENCIAS PARA RESOLVER EL ERROR:" -ForegroundColor Yellow
     Write-Host ""
     
-    # ──────────────────────────────────────────────────────────────────────────
     # BLOQUE IF-ELSE: Diferencia entre errores HTTP y errores de conexión
-    # ──────────────────────────────────────────────────────────────────────────
-    if ($_.Exception.Response) { # APERTURA del bloque if - Hay respuesta HTTP
+    if ($_.Exception.Response) {
         $statusCode = [int]$_.Exception.Response.StatusCode
         
-        # ══════════════════════════════════════════════════════════════════════
         # BLOQUE SWITCH: Proporciona ayuda específica según código HTTP
-        # ══════════════════════════════════════════════════════════════════════
-        # Cada caso (400, 404, default) tiene su propio par de llaves
-        switch ($statusCode) { # APERTURA del bloque switch
-            400 { # APERTURA del caso 400
+        switch ($statusCode) {
+            400 {
                 Write-Host "   • Revise el formato del archivo CSV" -ForegroundColor Gray
                 Write-Host "   • Verifique que los campos obligatorios estén presentes" -ForegroundColor Gray
-            } # CIERRE del caso 400
-            404 { # APERTURA del caso 404
+            }
+            404 {
                 Write-Host "   • El endpoint no fue encontrado" -ForegroundColor Gray
                 Write-Host "   • Verifique la URL de la API: $ApiUrl" -ForegroundColor Gray
-            } # CIERRE del caso 404
-            default { # APERTURA del caso default
+            }
+            default {
                 Write-Host "   • Código de estado HTTP: $statusCode" -ForegroundColor Gray
-            } # CIERRE del caso default
-        } # CIERRE del bloque switch
-    } # CIERRE del bloque if
-    else { # APERTURA del bloque else - No hay respuesta HTTP (error de conexión)
+            }
+        }
+    }
+    else {
         Write-Host "   • Verifique que el servidor backend esté ejecutándose" -ForegroundColor Gray
         Write-Host "   • URL esperada: http://localhost:5135" -ForegroundColor Gray
         Write-Host "   • Comando para iniciar: cd backend-config" -ForegroundColor Gray
         Write-Host "   • Luego ejecute: dotnet run" -ForegroundColor Gray
-    } # CIERRE del bloque else
-} # CIERRE del bloque catch principal (nivel 1)
+    }
+}
 
 # ══════════════════════════════════════════════════════════════════════════════
 # FINALIZACIÓN DEL SCRIPT
