@@ -47,98 +47,19 @@ function CatalogWithFilters() {
                 const apiService = await waitForApiService();
                 
                 console.log('📦 Obteniendo productos desde la API...');
+                // Cargar productos sin filtros inicialmente
                 const response = await apiService.getProducts();
                 
                 if (response && response.length > 0) {
                     console.log('✅ Productos cargados exitosamente:', response.length);
+                    console.log('🔍 Productos con campos de filtros:', response.slice(0, 3));
 
-                    // MEZCLAR con productos importados localmente (IconoPet u otros)
-                    let localImported = [];
-                    try {
-                        localImported = JSON.parse(localStorage.getItem('ventaspet_imported_products') || '[]');
-                    } catch {}
-                    // EVITAR DUPLICADOS AL MEZCLAR PRODUCTOS
-                    const normalizedLocal = localImported.map(p => ({
-                        Id: p.Id || (p.id ?? Date.now() + Math.random()),
-                        Name: p.Name || p.name,
-                        Description: p.Description || p.description || '',
-                        Category: p.Category || p.category || 'Otros',
-                        Price: p.Price || p.price || 0,
-                        Stock: p.Stock || p.stock || 0,
-                        Rating: p.Rating || p.rating || 0,
-                        PetType: p.PetType || p.petType || 'General',
-                        Source: 'Local'
-                    }));
-                    
-                    // Filtrar duplicados por nombre
-                    const existingNames = new Set(response.map(p => p.Name?.toLowerCase()));
-                    const uniqueLocal = normalizedLocal.filter(p => 
-                        !existingNames.has(p.Name?.toLowerCase())
-                    );
-                    
-                    const merged = Array.isArray(localImported) && uniqueLocal.length > 0
-                        ? [...response, ...uniqueLocal]
-                        : response;
-
-                    console.log(`📦 Catálogo final: API=${response.length} + Local=${localImported.length} (Unicos=${uniqueLocal.length}) => Total=${merged.length}`);
-                    console.log('🛡️ Duplicados filtrados:', localImported.length - uniqueLocal.length);
-
-                    setProductos(merged);
-                    setFilteredProducts(merged);
+                    setProductos(response);
+                    setFilteredProducts(response);
                 } else {
-                    console.log('⚠️ No hay productos desde API, cargando catálogo IconoPet + ejemplos');
-                    
-                    // Cargar productos de IconoPet si están disponibles
-                    let iconoPetProducts = [];
-                    if (window.IconoPetScraper) {
-                        try {
-                            iconoPetProducts = await window.IconoPetScraper.processForVelyKapet();
-                            console.log(`🏢 Cargados ${iconoPetProducts.length} productos de IconoPet`);
-                        } catch (error) {
-                            console.log('⚠️ Error cargando productos IconoPet:', error.message);
-                        }
-                    }
-                    
-                    // Productos de ejemplo para testing
-                    const sampleProducts = [
-                        { Id: 1, Name: 'Alimento Premium Royal Canin Perro Adulto', Category: 'Alimento', Price: 85000, Stock: 15, Rating: 4.8, Description: 'Alimento balanceado para perros adultos' },
-                        { Id: 2, Name: 'Snacks TIKI PETS Cat Treats', Category: 'Snacks', Price: 25000, Stock: 8, Rating: 4.5, Description: 'Premios naturales para gatos' },
-                        { Id: 3, Name: 'Juguete KONG Classic Perro', Category: 'Juguetes', Price: 45000, Stock: 12, Rating: 4.7, Description: 'Juguete resistente para perros' },
-                        { Id: 4, Name: 'Alimento NULO Gato Indoor', Category: 'Alimento', Price: 95000, Stock: 6, Rating: 4.6, Description: 'Alimento premium para gatos de interior' },
-                        { Id: 5, Name: 'Collar EVOLVE Ajustable', Category: 'Accesorios', Price: 35000, Stock: 20, Rating: 4.3, Description: 'Collar cómodo y seguro' },
-                        { Id: 6, Name: 'Shamú EMERALD PET Natural', Category: 'Higiene', Price: 28000, Stock: 10, Rating: 4.4, Description: 'Shampú suave para mascotas' },
-                        { Id: 7, Name: 'Alimento OLD PRINCE Cachorro', Category: 'Alimento', Price: 65000, Stock: 14, Rating: 4.5, Description: 'Alimento especial para cachorros' },
-                        { Id: 8, Name: 'Premios INABA Churu Gato', Category: 'Snacks', Price: 18000, Stock: 25, Rating: 4.9, Description: 'Premios cremosos para gatos' },
-                        { Id: 9, Name: 'Cama LOVING PETS Comfort', Category: 'Accesorios', Price: 55000, Stock: 7, Rating: 4.2, Description: 'Cama suave y confortable' },
-                        { Id: 10, Name: 'Alimento SPORTMANS PRIDE Active', Category: 'Alimento', Price: 78000, Stock: 11, Rating: 4.6, Description: 'Para perros activos y deportistas' },
-                        { Id: 11, Name: 'Juguete Película Gato FAWNA', Category: 'Juguetes', Price: 22000, Stock: 18, Rating: 4.3, Description: 'Juguete interactivo para gatos' },
-                        { Id: 12, Name: 'Alimento EVOLVE Grain Free', Category: 'Alimento', Price: 105000, Stock: 9, Rating: 4.8, Description: 'Sin granos, para mascotas sensibles' },
-                        { Id: 13, Name: 'Transportadora KONGO Secure', Category: 'Transporte', Price: 125000, Stock: 5, Rating: 4.4, Description: 'Transportadora segura y cómoda' },
-                        { Id: 14, Name: 'Snacks EMERALD PET Training', Category: 'Snacks', Price: 32000, Stock: 16, Rating: 4.5, Description: 'Premios para entrenamiento' },
-                        { Id: 15, Name: 'Correa LOVING PETS Retractil', Category: 'Accesorios', Price: 42000, Stock: 13, Rating: 4.1, Description: 'Correa retráctil de 5 metros' },
-                        { Id: 16, Name: 'Alimento ROYAL CANIN Persian', Category: 'Alimento', Price: 92000, Stock: 8, Rating: 4.7, Description: 'Especial para gatos persas' },
-                        { Id: 17, Name: 'Juguete Ratón TIKI PETS', Category: 'Juguetes', Price: 15000, Stock: 22, Rating: 4.4, Description: 'Ratón de juguete con hierba gatera' },
-                        { Id: 18, Name: 'Arena FAWNA Clumping', Category: 'Higiene', Price: 35000, Stock: 12, Rating: 4.2, Description: 'Arena aglutinante sin polvo' },
-                        { Id: 19, Name: 'Alimento HILLS Science Diet', Category: 'Alimento', Price: 98000, Stock: 7, Rating: 4.8, Description: 'Fórmula científica avanzada' },
-                        { Id: 20, Name: 'Snacks KONG Stuff\'N Treats', Category: 'Snacks', Price: 28000, Stock: 15, Rating: 4.6, Description: 'Para rellenar juguetes KONG' },
-                        { Id: 21, Name: 'Collar LED EVOLVE Safety', Category: 'Accesorios', Price: 38000, Stock: 18, Rating: 4.3, Description: 'Collar con luces LED recargables' },
-                        { Id: 22, Name: 'Champú INABA Sensitive', Category: 'Higiene', Price: 32000, Stock: 9, Rating: 4.5, Description: 'Para pieles sensibles' },
-                        { Id: 23, Name: 'Alimento NULO Puppy', Category: 'Alimento', Price: 89000, Stock: 11, Rating: 4.7, Description: 'Para cachorros en crecimiento' },
-                        { Id: 24, Name: 'Rascador EMERALD PET Tower', Category: 'Juguetes', Price: 125000, Stock: 4, Rating: 4.4, Description: 'Torre rascadora de 1.5m' },
-                        { Id: 25, Name: 'Transportín LOVING PETS Air', Category: 'Transporte', Price: 85000, Stock: 6, Rating: 4.2, Description: 'Aprobado para viajes aéreos' },
-                        { Id: 26, Name: 'Alimento SPORTMANS Senior', Category: 'Alimento', Price: 75000, Stock: 13, Rating: 4.5, Description: 'Para perros mayores' },
-                        { Id: 27, Name: 'Juguete Cuerda OLD PRINCE', Category: 'Juguetes', Price: 18000, Stock: 24, Rating: 4.1, Description: 'Cuerda natural para morder' },
-                        { Id: 28, Name: 'Vitaminas FAWNA Multi', Category: 'Salud', Price: 45000, Stock: 10, Rating: 4.6, Description: 'Multivitamínico completo' },
-                        { Id: 29, Name: 'Alimento KONGO Natural', Category: 'Alimento', Price: 72000, Stock: 16, Rating: 4.3, Description: 'Ingredientes naturales' },
-                        { Id: 30, Name: 'Pelota TIKI PETS Bounce', Category: 'Juguetes', Price: 22000, Stock: 19, Rating: 4.4, Description: 'Pelota que rebota impredeciblemente' }
-                    ];
-                    
-                    // COMBINAR productos de IconoPet + ejemplos
-                    const allProducts = [...iconoPetProducts, ...sampleProducts];
-                    console.log(`📦 Total productos cargados: ${allProducts.length} (IconoPet: ${iconoPetProducts.length}, Ejemplos: ${sampleProducts.length})`);
-                    
-                    setProductos(allProducts);
-                    setFilteredProducts(allProducts);
+                    console.log('⚠️ No hay productos desde API');
+                    setProductos([]);
+                    setFilteredProducts([]);
                 }
             } catch (error) {
                 console.error('❌ Error cargando productos:', error);
@@ -152,94 +73,93 @@ function CatalogWithFilters() {
         loadProducts();
     }, []);
 
-    // Función para aplicar filtros
+    // Función para aplicar filtros usando los campos del backend
     const applyFilters = React.useCallback((filters) => {
         let filtered = [...productos];
 
-        // Filtro de búsqueda por texto
+        console.log('🔍 Aplicando filtros:', filters);
+        console.log('📦 Total productos antes de filtrar:', filtered.length);
+
+        // Filtro de búsqueda por texto (búsqueda general)
         if (filters.search && filters.search.trim()) {
             const searchTerm = filters.search.toLowerCase().trim();
             filtered = filtered.filter(product => 
-                product.Name?.toLowerCase().includes(searchTerm) ||
-                product.Description?.toLowerCase().includes(searchTerm) ||
-                product.Category?.toLowerCase().includes(searchTerm)
+                (product.NombreBase && product.NombreBase.toLowerCase().includes(searchTerm)) ||
+                (product.Descripcion && product.Descripcion.toLowerCase().includes(searchTerm)) ||
+                (product.NombreCategoria && product.NombreCategoria.toLowerCase().includes(searchTerm))
             );
+            console.log(`🔍 Después de búsqueda "${searchTerm}": ${filtered.length} productos`);
         }
 
-        // Filtro por tipo de mascota (perros/gatos)
-        if (filters.pets && filters.pets.length > 0) {
-            filtered = filtered.filter(product => {
-                const category = product.Category?.toLowerCase() || '';
-                return filters.pets.some(pet => category.includes(pet));
-            });
+        // Filtro por tipo de mascota (ID numérico del backend)
+        if (filters.idMascotaTipo) {
+            filtered = filtered.filter(product => 
+                product.IdMascotaTipo === filters.idMascotaTipo
+            );
+            console.log(`🐾 Después de filtrar por mascota ID ${filters.idMascotaTipo}: ${filtered.length} productos`);
         }
 
-        // Filtro por tipo de producto
-        if (filters.productTypes && filters.productTypes.length > 0) {
-            filtered = filtered.filter(product => {
-                const name = product.Name?.toLowerCase() || '';
-                const description = product.Description?.toLowerCase() || '';
-                return filters.productTypes.some(type => 
-                    name.includes(type) || description.includes(type)
-                );
-            });
+        // Filtro por categoría de alimento (ID numérico del backend)
+        if (filters.idCategoriaAlimento) {
+            filtered = filtered.filter(product => 
+                product.IdCategoriaAlimento === filters.idCategoriaAlimento
+            );
+            console.log(`🍖 Después de filtrar por categoría alimento ID ${filters.idCategoriaAlimento}: ${filtered.length} productos`);
         }
 
-        // Filtro por marcas de snacks
-        if (filters.snackBrands && filters.snackBrands.length > 0) {
-            filtered = filtered.filter(product => {
-                const name = product.Name?.toLowerCase() || '';
-                const description = product.Description?.toLowerCase() || '';
-                return filters.snackBrands.some(brand => {
-                    const brandName = brand.replace('-', ' ').toLowerCase();
-                    return name.includes(brandName) || description.includes(brandName);
-                });
-            });
+        // Filtro por subcategoría (ID numérico del backend)
+        if (filters.idSubcategoria) {
+            filtered = filtered.filter(product => 
+                product.IdSubcategoria === filters.idSubcategoria
+            );
+            console.log(`📋 Después de filtrar por subcategoría ID ${filters.idSubcategoria}: ${filtered.length} productos`);
         }
 
-        // Filtro por marcas de alimento
-        if (filters.foodBrands && filters.foodBrands.length > 0) {
-            filtered = filtered.filter(product => {
-                const name = product.Name?.toLowerCase() || '';
-                const description = product.Description?.toLowerCase() || '';
-                return filters.foodBrands.some(brand => {
-                    const brandName = brand.replace('-', ' ').toLowerCase();
-                    return name.includes(brandName) || description.includes(brandName);
-                });
-            });
+        // Filtro por presentación (ID numérico del backend)
+        if (filters.idPresentacion) {
+            filtered = filtered.filter(product => 
+                product.IdPresentacion === filters.idPresentacion
+            );
+            console.log(`📦 Después de filtrar por presentación ID ${filters.idPresentacion}: ${filtered.length} productos`);
         }
 
         // Filtro por precio máximo
         if (filters.maxPrice && filters.maxPrice < 500000) {
-            filtered = filtered.filter(product => 
-                (product.Price || 0) <= filters.maxPrice
-            );
-        }
-
-        // Filtro por calificación
-        if (filters.ratings && filters.ratings.length > 0) {
             filtered = filtered.filter(product => {
-                const rating = product.Rating || 0;
-                return filters.ratings.some(minRating => 
-                    rating >= parseFloat(minRating)
-                );
+                // Obtener el precio mínimo de las variaciones
+                const variaciones = product.Variaciones || [];
+                if (variaciones.length > 0) {
+                    const minPrice = Math.min(...variaciones.map(v => v.Precio || 0));
+                    return minPrice <= filters.maxPrice;
+                }
+                return true; // Si no hay variaciones, incluir el producto
             });
+            console.log(`💰 Después de filtrar por precio <= ${filters.maxPrice}: ${filtered.length} productos`);
         }
 
         // Filtro por disponibilidad
         if (filters.availability && filters.availability.length > 0) {
             filtered = filtered.filter(product => {
+                // Verificar si tiene stock en alguna variación
+                const variaciones = product.Variaciones || [];
+                const hasStock = variaciones.some(v => (v.Stock || 0) > 0);
+                
                 if (filters.availability.includes('in-stock')) {
-                    return (product.Stock || 0) > 0;
+                    if (!hasStock) return false;
                 }
                 if (filters.availability.includes('free-shipping')) {
-                    return (product.Price || 0) >= 50000; // Envío gratis > $50k
+                    // Calcular precio mínimo para envío gratis
+                    if (variaciones.length > 0) {
+                        const minPrice = Math.min(...variaciones.map(v => v.Precio || 0));
+                        if (minPrice < 50000) return false;
+                    }
                 }
                 return true;
             });
+            console.log(`📦 Después de filtrar por disponibilidad: ${filtered.length} productos`);
         }
 
-        console.log(`🔍 Filtros aplicados: ${filtered.length} de ${productos.length} productos`);
+        console.log(`✅ Filtros aplicados: ${filtered.length} de ${productos.length} productos`);
         setFilteredProducts(filtered);
     }, [productos]);
 
@@ -360,46 +280,54 @@ function CatalogWithFilters() {
         setActiveFilters(newFilters);
     };
 
-    // Calcular contadores para cada filtro
+    // Calcular contadores para cada filtro usando los IDs del backend
     const calculateProductCounts = React.useCallback(() => {
         const counts = {};
 
-        // Contar por mascotas
-        counts['perros'] = productos.filter(p => 
-            p.Category?.toLowerCase().includes('perro') || 
-            p.Name?.toLowerCase().includes('perro')
-        ).length;
-        counts['gatos'] = productos.filter(p => 
-            p.Category?.toLowerCase().includes('gato') || 
-            p.Name?.toLowerCase().includes('gato')
-        ).length;
-
-        // Contar por tipos de producto
-        counts['alimento'] = productos.filter(p => 
-            p.Name?.toLowerCase().includes('alimento') ||
-            p.Description?.toLowerCase().includes('alimento')
-        ).length;
-        counts['snacks'] = productos.filter(p => 
-            p.Name?.toLowerCase().includes('snack') ||
-            p.Name?.toLowerCase().includes('premio') ||
-            p.Description?.toLowerCase().includes('snack')
-        ).length;
-
-        // Contar disponibilidad
-        counts['in-stock'] = productos.filter(p => (p.Stock || 0) > 0).length;
-        counts['free-shipping'] = productos.filter(p => (p.Price || 0) >= 50000).length;
-
-        // Contadores por defecto para marcas (se pueden actualizar dinámicamente)
-        const brands = ['tiki-pets', 'inaba', 'evolve-snacks', 'emerald-pet', 'loving-pets', 
-                      'nulo', 'evolve-food', 'sportmans-pride', 'kongo', 'old-prince', 'fawna'];
-        brands.forEach(brand => {
-            const brandName = brand.replace('-', ' ').toLowerCase();
-            counts[brand] = productos.filter(p => 
-                p.Name?.toLowerCase().includes(brandName) ||
-                p.Description?.toLowerCase().includes(brandName)
-            ).length;
+        // Contar por cada tipo de mascota (usando IdMascotaTipo)
+        productos.forEach(p => {
+            if (p.IdMascotaTipo) {
+                counts[p.IdMascotaTipo] = (counts[p.IdMascotaTipo] || 0) + 1;
+            }
         });
 
+        // Contar por cada categoría de alimento (usando IdCategoriaAlimento)
+        productos.forEach(p => {
+            if (p.IdCategoriaAlimento) {
+                counts[p.IdCategoriaAlimento] = (counts[p.IdCategoriaAlimento] || 0) + 1;
+            }
+        });
+
+        // Contar por cada subcategoría (usando IdSubcategoria)
+        productos.forEach(p => {
+            if (p.IdSubcategoria) {
+                counts[p.IdSubcategoria] = (counts[p.IdSubcategoria] || 0) + 1;
+            }
+        });
+
+        // Contar por cada presentación (usando IdPresentacion)
+        productos.forEach(p => {
+            if (p.IdPresentacion) {
+                counts[p.IdPresentacion] = (counts[p.IdPresentacion] || 0) + 1;
+            }
+        });
+
+        // Contar disponibilidad
+        counts['in-stock'] = productos.filter(p => {
+            const variaciones = p.Variaciones || [];
+            return variaciones.some(v => (v.Stock || 0) > 0);
+        }).length;
+        
+        counts['free-shipping'] = productos.filter(p => {
+            const variaciones = p.Variaciones || [];
+            if (variaciones.length > 0) {
+                const minPrice = Math.min(...variaciones.map(v => v.Precio || 0));
+                return minPrice >= 50000;
+            }
+            return false;
+        }).length;
+
+        console.log('📊 Contadores de productos calculados:', counts);
         return counts;
     }, [productos]);
 
@@ -692,8 +620,60 @@ function CatalogWithFilters() {
                     'No se encontraron productos'
                 ),
                 React.createElement('p',
-                    { style: { color: '#999' } },
+                    { style: { color: '#999', marginBottom: '15px' } },
                     'Intenta ajustar los filtros para encontrar más productos'
+                ),
+                // Mostrar filtros activos
+                Object.keys(activeFilters).length > 0 && React.createElement('div',
+                    {
+                        style: {
+                            background: '#f8f9fa',
+                            padding: '15px',
+                            borderRadius: '8px',
+                            marginBottom: '15px',
+                            textAlign: 'left',
+                            maxWidth: '400px',
+                            margin: '15px auto'
+                        }
+                    },
+                    React.createElement('p',
+                        { style: { fontWeight: '600', marginBottom: '10px', color: '#333' } },
+                        'Filtros activos:'
+                    ),
+                    Object.entries(activeFilters).map(([key, value]) => {
+                        if (key === 'search' && value) {
+                            return React.createElement('div', 
+                                { key: key, style: { marginBottom: '5px', color: '#666' } },
+                                `• Búsqueda: "${value}"`
+                            );
+                        }
+                        if ((key === 'idMascotaTipo' || key === 'idCategoriaAlimento' || 
+                             key === 'idSubcategoria' || key === 'idPresentacion') && value) {
+                            const labels = {
+                                'idMascotaTipo': 'Tipo de mascota',
+                                'idCategoriaAlimento': 'Categoría',
+                                'idSubcategoria': 'Subcategoría',
+                                'idPresentacion': 'Presentación'
+                            };
+                            return React.createElement('div', 
+                                { key: key, style: { marginBottom: '5px', color: '#666' } },
+                                `• ${labels[key]}: ID ${value}`
+                            );
+                        }
+                        if (key === 'maxPrice' && value < 500000) {
+                            return React.createElement('div', 
+                                { key: key, style: { marginBottom: '5px', color: '#666' } },
+                                `• Precio máximo: ${window.formatCOP ? window.formatCOP(value) : '$' + value}`
+                            );
+                        }
+                        if (key === 'availability' && value.length > 0) {
+                            return React.createElement('div', 
+                                { key: key, style: { marginBottom: '5px', color: '#666' } },
+                                `• Disponibilidad: ${value.join(', ')}`
+                            );
+                        }
+                        return null;
+                    })
                 ),
                 React.createElement('button',
                     {
@@ -705,10 +685,11 @@ function CatalogWithFilters() {
                             color: 'white',
                             border: 'none',
                             borderRadius: '5px',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            fontWeight: '600'
                         }
                     },
-                    'Limpiar filtros'
+                    '🔄 Limpiar todos los filtros'
                 )
             ),
             

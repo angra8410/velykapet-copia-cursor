@@ -228,6 +228,7 @@ class ApiService {
         // El backend devuelve ProductoDto con la siguiente estructura:
         // - IdProducto, NombreBase, Descripcion, NombreCategoria, TipoMascota, URLImagen
         // - Variaciones: array de VariacionProductoDto con IdVariacion, Peso, Precio, Stock
+        // - Campos de filtros avanzados: IdMascotaTipo, IdCategoriaAlimento, IdSubcategoria, IdPresentacion
         
         return {
             IdProducto: producto.IdProducto,
@@ -237,6 +238,15 @@ class ApiService {
             TipoMascota: producto.TipoMascota,
             URLImagen: producto.URLImagen,
             Activo: producto.Activo,
+            // Campos de filtros avanzados
+            IdMascotaTipo: producto.IdMascotaTipo,
+            NombreMascotaTipo: producto.NombreMascotaTipo,
+            IdCategoriaAlimento: producto.IdCategoriaAlimento,
+            NombreCategoriaAlimento: producto.NombreCategoriaAlimento,
+            IdSubcategoria: producto.IdSubcategoria,
+            NombreSubcategoria: producto.NombreSubcategoria,
+            IdPresentacion: producto.IdPresentacion,
+            NombrePresentacion: producto.NombrePresentacion,
             // IMPORTANTE: Mantener las variaciones tal como vienen del backend
             Variaciones: producto.Variaciones || []
         };
@@ -246,9 +256,16 @@ class ApiService {
         console.log('📦 Obteniendo productos', filters);
         const queryParams = new URLSearchParams();
         
+        // Filtros legacy (compatibilidad)
         if (filters.search) queryParams.append('busqueda', filters.search);
         if (filters.category) queryParams.append('categoria', filters.category);
         if (filters.petType) queryParams.append('tipoMascota', filters.petType);
+        
+        // Nuevos filtros avanzados con IDs
+        if (filters.idMascotaTipo) queryParams.append('idMascotaTipo', filters.idMascotaTipo);
+        if (filters.idCategoriaAlimento) queryParams.append('idCategoriaAlimento', filters.idCategoriaAlimento);
+        if (filters.idSubcategoria) queryParams.append('idSubcategoria', filters.idSubcategoria);
+        if (filters.idPresentacion) queryParams.append('idPresentacion', filters.idPresentacion);
         
         const endpoint = queryParams.toString() ? `/Productos?${queryParams}` : '/Productos';
         
@@ -277,6 +294,56 @@ class ApiService {
             return mapped;
         } catch (error) {
             console.error('❌ Error obteniendo producto:', error.message);
+            throw error;
+        }
+    }
+
+    // ======================
+    // ENDPOINTS DE FILTROS AVANZADOS
+    // ======================
+
+    async getMascotaTipos() {
+        console.log('🐾 Obteniendo tipos de mascotas');
+        try {
+            return await this.get('/Productos/filtros/mascotas');
+        } catch (error) {
+            console.error('❌ Error obteniendo tipos de mascotas:', error.message);
+            throw error;
+        }
+    }
+
+    async getCategoriasAlimento(idMascotaTipo = null) {
+        console.log('🍖 Obteniendo categorías de alimento', { idMascotaTipo });
+        try {
+            const endpoint = idMascotaTipo 
+                ? `/Productos/filtros/categorias-alimento?idMascotaTipo=${idMascotaTipo}`
+                : '/Productos/filtros/categorias-alimento';
+            return await this.get(endpoint);
+        } catch (error) {
+            console.error('❌ Error obteniendo categorías de alimento:', error.message);
+            throw error;
+        }
+    }
+
+    async getSubcategorias(idCategoriaAlimento = null) {
+        console.log('📋 Obteniendo subcategorías', { idCategoriaAlimento });
+        try {
+            const endpoint = idCategoriaAlimento 
+                ? `/Productos/filtros/subcategorias?idCategoriaAlimento=${idCategoriaAlimento}`
+                : '/Productos/filtros/subcategorias';
+            return await this.get(endpoint);
+        } catch (error) {
+            console.error('❌ Error obteniendo subcategorías:', error.message);
+            throw error;
+        }
+    }
+
+    async getPresentaciones() {
+        console.log('📦 Obteniendo presentaciones');
+        try {
+            return await this.get('/Productos/filtros/presentaciones');
+        } catch (error) {
+            console.error('❌ Error obteniendo presentaciones:', error.message);
             throw error;
         }
     }
