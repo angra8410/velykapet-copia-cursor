@@ -6,68 +6,98 @@ console.log('🔍 Cargando Filter Sidebar Component...');
 function FilterSidebar({ onFiltersChange, activeFilters = {}, productCounts = {} }) {
     const [expandedSections, setExpandedSections] = React.useState({
         pets: true,
-        productType: true,
-        snackBrands: false,
-        foodBrands: false,
+        categoryFood: true,
+        subcategory: false,
+        presentation: false,
         price: true,
-        rating: true,
         availability: true
     });
 
     const [priceRange, setPriceRange] = React.useState(activeFilters.maxPrice || 500000);
+    
+    // Estados para las opciones dinámicas cargadas del backend
+    const [mascotaTipos, setMascotaTipos] = React.useState([]);
+    const [categoriasAlimento, setCategoriasAlimento] = React.useState([]);
+    const [subcategorias, setSubcategorias] = React.useState([]);
+    const [presentaciones, setPresentaciones] = React.useState([]);
+    const [loadingFilters, setLoadingFilters] = React.useState(true);
 
-    // Configuración de filtros con las marcas reales
-    const filterConfig = {
-        pets: [
-            { id: 'perros', label: 'Perros', icon: '🐕' },
-            { id: 'gatos', label: 'Gatos', icon: '🐱' }
-        ],
-        productTypes: [
-            { id: 'alimento', label: 'Alimento', icon: '🍖' },
-            { id: 'snacks', label: 'Snacks y premios', icon: '🦴' },
-            { id: 'juguetes', label: 'Juguetes', icon: '🎾' },
-            { id: 'accesorios', label: 'Accesorios', icon: '🎀' },
-            { id: 'higiene', label: 'Higiene y cuidado', icon: '🧴' }
-        ],
-        snackBrands: [
-            { id: 'tiki-pets', label: 'TIKI PETS' },
-            { id: 'inaba', label: 'INABA' },
-            { id: 'evolve-snacks', label: 'EVOLVE' },
-            { id: 'emerald-pet', label: 'EMERALD PET' },
-            { id: 'loving-pets', label: 'LOVING PETS' }
-        ],
-        foodBrands: [
-            { id: 'nulo', label: 'NULO' },
-            { id: 'evolve-food', label: 'EVOLVE' },
-            { id: 'sportmans-pride', label: 'SPORTMAN\'S PRIDE' },
-            { id: 'kongo', label: 'KONGO' },
-            { id: 'old-prince', label: 'OLD PRINCE' },
-            { id: 'fawna', label: 'FAWNA' }
-        ],
-        ratings: [
-            { id: '4.5', label: '4.5+', stars: '⭐⭐⭐⭐⭐' },
-            { id: '4.0', label: '4.0+', stars: '⭐⭐⭐⭐' },
-            { id: '3.5', label: '3.5+', stars: '⭐⭐⭐' }
-        ],
-        availability: [
-            { id: 'in-stock', label: 'En stock', icon: '📦' },
-            { id: 'free-shipping', label: 'Envío gratis', icon: '🚚' }
-        ]
-    };
+    // Cargar opciones de filtros dinámicamente desde el backend
+    React.useEffect(() => {
+        const loadFilterOptions = async () => {
+            try {
+                console.log('📥 Cargando opciones de filtros desde backend...');
+                
+                // Esperar que ApiService esté disponible
+                let apiService = window.ApiService;
+                if (!apiService) {
+                    console.log('⏳ Esperando ApiService...');
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    apiService = window.ApiService;
+                }
+
+                if (apiService) {
+                    // Cargar todas las opciones en paralelo
+                    const [mascotas, categorias, subs, presen] = await Promise.all([
+                        apiService.getMascotaTipos().catch(e => { console.warn('⚠️ Error cargando mascotas:', e); return []; }),
+                        apiService.getCategoriasAlimento().catch(e => { console.warn('⚠️ Error cargando categorías:', e); return []; }),
+                        apiService.getSubcategorias().catch(e => { console.warn('⚠️ Error cargando subcategorías:', e); return []; }),
+                        apiService.getPresentaciones().catch(e => { console.warn('⚠️ Error cargando presentaciones:', e); return []; })
+                    ]);
+
+                    console.log('✅ Opciones de filtros cargadas:', { 
+                        mascotas: mascotas.length, 
+                        categorias: categorias.length,
+                        subcategorias: subs.length,
+                        presentaciones: presen.length
+                    });
+
+                    setMascotaTipos(mascotas);
+                    setCategoriasAlimento(categorias);
+                    setSubcategorias(subs);
+                    setPresentaciones(presen);
+                } else {
+                    console.error('❌ ApiService no disponible');
+                }
+            } catch (error) {
+                console.error('❌ Error cargando opciones de filtros:', error);
+            } finally {
+                setLoadingFilters(false);
+            }
+        };
+
+        loadFilterOptions();
+    }, []);
+
+    // Configuración de filtros de disponibilidad (estáticos)
+    const availabilityOptions = [
+        { id: 'in-stock', label: 'En stock', icon: '📦' },
+        { id: 'free-shipping', label: 'Envío gratis', icon: '🚚' }
+    ];
 
     const handleFilterChange = (filterType, value, checked) => {
         const newFilters = { ...activeFilters };
         
-        if (!newFilters[filterType]) {
-            newFilters[filterType] = [];
-        }
+        // Para filtros de múltiple selección (checkbox)
+        if (filterType === 'availability') {
+            if (!newFilters[filterType]) {
+                newFilters[filterType] = [];
+            }
 
-        if (checked) {
-            if (!newFilters[filterType].includes(value)) {
-                newFilters[filterType].push(value);
+            if (checked) {
+                if (!newFilters[filterType].includes(value)) {
+                    newFilters[filterType].push(value);
+                }
+            } else {
+                newFilters[filterType] = newFilters[filterType].filter(item => item !== value);
             }
         } else {
-            newFilters[filterType] = newFilters[filterType].filter(item => item !== value);
+            // Para filtros de selección única (radio - ID numéricos)
+            if (checked) {
+                newFilters[filterType] = value;
+            } else {
+                delete newFilters[filterType];
+            }
         }
 
         onFiltersChange(newFilters);
@@ -89,6 +119,145 @@ function FilterSidebar({ onFiltersChange, activeFilters = {}, productCounts = {}
             ...prev,
             [section]: !prev[section]
         }));
+    };
+
+    // Renderizar sección de filtro con radio buttons (selección única)
+    const renderRadioFilterSection = (title, items, filterType, icon, sectionKey, activeValue) => {
+        const isExpanded = expandedSections[sectionKey];
+        
+        return React.createElement('div',
+            {
+                className: 'filter-section',
+                style: {
+                    marginBottom: '20px',
+                    border: '1px solid #e0e0e0',
+                    borderRadius: '8px',
+                    background: 'white'
+                }
+            },
+            
+            // Header del filtro
+            React.createElement('div',
+                {
+                    className: 'filter-header',
+                    onClick: () => toggleSection(sectionKey),
+                    style: {
+                        padding: '12px 16px',
+                        background: '#f8f9fa',
+                        borderRadius: '8px 8px 0 0',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        color: '#333'
+                    }
+                },
+                React.createElement('span',
+                    { style: { display: 'flex', alignItems: 'center', gap: '8px' } },
+                    icon && React.createElement('span', null, icon),
+                    title
+                ),
+                React.createElement('span',
+                    {
+                        style: {
+                            transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                            transition: 'transform 0.2s ease'
+                        }
+                    },
+                    '▼'
+                )
+            ),
+            
+            // Contenido del filtro
+            isExpanded && React.createElement('div',
+                {
+                    className: 'filter-content',
+                    style: {
+                        padding: '12px 16px',
+                        maxHeight: '300px',
+                        overflowY: 'auto'
+                    }
+                },
+                // Opción "Todos" para limpiar el filtro
+                React.createElement('label',
+                    {
+                        key: 'all',
+                        className: 'filter-option',
+                        style: {
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            padding: '6px 0',
+                            cursor: 'pointer',
+                            fontSize: '13px',
+                            color: '#555',
+                            fontWeight: activeValue === null || activeValue === undefined ? '600' : '400'
+                        }
+                    },
+                    React.createElement('input',
+                        {
+                            type: 'radio',
+                            name: filterType,
+                            checked: activeValue === null || activeValue === undefined,
+                            onChange: () => {
+                                const newFilters = { ...activeFilters };
+                                delete newFilters[filterType];
+                                onFiltersChange(newFilters);
+                            },
+                            style: {
+                                width: '16px',
+                                height: '16px'
+                            }
+                        }
+                    ),
+                    React.createElement('span', null, 'Todos')
+                ),
+                items.map(item => 
+                    React.createElement('label',
+                        {
+                            key: item.IdMascotaTipo || item.IdCategoriaAlimento || item.IdSubcategoria || item.IdPresentacion,
+                            className: 'filter-option',
+                            style: {
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '6px 0',
+                                cursor: 'pointer',
+                                fontSize: '13px',
+                                color: '#555'
+                            }
+                        },
+                        React.createElement('input',
+                            {
+                                type: 'radio',
+                                name: filterType,
+                                checked: activeValue === (item.IdMascotaTipo || item.IdCategoriaAlimento || item.IdSubcategoria || item.IdPresentacion),
+                                onChange: (e) => handleFilterChange(filterType, item.IdMascotaTipo || item.IdCategoriaAlimento || item.IdSubcategoria || item.IdPresentacion, e.target.checked),
+                                style: {
+                                    width: '16px',
+                                    height: '16px'
+                                }
+                            }
+                        ),
+                        React.createElement('span', null, item.Nombre),
+                        React.createElement('span',
+                            {
+                                style: {
+                                    marginLeft: 'auto',
+                                    color: '#999',
+                                    fontSize: '12px'
+                                }
+                            },
+                            productCounts[item.IdMascotaTipo || item.IdCategoriaAlimento || item.IdSubcategoria || item.IdPresentacion] !== undefined 
+                                ? `(${productCounts[item.IdMascotaTipo || item.IdCategoriaAlimento || item.IdSubcategoria || item.IdPresentacion]})`
+                                : ''
+                        )
+                    )
+                )
+            )
+        );
     };
 
     const renderFilterSection = (title, items, filterType, icon, sectionKey) => {
@@ -176,7 +345,6 @@ function FilterSidebar({ onFiltersChange, activeFilters = {}, productCounts = {}
                             }
                         ),
                         item.icon && React.createElement('span', { style: { fontSize: '16px' } }, item.icon),
-                        item.stars && React.createElement('span', { style: { fontSize: '12px' } }, item.stars),
                         React.createElement('span', null, item.label),
                         React.createElement('span',
                             {
@@ -186,13 +354,47 @@ function FilterSidebar({ onFiltersChange, activeFilters = {}, productCounts = {}
                                     fontSize: '12px'
                                 }
                             },
-                            `(${productCounts[item.id] || 0})`
+                            productCounts[item.id] !== undefined ? `(${productCounts[item.id]})` : ''
                         )
                     )
                 )
             )
         );
     };
+
+    if (loadingFilters) {
+        return React.createElement('aside',
+            {
+                className: 'filter-sidebar',
+                style: {
+                    width: '280px',
+                    background: '#f8f9fa',
+                    padding: '25px',
+                    borderRadius: '12px',
+                    height: 'fit-content',
+                    position: 'sticky',
+                    top: '20px'
+                }
+            },
+            React.createElement('div',
+                { style: { textAlign: 'center', padding: '20px' } },
+                React.createElement('div',
+                    {
+                        style: {
+                            width: '40px',
+                            height: '40px',
+                            border: '4px solid #f3f3f3',
+                            borderTop: '4px solid #E45A84',
+                            borderRadius: '50%',
+                            animation: 'spin 1s linear infinite',
+                            margin: '0 auto 10px'
+                        }
+                    }
+                ),
+                React.createElement('p', { style: { color: '#666', fontSize: '14px' } }, 'Cargando filtros...')
+            )
+        );
+    }
 
     return React.createElement('aside',
         {
@@ -261,17 +463,45 @@ function FilterSidebar({ onFiltersChange, activeFilters = {}, productCounts = {}
             )
         ),
 
-        // Filtros de mascotas
-        renderFilterSection('MASCOTAS', filterConfig.pets, 'pets', '🐾', 'pets'),
+        // Filtros de mascotas (usando IDs del backend)
+        mascotaTipos.length > 0 && renderRadioFilterSection(
+            'TIPO DE MASCOTA', 
+            mascotaTipos, 
+            'idMascotaTipo', 
+            '🐾', 
+            'pets',
+            activeFilters.idMascotaTipo
+        ),
 
-        // Tipos de producto
-        renderFilterSection('TIPO DE PRODUCTO', filterConfig.productTypes, 'productTypes', '📦', 'productType'),
+        // Categorías de alimento (usando IDs del backend)
+        categoriasAlimento.length > 0 && renderRadioFilterSection(
+            'CATEGORÍA DE ALIMENTO', 
+            categoriasAlimento, 
+            'idCategoriaAlimento', 
+            '🍖', 
+            'categoryFood',
+            activeFilters.idCategoriaAlimento
+        ),
 
-        // Marcas de snacks
-        renderFilterSection('MARCAS - SNACKS', filterConfig.snackBrands, 'snackBrands', '🦴', 'snackBrands'),
+        // Subcategorías (usando IDs del backend)
+        subcategorias.length > 0 && renderRadioFilterSection(
+            'SUBCATEGORÍA', 
+            subcategorias, 
+            'idSubcategoria', 
+            '📋', 
+            'subcategory',
+            activeFilters.idSubcategoria
+        ),
 
-        // Marcas de alimento
-        renderFilterSection('MARCAS - ALIMENTO', filterConfig.foodBrands, 'foodBrands', '🍖', 'foodBrands'),
+        // Presentaciones (usando IDs del backend)
+        presentaciones.length > 0 && renderRadioFilterSection(
+            'PRESENTACIÓN', 
+            presentaciones, 
+            'idPresentacion', 
+            '📦', 
+            'presentation',
+            activeFilters.idPresentacion
+        ),
 
         // Filtro de precio
         React.createElement('div',
@@ -356,11 +586,8 @@ function FilterSidebar({ onFiltersChange, activeFilters = {}, productCounts = {}
             )
         ),
 
-        // Calificaciones
-        renderFilterSection('CALIFICACIÓN', filterConfig.ratings, 'ratings', '⭐', 'rating'),
-
-        // Disponibilidad
-        renderFilterSection('DISPONIBILIDAD', filterConfig.availability, 'availability', '📦', 'availability'),
+        // Disponibilidad (checkboxes)
+        renderFilterSection('DISPONIBILIDAD', availabilityOptions, 'availability', '📦', 'availability'),
 
         // Botón limpiar filtros
         React.createElement('button',
