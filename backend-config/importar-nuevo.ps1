@@ -12,7 +12,7 @@ Write-Host "Importando productos desde $CsvFile"
 
 try {
     # Preparar archivo
-    $fileBin = [System.IO.File]::ReadAllBytes((Resolve-Path $CsvFile))
+    $fileBin = [System.IO.File]::ReadAllBytes($CsvFile)
     $boundary = [System.Guid]::NewGuid().ToString()
     $LF = "`r`n"
 
