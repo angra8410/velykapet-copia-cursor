@@ -555,6 +555,34 @@ namespace VentasPetApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Extrae el nombre base del producto eliminando el sufijo de peso/presentación.
+        /// Ejemplos:
+        /// - "BR FOR CAT VET CONTROL DE PESO X 500GR" -> "BR FOR CAT VET CONTROL DE PESO"
+        /// - "BR FOR CAT VET CONTROL DE PESO X 1.5 KG" -> "BR FOR CAT VET CONTROL DE PESO"
+        /// - "Producto sin variación" -> "Producto sin variación"
+        /// </summary>
+        private string ExtraerNombreBase(string? nombreCompleto)
+        {
+            if (string.IsNullOrWhiteSpace(nombreCompleto))
+            {
+                return string.Empty;
+            }
+
+            var nombre = nombreCompleto.Trim();
+            
+            // Buscar el patrón " X " que normalmente precede al peso/presentación
+            var indexX = nombre.LastIndexOf(" X ", StringComparison.OrdinalIgnoreCase);
+            if (indexX > 0)
+            {
+                // Retornar todo antes del " X "
+                return nombre.Substring(0, indexX).Trim();
+            }
+
+            // Si no hay patrón " X ", retornar el nombre completo
+            return nombre;
+        }
+
         // POST: api/Productos/ImportarCsv
         /// <summary>
         /// Importa productos masivamente desde un archivo CSV
@@ -606,16 +634,29 @@ namespace VentasPetApi.Controllers
                 var presentaciones = await _context.PresentacionesEmpaque.Where(p => p.Activa).ToListAsync();
                 var proveedores = await _context.Proveedores.Where(p => p.Activo).ToListAsync();
 
-                // Procesar cada producto
-                for (int i = 0; i < productosProcessados.Count; i++)
+                // Agrupar productos por nombre base (sin la variación de peso)
+                // Esto permite que múltiples filas CSV con el mismo producto pero diferentes pesos
+                // se importen como UN SOLO producto con MÚLTIPLES variaciones
+                var productosAgrupados = productosProcessados
+                    .Select((csv, index) => new { Csv = csv, LineNumber = index + 2 })
+                    .GroupBy(x => ExtraerNombreBase(x.Csv.NAME))
+                    .ToList();
+
+                Console.WriteLine($"📊 {productosProcessados.Count} filas agrupadas en {productosAgrupados.Count} producto(s) único(s).");
+
+                // Procesar cada grupo de productos (un producto con una o más variaciones)
+                foreach (var grupo in productosAgrupados)
                 {
-                    var productoCsv = productosProcessados[i];
-                    var lineNumber = i + 2; // +2 porque línea 1 es header y el índice empieza en 0
+                    var nombreBase = grupo.Key;
+                    var variacionesCsv = grupo.ToList();
+                    var primeraLinea = variacionesCsv.First();
+                    var productoCsv = primeraLinea.Csv;
+                    var lineNumber = primeraLinea.LineNumber;
 
                     try
                     {
                         // Validación básica
-                        if (string.IsNullOrWhiteSpace(productoCsv.NAME))
+                        if (string.IsNullOrWhiteSpace(nombreBase))
                         {
                             result.Errors.Add($"Línea {lineNumber}: El nombre del producto es obligatorio.");
                             result.FailureCount++;
@@ -673,47 +714,24 @@ namespace VentasPetApi.Controllers
                                 p.Nombre.Equals(productoCsv.proveedor.Trim(), StringComparison.OrdinalIgnoreCase));
                         }
 
-                        // Verificar que no exista un producto con el mismo nombre
-                        var productoExiste = await _context.Productos.AnyAsync(p => p.NombreBase == productoCsv.NAME.Trim());
+                        // Verificar que no exista un producto con el mismo nombre base
+                        var productoExiste = await _context.Productos.AnyAsync(p => p.NombreBase == nombreBase);
                         if (productoExiste)
                         {
-                            result.Errors.Add($"Línea {lineNumber}: El producto '{productoCsv.NAME}' ya existe.");
+                            result.Errors.Add($"Línea {lineNumber}: El producto '{nombreBase}' ya existe.");
                             result.FailureCount++;
                             continue;
                         }
 
-                        // Parsear precio
-                        decimal precio = 0;
-                        if (!string.IsNullOrWhiteSpace(productoCsv.PRICE))
-                        {
-                            var precioStr = productoCsv.PRICE.Replace("$", "").Replace(",", "").Replace(".", "").Trim();
-                            if (!decimal.TryParse(precioStr, out precio))
-                            {
-                                result.Errors.Add($"Línea {lineNumber}: Precio inválido '{productoCsv.PRICE}'.");
-                                result.FailureCount++;
-                                continue;
-                            }
-                        }
-
-                        // Parsear stock
-                        int stock = 0;
-                        if (!string.IsNullOrWhiteSpace(productoCsv.stock))
-                        {
-                            if (!int.TryParse(productoCsv.stock, out stock))
-                            {
-                                stock = 0;
-                            }
-                        }
-
-                        // Iniciar transacción para cada producto
+                        // Iniciar transacción para cada producto y sus variaciones
                         using var transaction = await _context.Database.BeginTransactionAsync();
                         
                         try
                         {
-                            // Crear el producto
+                            // Crear el producto base (una sola vez para todas las variaciones)
                             var producto = new Producto
                             {
-                                NombreBase = productoCsv.NAME.Trim(),
+                                NombreBase = nombreBase,
                                 Descripcion = productoCsv.description?.Trim() ?? productoCsv.presentacion?.Trim(),
                                 IdCategoria = categoria.IdCategoria,
                                 TipoMascota = productoCsv.CATEGORIA?.Trim() ?? "General",
@@ -731,30 +749,59 @@ namespace VentasPetApi.Controllers
                             _context.Productos.Add(producto);
                             await _context.SaveChangesAsync();
 
-                            // Crear la variación si hay precio
+                            // Crear TODAS las variaciones de este producto (una por cada fila CSV del grupo)
                             var variacionesCreadas = new List<VariacionCreadaDto>();
-                            if (precio > 0)
+                            foreach (var variacionCsv in variacionesCsv)
                             {
-                                var variacion = new VariacionProducto
-                                {
-                                    IdProducto = producto.IdProducto,
-                                    Peso = productoCsv.presentacion?.Trim() ?? "1 UN",
-                                    Precio = precio,
-                                    Stock = stock,
-                                    Activa = true,
-                                    FechaCreacion = DateTime.Now
-                                };
+                                var csvData = variacionCsv.Csv;
+                                var csvLineNumber = variacionCsv.LineNumber;
 
-                                _context.VariacionesProducto.Add(variacion);
-                                await _context.SaveChangesAsync();
-
-                                variacionesCreadas.Add(new VariacionCreadaDto
+                                // Parsear precio de esta variación
+                                decimal precio = 0;
+                                if (!string.IsNullOrWhiteSpace(csvData.PRICE))
                                 {
-                                    IdVariacion = variacion.IdVariacion,
-                                    Presentacion = variacion.Peso,
-                                    Precio = variacion.Precio,
-                                    Stock = variacion.Stock
-                                });
+                                    var precioStr = csvData.PRICE.Replace("$", "").Replace(",", "").Replace(".", "").Trim();
+                                    if (!decimal.TryParse(precioStr, out precio))
+                                    {
+                                        Console.WriteLine($"⚠️  Línea {csvLineNumber}: Precio inválido '{csvData.PRICE}', usando 0.");
+                                        precio = 0;
+                                    }
+                                }
+
+                                // Parsear stock de esta variación
+                                int stock = 0;
+                                if (!string.IsNullOrWhiteSpace(csvData.stock))
+                                {
+                                    if (!int.TryParse(csvData.stock, out stock))
+                                    {
+                                        stock = 0;
+                                    }
+                                }
+
+                                // Solo crear variación si hay precio válido
+                                if (precio > 0)
+                                {
+                                    var variacion = new VariacionProducto
+                                    {
+                                        IdProducto = producto.IdProducto,
+                                        Peso = csvData.presentacion?.Trim() ?? "1 UN",
+                                        Precio = precio,
+                                        Stock = stock,
+                                        Activa = true,
+                                        FechaCreacion = DateTime.Now
+                                    };
+
+                                    _context.VariacionesProducto.Add(variacion);
+                                    await _context.SaveChangesAsync();
+
+                                    variacionesCreadas.Add(new VariacionCreadaDto
+                                    {
+                                        IdVariacion = variacion.IdVariacion,
+                                        Presentacion = variacion.Peso,
+                                        Precio = variacion.Precio,
+                                        Stock = variacion.Stock
+                                    });
+                                }
                             }
 
                             await transaction.CommitAsync();
@@ -764,16 +811,16 @@ namespace VentasPetApi.Controllers
                                 IdProducto = producto.IdProducto,
                                 NombreBase = producto.NombreBase,
                                 Variaciones = variacionesCreadas,
-                                Mensaje = $"Producto creado exitosamente"
+                                Mensaje = $"Producto creado exitosamente con {variacionesCreadas.Count} variación(es)"
                             });
 
                             result.SuccessCount++;
-                            Console.WriteLine($"✅ Línea {lineNumber}: Producto '{producto.NombreBase}' creado exitosamente.");
+                            Console.WriteLine($"✅ Producto '{producto.NombreBase}' creado con {variacionesCreadas.Count} variación(es).");
                         }
                         catch (Exception exTrans)
                         {
                             await transaction.RollbackAsync();
-                            result.Errors.Add($"Línea {lineNumber}: Error al crear producto '{productoCsv.NAME}' - {exTrans.Message}");
+                            result.Errors.Add($"Línea {lineNumber}: Error al crear producto '{nombreBase}' - {exTrans.Message}");
                             result.FailureCount++;
                             Console.WriteLine($"❌ Línea {lineNumber}: Error - {exTrans.Message}");
                         }
