@@ -38,9 +38,6 @@ try {
     Write-Host "Fallidos: $($jsonObject.failureCount)"
 }
 catch {
-<<<<<<< HEAD
-    Write-Host "Error: $_"
-=======
     # MANEJO DE ERRORES PRINCIPAL
     Write-Host "Error al realizar la petición: $_" -ForegroundColor Red
 
@@ -87,7 +84,6 @@ catch {
         Write-Host "   • Comando para iniciar: cd backend-config" -ForegroundColor Gray
         Write-Host "   • Luego ejecute: dotnet run" -ForegroundColor Gray
     }
->>>>>>> 93f1867ebac3671454dfee340fd34f1e8c1fc37e
 }
 
 Write-Host "Fin"
