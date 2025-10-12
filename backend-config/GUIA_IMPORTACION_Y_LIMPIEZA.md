@@ -65,9 +65,78 @@ chmod +x test-importar-csv.sh  # Solo la primera vez
 
 ## 🧹 Scripts de Limpieza
 
-### 1. `limpiar-productos-prueba.ps1` (PowerShell)
+### ⭐ Método RÁPIDO: Scripts de Limpieza Automática (SQLite)
 
-**Descripción**: Elimina productos de prueba usando la API REST.
+Para desarrollo (usando SQLite), use estos scripts simples:
+
+**PowerShell**:
+```powershell
+cd backend-config
+.\limpiar-productos-prueba-rapido.ps1
+```
+
+**Bash**:
+```bash
+cd backend-config
+./limpiar-productos-prueba-rapido.sh
+```
+
+Estos scripts ejecutan automáticamente el SQL de limpieza y muestran los resultados.
+
+---
+
+### 1. `Data/limpiar-productos-prueba-sqlite.sql` (SQLite) - Base del método rápido
+
+**Descripción**: Script SQL para limpieza directa en la base de datos SQLite.
+
+**Uso directo**:
+```bash
+cd backend-config
+sqlite3 VentasPet.db < Data/limpiar-productos-prueba-sqlite.sql
+```
+
+**Ventajas**:
+- ✅ Más rápido para grandes volúmenes
+- ✅ No requiere que el backend esté ejecutándose
+- ✅ Usa transacciones para seguridad
+- ✅ Funciona siempre (no depende de endpoints de API)
+
+---
+
+### 2. `Data/limpiar-productos-prueba.sql` (SQL Server) - Para producción
+
+**Descripción**: Script SQL para limpieza directa en la base de datos.
+
+**Uso**:
+1. Abrir el archivo en SQL Server Management Studio, Azure Data Studio o similar
+2. Revisar los productos que serán eliminados (ejecutar sección 1)
+3. Descomentar la sección de eliminación si desea proceder
+4. Ejecutar el script
+
+**Para SQLite (desarrollo)**:
+```bash
+cd backend-config
+sqlite3 VentasPet.db < Data/limpiar-productos-prueba-sqlite.sql
+```
+
+**Ventajas**:
+- ✅ Más rápido para grandes volúmenes
+- ✅ No requiere que el backend esté ejecutándose
+- ✅ Usa transacciones para seguridad
+- ✅ Funciona siempre (no depende de endpoints de API)
+
+**⚠️ IMPORTANTE**: 
+- Siempre verifique los productos ANTES de eliminar
+- El script usa transacciones (rollback automático en caso de error)
+
+---
+
+### 2. `limpiar-productos-prueba.ps1` (PowerShell) - API Required
+
+**⚠️ NOTA**: Este script requiere que el backend tenga un endpoint DELETE implementado.
+Actualmente, el backend NO tiene este endpoint, así que use el SQL script en su lugar.
+
+**Descripción**: Elimina productos de prueba usando la API REST (si está disponible).
 
 **Uso básico** (sin confirmación):
 ```powershell
@@ -86,10 +155,13 @@ cd backend-config
 - ✅ Muestra productos antes de eliminar
 - ✅ Opción de confirmación manual
 - ✅ Reporte detallado de éxitos y errores
+- ⚠️ Requiere endpoint DELETE en el backend
 
 ---
 
-### 2. `limpiar-productos-prueba.sh` (Bash)
+### 3. `limpiar-productos-prueba.sh` (Bash) - API Required
+
+**⚠️ NOTA**: Similar al script PowerShell, requiere endpoint DELETE.
 
 **Descripción**: Versión bash del script de limpieza.
 
@@ -108,27 +180,7 @@ cd backend-config
 **Prerequisitos**:
 - `curl` instalado
 - `jq` instalado (opcional pero recomendado): `sudo apt install jq`
-
----
-
-### 3. `Data/limpiar-productos-prueba.sql` (SQL Server)
-
-**Descripción**: Script SQL para limpieza directa en la base de datos.
-
-**Uso**:
-1. Abrir el archivo en SQL Server Management Studio
-2. Revisar los productos que serán eliminados (ejecutar sección 1)
-3. Descomentar la sección de eliminación si desea proceder
-4. Ejecutar el script
-
-**Ventajas**:
-- ✅ Más rápido para grandes volúmenes
-- ✅ No requiere que el backend esté ejecutándose
-- ✅ Usa transacciones para seguridad
-
-**⚠️ IMPORTANTE**: 
-- Siempre verifique los productos ANTES de eliminar
-- El script usa transacciones (rollback automático en caso de error)
+- Backend con endpoint DELETE implementado
 
 ---
 
@@ -200,32 +252,46 @@ $ApiUrl = "http://localhost:5135/api/Productos/ImportarCsv"
 
 ### Flujo Completo: Importar → Verificar → Limpiar
 
-```powershell
+**Usando scripts rápidos (SQLite/Desarrollo)**:
+```bash
 # 1. Importar productos de prueba
+cd backend-config
+./test-importar-csv.sh
+
+# 2. Verificar productos importados
+curl http://localhost:5135/api/Productos | jq
+
+# 3. Limpiar productos de prueba (método rápido)
+./limpiar-productos-prueba-rapido.sh
+```
+
+**PowerShell**:
+```powershell
+# 1. Importar
 cd backend-config
 .\importar-simple.ps1
 
-# 2. Verificar productos importados (opcional)
-# Visitar http://localhost:5135/api/Productos en el navegador
+# 2. Verificar (abrir en navegador)
+# http://localhost:5135/api/Productos
 
-# 3. Limpiar productos de prueba
-.\limpiar-productos-prueba.ps1 -Confirmar
+# 3. Limpiar (método rápido)
+.\limpiar-productos-prueba-rapido.ps1
 ```
 
 ---
 
 ### Múltiples Importaciones de Prueba
 
-```powershell
+```bash
 # Primera importación
-.\importar-simple.ps1
+./test-importar-csv.sh
 
-# Limpiar
-.\limpiar-productos-prueba.ps1
+# Limpiar (método rápido)
+./limpiar-productos-prueba-rapido.sh
 
 # Segunda importación con datos diferentes
 # (modificar sample-products.csv primero)
-.\importar-simple.ps1
+./test-importar-csv.sh
 ```
 
 ---
