@@ -306,10 +306,11 @@ console.log(`Creados: ${result.successCount}, Errores: ${result.failureCount}`);
    - Mismo formato que la importación
    - Útil para actualizaciones masivas
 
-5. **Múltiples Variaciones por Producto**
-   - Soportar varias filas CSV para el mismo producto
-   - Agrupar por nombre de producto
-   - Crear todas las variaciones
+5. **Múltiples Variaciones por Producto** ✅ **IMPLEMENTADO**
+   - ✅ Soporta varias filas CSV para el mismo producto
+   - ✅ Agrupa por nombre de producto base
+   - ✅ Crea todas las variaciones automáticamente
+   - 📚 Ver [FORMATO_CSV_VARIACIONES.md](./FORMATO_CSV_VARIACIONES.md) para detalles
 
 6. **Otros Formatos**
    - Soporte para Excel (.xlsx)
