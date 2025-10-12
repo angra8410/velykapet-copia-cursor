@@ -83,6 +83,22 @@ Por cada registro del CSV:
    - Muestra resultados formateados
    - Valida productos creados
 
+5. **`backend-config/importar-masivo.ps1`** ⭐ NUEVO
+   - Script PowerShell interactivo mejorado
+   - Interfaz con mensajes claros y colores
+   - Validaciones y ayuda integrada
+   - Formato automático de respuestas JSON
+   - Manejo de errores con sugerencias
+   - Opciones de reintento
+   - Compatible con PowerShell 5.1+
+
+6. **`backend-config/GUIA_IMPORTAR_MASIVO.md`** ⭐ NUEVO
+   - Documentación completa del script PowerShell
+   - Guía de uso paso a paso
+   - Ejemplos de escenarios de uso
+   - Resolución de problemas comunes
+   - Mejores prácticas
+
 ### Archivos Modificados
 
 1. **`backend-config/Models/Producto.cs`**
@@ -192,6 +208,24 @@ ID,CATEGORIA,CATEGORIA ALIMENTOS,SUBCATEGORIA,PRESENTACION EMPAQUE,MARCA,NAME,PR
 
 ## 🚀 Uso del Endpoint
 
+### ⭐ Con Script PowerShell Interactivo (RECOMENDADO para Windows)
+
+```powershell
+cd backend-config
+.\importar-masivo.ps1
+```
+
+**Características del script mejorado:**
+- ✅ Interfaz interactiva con instrucciones paso a paso
+- ✅ Validación de archivo antes de enviar
+- ✅ Formato JSON de respuesta automático
+- ✅ Resumen visual de resultados (exitosos/fallidos)
+- ✅ Mensajes de error con sugerencias de solución
+- ✅ Opciones de reintento en caso de error
+- ✅ Ayuda integrada sobre formato CSV
+
+📚 **Ver documentación completa:** [GUIA_IMPORTAR_MASIVO.md](./GUIA_IMPORTAR_MASIVO.md)
+
 ### Con cURL
 
 ```bash
@@ -200,7 +234,7 @@ curl -X POST http://localhost:5135/api/Productos/ImportarCsv \
   -F "file=@productos.csv"
 ```
 
-### Con Script de Prueba
+### Con Script de Prueba (Bash)
 
 ```bash
 cd backend-config
