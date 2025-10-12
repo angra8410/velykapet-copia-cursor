@@ -137,7 +137,7 @@ try { # APERTURA del bloque try principal (nivel 1)
             Write-Host "📊 RESUMEN DE LA IMPORTACIÓN:" -ForegroundColor Yellow
             Write-Host ""
             Write-Host "   📦 Total procesados: " -NoNewline -ForegroundColor Gray
-                        Write-Host "$totalProcessed" -ForegroundColor White
+            Write-Host "$totalProcessed" -ForegroundColor White
             Write-Host "   ✅ Exitosos:         " -NoNewline -ForegroundColor Gray
             Write-Host "$successCount" -ForegroundColor Green
             Write-Host "   ❌ Fallidos:         " -NoNewline -ForegroundColor Gray
