@@ -4,8 +4,30 @@
 
 ¿Primera vez usando el endpoint? Empieza aquí:
 
-👉 **[QUICK_START_IMPORTAR_CSV.md](QUICK_START_IMPORTAR_CSV.md)**
+### ⭐ Para Usuarios Windows (PowerShell)
+
+👉 **[QUICK_REFERENCE_IMPORTAR_MASIVO.md](QUICK_REFERENCE_IMPORTAR_MASIVO.md)** - Quick Reference del Script PowerShell
+- Script interactivo mejorado
+- Uso en un minuto
 - Comandos básicos
+- Solución de errores comunes
+
+👉 **[GUIA_IMPORTAR_MASIVO.md](GUIA_IMPORTAR_MASIVO.md)** - Guía Completa PowerShell
+- Documentación detallada del script `importar-masivo.ps1`
+- Ejemplos de uso paso a paso
+- Interpretación de resultados
+- Mejores prácticas
+
+**Uso rápido:**
+```powershell
+cd backend-config
+.\importar-masivo.ps1
+```
+
+### 📘 Para Usuarios Linux/Mac o Uso Programático
+
+👉 **[QUICK_START_IMPORTAR_CSV.md](QUICK_START_IMPORTAR_CSV.md)**
+- Comandos básicos con cURL
 - Ejemplos prácticos
 - Troubleshooting
 
@@ -41,9 +63,23 @@
 - Formato correcto del CSV
 - Listo para importar
 
-### 🔧 Script de Prueba
+### 🔧 Scripts de Prueba e Importación
 
-**[test-importar-csv.sh](test-importar-csv.sh)**
+**⭐ [importar-masivo.ps1](importar-masivo.ps1)** - Script PowerShell Interactivo (RECOMENDADO)
+- Interfaz interactiva con mensajes claros
+- Validaciones automáticas
+- Formato de respuesta JSON
+- Manejo de errores con sugerencias
+- Opciones de reintento
+- Compatible con PowerShell 5.1+
+
+**Uso:**
+```powershell
+cd backend-config
+.\importar-masivo.ps1
+```
+
+**[test-importar-csv.sh](test-importar-csv.sh)** - Script Bash de prueba
 - Script automatizado bash
 - Prueba el endpoint completo
 - Muestra resultados formateados
@@ -54,6 +90,10 @@ cd backend-config
 bash test-importar-csv.sh
 ```
 
+**[importar-simple.ps1](importar-simple.ps1)** - Script PowerShell básico (legacy)
+- Versión simple sin interactividad
+- Usar `importar-masivo.ps1` para mejor experiencia
+
 ## 📋 Estructura del Proyecto
 
 ```
@@ -63,16 +103,37 @@ backend-config/
 ├── Models/
 │   └── Producto.cs                      # DTOs: ProductoCsvDto, ImportResultDto
 ├── API_ENDPOINT_IMPORTAR_CSV.md         # Documentación técnica completa
-├── QUICK_START_IMPORTAR_CSV.md          # Guía de inicio rápido
+├── QUICK_START_IMPORTAR_CSV.md          # Guía de inicio rápido (Linux/Mac)
 ├── RESUMEN_IMPORTACION_CSV.md           # Resumen ejecutivo
 ├── INDICE_IMPORTACION_CSV.md            # Este archivo
+├── GUIA_IMPORTAR_MASIVO.md              # ⭐ Guía completa PowerShell
+├── QUICK_REFERENCE_IMPORTAR_MASIVO.md   # ⭐ Quick Reference PowerShell
 ├── sample-products.csv                  # Archivo de ejemplo
-└── test-importar-csv.sh                 # Script de prueba
+├── importar-masivo.ps1                  # ⭐ Script PowerShell interactivo
+├── importar-simple.ps1                  # Script PowerShell básico (legacy)
+└── test-importar-csv.sh                 # Script de prueba bash
 ```
 
 ## 🎯 Casos de Uso Comunes
 
-### 1. Primera Importación
+### 1. Primera Importación (Windows - PowerShell)
+
+```powershell
+# Navegar al directorio
+cd backend-config
+
+# Ejecutar el script interactivo
+.\importar-masivo.ps1
+
+# El script te guiará paso a paso:
+# 1. Mostrará el formato esperado del CSV
+# 2. Pedirá la ruta del archivo (default: sample-products.csv)
+# 3. Validará el archivo
+# 4. Enviará la solicitud
+# 5. Mostrará resultados formateados
+```
+
+### 2. Primera Importación (Linux/Mac - cURL)
 
 ```bash
 # 1. Preparar CSV con tus productos
@@ -84,7 +145,7 @@ curl -X POST http://localhost:5135/api/Productos/ImportarCsv \
   -F "file=@mis-productos.csv"
 ```
 
-### 2. Validar antes de Importar
+### 3. Validar antes de Importar
 
 ```bash
 # Usar el script de prueba con archivo pequeño
@@ -93,7 +154,7 @@ cp mis-productos.csv test-productos.csv
 bash test-importar-csv.sh
 ```
 
-### 3. Importación de Catálogo Completo
+### 4. Importación de Catálogo Completo
 
 Ver: [API_ENDPOINT_IMPORTAR_CSV.md - Casos de Uso](API_ENDPOINT_IMPORTAR_CSV.md#📊-casos-de-uso)
 
