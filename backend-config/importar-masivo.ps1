@@ -137,14 +137,13 @@ try { # APERTURA del bloque try principal (nivel 1)
             Write-Host "📊 RESUMEN DE LA IMPORTACIÓN:" -ForegroundColor Yellow
             Write-Host ""
             Write-Host "   📦 Total procesados: " -NoNewline -ForegroundColor Gray
-            Write-Host "$totalProcessed" -ForegroundColor White
+                        Write-Host "$totalProcessed" -ForegroundColor White
             Write-Host "   ✅ Exitosos:         " -NoNewline -ForegroundColor Gray
             Write-Host "$successCount" -ForegroundColor Green
             Write-Host "   ❌ Fallidos:         " -NoNewline -ForegroundColor Gray
             Write-Host "$failureCount" -ForegroundColor $(if ($failureCount -gt 0) { "Red" } else { "Green" })
             Write-Host ""
-        } # CIERRE del bloque if
-        else { # APERTURA del bloque else
+        } else { # APERTURA del bloque else
             # Fallback: Si no hay estructura de resumen, mostrar JSON completo
             Write-Host $response.Content -ForegroundColor White
             Write-Host ""
