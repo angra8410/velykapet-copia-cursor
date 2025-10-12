@@ -9,7 +9,7 @@
 #   bash test-importar-csv.sh
 #
 # Requisitos:
-#   - El backend debe estar ejecutándose en http://localhost:5122
+#   - El backend debe estar ejecutándose en http://localhost:5135
 #   - Debe existir el archivo sample-products.csv en el directorio actual
 # ==============================================================================
 
