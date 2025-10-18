@@ -11,7 +11,6 @@ function Clean-Price {
     if ([string]::IsNullOrWhiteSpace($price)) {
         return ""
     }
-    # Solo limpia dólar y espacio (agrega otros símbolos manualmente si puedes)
     $cleaned = $price -replace '\$', '' -replace '\s', ''
     if ($cleaned -match '^\d{1,3}(,\d{3})*\.\d{2}$') {
         $cleaned = $cleaned -replace ',', ''
@@ -115,12 +114,12 @@ function Process-CsvFile {
         [string]$outputPath
     )
     Write-Host ""
-    Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
-    Write-Host "🔄 PROCESANDO ARCHIVO CSV" -ForegroundColor Green
-    Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "--------------------------------------------------------" -ForegroundColor Cyan
+    Write-Host "PROCESANDO ARCHIVO CSV" -ForegroundColor Green
+    Write-Host "--------------------------------------------------------" -ForegroundColor Cyan
     Write-Host ""
-    Write-Host "📂 Archivo de entrada: $inputPath" -ForegroundColor Yellow
-    Write-Host "📂 Archivo de salida: $outputPath" -ForegroundColor Yellow
+    Write-Host "Archivo de entrada: $inputPath" -ForegroundColor Yellow
+    Write-Host "Archivo de salida: $outputPath" -ForegroundColor Yellow
     Write-Host ""
     $stats = @{
         TotalRows = 0
@@ -166,19 +165,19 @@ function Process-CsvFile {
             $processedData += $row
         }
         $processedData | Export-Csv -Path $outputPath -Encoding UTF8 -NoTypeInformation
-        Write-Host "📊 ESTADÍSTICAS DE PROCESAMIENTO:" -ForegroundColor Magenta
-        Write-Host "   📋 Total de filas: $($stats.TotalRows)" -ForegroundColor Gray
-        Write-Host "   ✅ Filas procesadas: $($stats.ProcessedRows - $stats.SkippedRows)" -ForegroundColor Green
-        Write-Host "   ⚠️ Filas omitidas: $($stats.SkippedRows)" -ForegroundColor Yellow
-        Write-Host "   💰 Precios normalizados: $($stats.CleanedPrices)" -ForegroundColor Cyan
+        Write-Host "ESTADÍSTICAS DE PROCESAMIENTO:" -ForegroundColor Magenta
+        Write-Host "   Total de filas: $($stats.TotalRows)" -ForegroundColor Gray
+        Write-Host "   Filas procesadas: $($stats.ProcessedRows - $stats.SkippedRows)" -ForegroundColor Green
+        Write-Host "   Filas omitidas: $($stats.SkippedRows)" -ForegroundColor Yellow
+        Write-Host "   Precios normalizados: $($stats.CleanedPrices)" -ForegroundColor Cyan
         Write-Host ""
         if ($stats.Errors.Count -gt 0) {
-            Write-Host "⚠️ ERRORES ENCONTRADOS: $($stats.Errors.Count)" -ForegroundColor Red
+            Write-Host "ERRORES ENCONTRADOS: $($stats.Errors.Count)" -ForegroundColor Red
             Write-Host ""
             foreach ($error in $stats.Errors) {
-                Write-Host ("   ❌ Fila $($error.Row):") -ForegroundColor Red
+                Write-Host ("   Fila $($error.Row):") -ForegroundColor Red
                 foreach ($errorMsg in $error.Errors) {
-                    Write-Host ("      • $errorMsg") -ForegroundColor DarkRed
+                    Write-Host ("      - $errorMsg") -ForegroundColor DarkRed
                 }
                 $errorData = $error.Data | Format-List | Out-String
                 Write-Host "      Datos:" -ForegroundColor DarkYellow
@@ -186,13 +185,13 @@ function Process-CsvFile {
                 Write-Host ""
             }
         }
-        Write-Host "✅ Archivo procesado correctamente y guardado en: $outputPath" -ForegroundColor Green
+        Write-Host "Archivo procesado correctamente y guardado en: $outputPath" -ForegroundColor Green
     }
     catch {
-        Write-Host "❌ Error al procesar el archivo: $_" -ForegroundColor Red
+        Write-Host "Error al procesar el archivo: $_" -ForegroundColor Red
     }
     Write-Host ""
-    Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "--------------------------------------------------------" -ForegroundColor Cyan
 }
 
 $inputPath = Get-InputFilePath
