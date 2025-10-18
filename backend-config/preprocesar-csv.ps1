@@ -1,6 +1,3 @@
-# Script para preprocesar archivos CSV
-# Normaliza precios, limpia datos y genera un archivo UTF-8 compatible
-
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
@@ -139,11 +136,11 @@ function Process-CsvFile {
         foreach ($row in $data) {
             $stats.ProcessedRows++
             $rowErrors = @()
-            $nombreError = Validate-Field $row.Nombre "Nombre"
+            $nombreError = Validate-Field $row.NAME "NAME"
             if ($nombreError) {
                 $rowErrors += $nombreError
             }
-            $precioError = Validate-Field $row.Precio "Precio"
+            $precioError = Validate-Field $row.PRICE "PRICE"
             if ($precioError) {
                 $rowErrors += $precioError
             }
@@ -156,12 +153,12 @@ function Process-CsvFile {
                 }
                 continue
             }
-            $originalPrice = $row.Precio
+            $originalPrice = $row.PRICE
             $cleanedPrice = Clean-Price $originalPrice
             if ($cleanedPrice -ne $originalPrice) {
                 $stats.CleanedPrices++
             }
-            $row.Precio = $cleanedPrice
+            $row.PRICE = $cleanedPrice
             $processedData += $row
         }
         $processedData | Export-Csv -Path $outputPath -Encoding UTF8 -NoTypeInformation
