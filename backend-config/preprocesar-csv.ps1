@@ -1,306 +1,270 @@
-# ========================================
-# Script de Preprocesamiento de CSV
-# ========================================
-# Limpia y valida archivos CSV antes de importarlos
-# Corrige formatos de precios, encoding, y valida campos obligatorios
-# ========================================
+# Script para preprocesar archivos CSV
+# Normaliza precios, limpia datos y genera un archivo UTF-8 compatible
 
-param(
-    [string]$InputFile = "",
-    [string]$OutputFile = ""
-)
-
-# Configurar encoding UTF-8 para la consola
+# Configuración de codificación
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $OutputEncoding = [System.Text.Encoding]::UTF8
 
-function Show-Welcome {
-    Write-Host ""
-    Write-Host "╔════════════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "║         PREPROCESADOR DE CSV - VelyKapet                              ║" -ForegroundColor Cyan
-    Write-Host "║         Limpieza y Validación de Archivos CSV                         ║" -ForegroundColor Cyan
-    Write-Host "╚════════════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
-    Write-Host ""
-}
-
-function Show-Help {
-    Write-Host "📋 FUNCIONES DEL PREPROCESADOR:" -ForegroundColor Yellow
-    Write-Host ""
-    Write-Host "  ✅ Limpieza de Precios:" -ForegroundColor Green
-    Write-Host "     • Detecta y normaliza formatos: `$20,400.00 -> 20400.00" -ForegroundColor Gray
-    Write-Host "     • Maneja formatos europeos: `$20.400,00 -> 20400.00" -ForegroundColor Gray
-    Write-Host "     • Remueve símbolos de moneda ($, €, etc.)" -ForegroundColor Gray
-    Write-Host ""
-    Write-Host "  ✅ Validación de Campos:" -ForegroundColor Green
-    Write-Host "     • Verifica campos obligatorios (NAME, CATEGORIA, PRICE)" -ForegroundColor Gray
-    Write-Host "     • Detecta filas vacías o incompletas" -ForegroundColor Gray
-    Write-Host "     • Valida tipos de datos" -ForegroundColor Gray
-    Write-Host ""
-    Write-Host "  ✅ Normalización de Encoding:" -ForegroundColor Green
-    Write-Host "     • Convierte a UTF-8 sin BOM" -ForegroundColor Gray
-    Write-Host "     • Corrige caracteres especiales" -ForegroundColor Gray
-    Write-Host ""
-    Write-Host "  ✅ Generación de Reporte:" -ForegroundColor Green
-    Write-Host "     • Muestra estadísticas de limpieza" -ForegroundColor Gray
-    Write-Host "     • Lista errores encontrados y corregidos" -ForegroundColor Gray
-    Write-Host "     • Crea archivo limpio listo para importar" -ForegroundColor Gray
-    Write-Host ""
-}
-
-function Get-InputFilePath {
-    if ($InputFile -ne "") {
-        return $InputFile
-    }
+# Función para limpiar y normalizar precios
+function Clean-Price {
+    param (
+        [string]$price
+    )
     
-    Write-Host "📂 SELECCIÓN DE ARCHIVO CSV A PROCESAR" -ForegroundColor Yellow
-    Write-Host ""
-    Write-Host "Ingrese la ruta del archivo CSV (presione ENTER para usar 'sample-products.csv'):" -ForegroundColor White
-    $filePath = Read-Host "Ruta del archivo"
-    
-    if ([string]::IsNullOrWhiteSpace($filePath)) {
-        $filePath = "sample-products.csv"
-    }
-    
-    return $filePath
-}
-}
-
-function Test-CsvFileExists {
-    param([string]$FilePath)
-    
-    Write-Host ""
-    Write-Host "🔍 Validando archivo..." -ForegroundColor Cyan
-    
-    if (-not (Test-Path $FilePath)) {
-        Write-Host "❌ ERROR: No se encontró el archivo '$FilePath'" -ForegroundColor Red
-        Write-Host ""
-        Write-Host "Sugerencias:" -ForegroundColor Yellow
-        Write-Host "  • Verifique que la ruta sea correcta" -ForegroundColor Gray
-        Write-Host "  • Use rutas absolutas o relativas desde la ubicación actual" -ForegroundColor Gray
-        Write-Host "  • Asegúrese de que el archivo tenga extensión .csv" -ForegroundColor Gray
-        return $false
-    }
-    
-    $fileInfo = Get-Item $FilePath
-    Write-Host "✅ Archivo encontrado:" -ForegroundColor Green
-    Write-Host "   📄 Nombre: $($fileInfo.Name)" -ForegroundColor Gray
-    Write-Host "   📏 Tamaño: $([Math]::Round($fileInfo.Length / 1KB, 2)) KB" -ForegroundColor Gray
-    Write-Host "   📅 Modificado: $($fileInfo.LastWriteTime)" -ForegroundColor Gray
-    Write-Host ""
-    
-    return $true
-}
-
-function Clean-PriceField {
-    param([string]$Price)
-    
-    if ([string]::IsNullOrWhiteSpace($Price)) {
+    if ([string]::IsNullOrWhiteSpace($price)) {
         return ""
     }
     
-    # Remover símbolos de moneda y espacios
-    $cleaned = $Price.Trim() -replace '[\$€£¥₹]', '' -replace '\s', ''
+    # Eliminar símbolos de moneda y espacios
+    $cleaned = $price -replace '[$€£¥]', '' -replace '\s', ''
     
-    # Detectar formato y normalizar
+    # Normalizar formato de precio
+    # Formato US: 1,234.56 -> 1234.56
+    # Formato EU: 1.234,56 -> 1234.56
+    
+    # Detectar formato US (1,234.56)
     if ($cleaned -match '^\d+,\d{3}\.\d{2}$') {
-        # Formato US: 20,400.00 -> remover coma
         $cleaned = $cleaned -replace ',', ''
+        return $cleaned
     }
+    # Detectar formato EU (1.234,56)
     elseif ($cleaned -match '^\d+\.\d{3},\d{2}$') {
-        # Formato EU: 20.400,00 -> remover punto, cambiar coma por punto
-        $cleaned = $cleaned -replace '\.', '' -replace ',', '.'
+        $cleaned = ($cleaned -replace '\.', '') -replace ',', '.'
+        return $cleaned
     }
-    elseif ($cleaned -match '^[\d]+[,][\d]{2}$') {
-        # Solo coma decimal: 20400,00 -> cambiar coma por punto
-        $cleaned = $cleaned -replace ',', '.'
+    # Si ya está en formato correcto (1234.56)
+    elseif ($cleaned -match '^\d+\.\d{2}$') {
+        return $cleaned
     }
-    elseif ($cleaned -match '^[\d]+[.][\d]+$') {
-        # Ya tiene punto decimal: 20400.00 -> dejar como está
-        # No hacer nada
+    # Si es un número entero, agregar decimales
+    elseif ($cleaned -match '^\d+$') {
+        return "$cleaned.00"
     }
-    
-    return $cleaned
+    # Otros casos, devolver tal cual
+    else {
+        return $cleaned
+    }
 }
 
-function Process-CsvFile {
-    param(
-        [string]$InputPath,
-        [string]$OutputPath
+# Función para validar campos
+function Validate-Field {
+    param (
+        [string]$value,
+        [string]$fieldName
     )
     
-    Write-Host "🔄 PROCESANDO ARCHIVO CSV" -ForegroundColor Yellow
+    if ([string]::IsNullOrWhiteSpace($value)) {
+        return "Campo '$fieldName' vacío"
+    }
+    
+    return $null
+}
+
+# Función para obtener la ruta del archivo de entrada
+function Get-InputFilePath {
+    $defaultPath = "productos.csv"
+    
+    if (Test-Path $defaultPath) {
+        Write-Host "Archivo encontrado: $defaultPath" -ForegroundColor Green
+        return $defaultPath
+    }
+    
+    Write-Host "No se encontró el archivo predeterminado 'productos.csv'" -ForegroundColor Yellow
+    Write-Host "Archivos CSV disponibles en el directorio actual:" -ForegroundColor Cyan
+    
+    $csvFiles = Get-ChildItem -Filter "*.csv" | Select-Object -ExpandProperty Name
+    
+    if ($csvFiles.Count -eq 0) {
+        Write-Host "No se encontraron archivos CSV en el directorio actual" -ForegroundColor Red
+        Write-Host "Por favor, coloque un archivo CSV en este directorio y vuelva a ejecutar el script" -ForegroundColor Yellow
+        exit
+    }
+    
+    for ($i = 0; $i -lt $csvFiles.Count; $i++) {
+        Write-Host "[$($i+1)] $($csvFiles[$i])" -ForegroundColor Cyan
+    }
+    
     Write-Host ""
-    Write-Host "   📥 Entrada:  $InputPath" -ForegroundColor Gray
-    Write-Host "   📤 Salida:   $OutputPath" -ForegroundColor Gray
+    $selection = Read-Host "Seleccione un archivo (1-$($csvFiles.Count)) o ingrese la ruta completa a otro archivo CSV"
+    
+    if ($selection -match '^\d+$' -and [int]$selection -ge 1 -and [int]$selection -le $csvFiles.Count) {
+        $selectedFile = $csvFiles[[int]$selection - 1]
+        Write-Host "Archivo seleccionado: $selectedFile" -ForegroundColor Green
+        return $selectedFile
+    }
+    elseif (Test-Path $selection) {
+        if ($selection -like "*.csv") {
+            Write-Host "Archivo seleccionado: $selection" -ForegroundColor Green
+            return $selection
+        }
+        else {
+            Write-Host "El archivo seleccionado no es un archivo CSV" -ForegroundColor Red
+            exit
+        }
+    }
+    else {
+        Write-Host "Archivo no encontrado: $selection" -ForegroundColor Red
+        exit
+    }
+}
+
+# Función para generar nombre de archivo de salida
+function Get-OutputFilePath {
+    param (
+        [string]$inputPath
+    )
+    
+    $directory = Split-Path -Parent $inputPath
+    if ([string]::IsNullOrEmpty($directory)) {
+        $directory = "."
+    }
+    
+    $filename = Split-Path -Leaf $inputPath
+    $filenameWithoutExt = [System.IO.Path]::GetFileNameWithoutExtension($filename)
+    
+    $outputPath = Join-Path $directory "$filenameWithoutExt-procesado.csv"
+    
+    # Verificar si el archivo ya existe
+    if (Test-Path $outputPath) {
+        Write-Host "El archivo de salida '$outputPath' ya existe." -ForegroundColor Yellow
+        $response = Read-Host "¿Desea sobrescribirlo? (S/N)"
+        
+        if ($response -ne 'S' -and $response -ne 's') {
+            $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+            $outputPath = Join-Path $directory "$filenameWithoutExt-procesado-$timestamp.csv"
+            Write-Host "Se usará un nuevo nombre de archivo: $outputPath" -ForegroundColor Green
+        }
+        else {
+            Write-Host "Se sobrescribirá el archivo existente" -ForegroundColor Yellow
+        }
+    }
+    
+    return $outputPath
+}
+
+# Función principal
+function Process-CsvFile {
+    param (
+        [string]$inputPath,
+        [string]$outputPath
+    )
+    
+    Write-Host ""
+    Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "🔄 PROCESANDO ARCHIVO CSV" -ForegroundColor Green
+    Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "📂 Archivo de entrada: $inputPath" -ForegroundColor Yellow
+    Write-Host "📂 Archivo de salida: $outputPath" -ForegroundColor Yellow
     Write-Host ""
     
+    # Estadísticas
     $stats = @{
         TotalRows = 0
         ProcessedRows = 0
-        ErrorRows = 0
-        PricesFixed = 0
-        EmptyRows = 0
+        SkippedRows = 0
+        CleanedPrices = 0
         Errors = @()
     }
     
     try {
-        # Leer archivo con encoding UTF-8
-        $content = Get-Content -Path $InputPath -Encoding UTF8
+        # Leer archivo CSV
+        $data = Import-Csv -Path $inputPath -Encoding UTF8 -ErrorAction Stop
         
-        if ($content.Count -eq 0) {
-            Write-Host "❌ ERROR: El archivo está vacío" -ForegroundColor Red
-            return $null
+        # Verificar si hay datos
+        if ($data.Count -eq 0) {
+            Write-Host "El archivo CSV está vacío" -ForegroundColor Red
+            return
         }
         
-        # Obtener encabezados
-        $headers = $content[0]
-        $outputLines = @($headers)
+        $stats.TotalRows = $data.Count
         
-        Write-Host "✅ Encabezados detectados:" -ForegroundColor Green
-        Write-Host "   $headers" -ForegroundColor Gray
-        Write-Host ""
+        # Crear array para almacenar filas procesadas
+        $processedData = @()
         
-        # Procesar cada fila (saltando encabezado)
-        for ($i = 1; $i -lt $content.Count; $i++) {
-            $line = $content[$i]
-            $stats.TotalRows++
-            
-            # Saltar filas vacías
-            if ([string]::IsNullOrWhiteSpace($line)) {
-                $stats.EmptyRows++
-                continue
-            }
-            
-            # Dividir campos (manejo simple de CSV)
-            $fields = $line -split ','
-            
-            # Validar campos mínimos
-            if ($fields.Count -lt 3) {
-                $stats.ErrorRows++
-                $stats.Errors += "Línea $($i + 1): Número insuficiente de campos"
-                continue
-            }
-            
-            # Limpiar campo de precio (asumiendo que PRICE está en la columna 13 según el sample)
-            # Ajustar índice según la estructura real del CSV
-            if ($fields.Count -gt 13) {
-                $originalPrice = $fields[13]
-                $cleanedPrice = Clean-PriceField $originalPrice
-                
-                if ($originalPrice -ne $cleanedPrice -and -not [string]::IsNullOrWhiteSpace($originalPrice)) {
-                    $fields[13] = $cleanedPrice
-                    $stats.PricesFixed++
-                    Write-Host "   🔧 Línea $($i + 1): Precio '$originalPrice' -> '$cleanedPrice'" -ForegroundColor DarkYellow
-                }
-            }
-            
-            # Reconstruir línea
-            $outputLines += ($fields -join ',')
+        # Procesar cada fila
+        foreach ($row in $data) {
             $stats.ProcessedRows++
-        }
-        
-        # Guardar archivo procesado
-        $outputLines | Out-File -FilePath $OutputPath -Encoding UTF8 -Force
-        
-        Write-Host ""
-        Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
-        Write-Host "✅ PROCESAMIENTO COMPLETADO" -ForegroundColor Green
-        Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
-        Write-Host ""
-        Write-Host "📊 ESTADÍSTICAS:" -ForegroundColor Yellow
-        Write-Host "   📦 Total de filas:        $($stats.TotalRows)" -ForegroundColor Gray
-        Write-Host "   ✅ Filas procesadas:      $($stats.ProcessedRows)" -ForegroundColor Green
-        Write-Host "   🔧 Precios corregidos:    $($stats.PricesFixed)" -ForegroundColor Yellow
-        Write-Host "   ⚠️  Filas vacías:          $($stats.EmptyRows)" -ForegroundColor DarkYellow
-        Write-Host "   ❌ Filas con errores:     $($stats.ErrorRows)" -ForegroundColor Red
-        Write-Host ""
-        
-        if ($stats.Errors.Count -gt 0) {
-            Write-Host "⚠️  ERRORES ENCONTRADOS:" -ForegroundColor Red
-            foreach ($error in $stats.Errors) {
-                Write-Host "   • $error" -ForegroundColor DarkRed
+            $rowErrors = @()
+            
+            # Validar campos obligatorios
+            $nombreError = Validate-Field $row.Nombre "Nombre"
+            if ($nombreError) {
+                $rowErrors += $nombreError
             }
-            Write-Host ""
+            
+            $precioError = Validate-Field $row.Precio "Precio"
+            if ($precioError) {
+                $rowErrors += $precioError
+            }
+            
+            # Si hay errores, registrarlos y saltar la fila
+            if ($rowErrors.Count -gt 0) {
+                $stats.SkippedRows++
+                $stats.Errors += @{
+                    Row = $stats.ProcessedRows
+                    Errors = $rowErrors
+                    Data = $row
+                }
+                continue
+            }
+            
+            # Limpiar precio
+            $originalPrice = $row.Precio
+            $cleanedPrice = Clean-Price $originalPrice
+            
+            if ($cleanedPrice -ne $originalPrice) {
+                $stats.CleanedPrices++
+            }
+            
+            # Actualizar precio en la fila
+            $row.Precio = $cleanedPrice
+            
+            # Agregar fila procesada
+            $processedData += $row
         }
         
-        Write-Host "✅ Archivo limpio guardado en: $OutputPath" -ForegroundColor Green
+        # Guardar datos procesados
+        $processedData | Export-Csv -Path $outputPath -Encoding UTF8 -NoTypeInformation
+        
+        # Mostrar estadísticas
+        Write-Host "📊 ESTADÍSTICAS DE PROCESAMIENTO:" -ForegroundColor Magenta
+        Write-Host "   📋 Total de filas: $($stats.TotalRows)" -ForegroundColor Gray
+        Write-Host "   ✅ Filas procesadas: $($stats.ProcessedRows - $stats.SkippedRows)" -ForegroundColor Green
+        Write-Host "   ⚠️ Filas omitidas: $($stats.SkippedRows)" -ForegroundColor Yellow
+        Write-Host "   💰 Precios normalizados: $($stats.CleanedPrices)" -ForegroundColor Cyan
         Write-Host ""
         
-        return $stats
+        # Mostrar errores si los hay
+        if ($stats.Errors.Count -gt 0) {
+            Write-Host "⚠️ ERRORES ENCONTRADOS: $($stats.Errors.Count)" -ForegroundColor Red
+            Write-Host ""
+            
+            foreach ($error in $stats.Errors) {
+                Write-Host "   ❌ Fila $($error.Row):" -ForegroundColor Red
+                foreach ($errorMsg in $error.Errors) {
+                    Write-Host "      • $errorMsg" -ForegroundColor DarkRed
+                }
+                
+                # Mostrar datos de la fila con error
+                $errorData = $error.Data | Format-List | Out-String
+                Write-Host "      Datos:" -ForegroundColor DarkYellow
+                Write-Host "      $($errorData.Trim() -replace "`n", "`n      ")" -ForegroundColor Gray
+                Write-Host ""
+            }
+        }
+        
+        Write-Host "✅ Archivo procesado correctamente y guardado en: $outputPath" -ForegroundColor Green
     }
     catch {
-        Write-Host "❌ ERROR al procesar el archivo: $_" -ForegroundColor Red
-        Write-Host "   StackTrace: $($_.ScriptStackTrace)" -ForegroundColor DarkRed
-        return $null
-    }
-}
-
-function Ask-Confirmation {
-    param([string]$OutputPath)
-    
-    if (Test-Path $OutputPath) {
-        Write-Host "⚠️  ADVERTENCIA: El archivo '$OutputPath' ya existe." -ForegroundColor Yellow
-        Write-Host ""
-        $response = Read-Host "¿Desea sobrescribirlo? (S/N)"
-        
-        if ($response -ne 'S' -and $response -ne 's' -and $response -ne 'Y' -and $response -ne 'y') {
-            Write-Host "❌ Operación cancelada por el usuario." -ForegroundColor Red
-            return $false
-        }
+        Write-Host "❌ Error al procesar el archivo: $_" -ForegroundColor Red
     }
     
-    return $true
-}
-
-# ========================================
-# PROGRAMA PRINCIPAL
-# ========================================
-
-Show-Welcome
-Show-Help
-
-# Obtener ruta del archivo de entrada
-$inputFilePath = Get-InputFilePath
-
-# Validar que el archivo existe
-if (-not (Test-CsvFileExists $inputFilePath)) {
     Write-Host ""
-    Write-Host "Presione cualquier tecla para salir..." -ForegroundColor Gray
-    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-    exit 1
+    Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
 }
 
-# Generar nombre de archivo de salida
-if ($OutputFile -eq "") {
-    $fileInfo = Get-Item $inputFilePath
-    $baseName = [System.IO.Path]::GetFileNameWithoutExtension($fileInfo.Name)
-    $extension = $fileInfo.Extension
-    $OutputFile = "$baseName-limpio$extension"
-}
-
-# Confirmar sobrescritura si existe
-if (-not (Ask-Confirmation $OutputFile)) {
-    exit 0
-}
-
-# Procesar archivo
-$stats = Process-CsvFile -InputPath $inputFilePath -OutputPath $OutputFile
-
-if ($null -eq $stats) {
-    Write-Host "❌ El procesamiento falló. Revise los errores anteriores." -ForegroundColor Red
-    exit 1
-}
-
-Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
-Write-Host "                      SIGUIENTE PASO" -ForegroundColor Green
-Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "Ahora puede importar el archivo limpio usando:" -ForegroundColor Yellow
-Write-Host ""
-Write-Host "   .\importar-masivo.ps1" -ForegroundColor White
-Write-Host ""
-Write-Host "Y seleccione el archivo: $OutputFile" -ForegroundColor Cyan
-Write-Host ""
-
-Write-Host "Presione cualquier tecla para salir..." -ForegroundColor Gray
-$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+# Ejecución principal
+$inputPath = Get-InputFilePath
+$outputPath = Get-OutputFilePath $inputPath
+Process-CsvFile $inputPath $outputPath
