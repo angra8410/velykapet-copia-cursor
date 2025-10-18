@@ -105,7 +105,6 @@ try {
     
     Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
 }
-}
 catch {
     # MANEJO DE ERRORES PRINCIPAL
     Write-Host "Error al realizar la petición: $_" -ForegroundColor Red
