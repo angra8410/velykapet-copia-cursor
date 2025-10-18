@@ -298,8 +298,18 @@ namespace VentasPetApi.Models
         public int SuccessCount { get; set; }
         public int FailureCount { get; set; }
         public List<string> Errors { get; set; } = new List<string>();
+        public List<ImportRowErrorDto> DetailedErrors { get; set; } = new List<ImportRowErrorDto>();
         public List<ProductoCreadoResponseDto> CreatedProducts { get; set; } = new List<ProductoCreadoResponseDto>();
         public string Message { get; set; } = string.Empty;
+    }
+
+    public class ImportRowErrorDto
+    {
+        public int LineNumber { get; set; }
+        public string ProductName { get; set; } = string.Empty;
+        public string ErrorType { get; set; } = string.Empty; // "ValidationError", "DatabaseError", "DuplicateError", "ParsingError"
+        public string ErrorMessage { get; set; } = string.Empty;
+        public Dictionary<string, string>? FieldErrors { get; set; } // Specific field validation errors
     }
 
     // Nuevas tablas maestras para filtros avanzados

@@ -658,7 +658,16 @@ namespace VentasPetApi.Controllers
                         // Validación básica
                         if (string.IsNullOrWhiteSpace(nombreBase))
                         {
-                            result.Errors.Add($"Línea {lineNumber}: El nombre del producto es obligatorio.");
+                            var errorMsg = $"Línea {lineNumber}: El nombre del producto es obligatorio.";
+                            result.Errors.Add(errorMsg);
+                            result.DetailedErrors.Add(new ImportRowErrorDto
+                            {
+                                LineNumber = lineNumber,
+                                ProductName = productoCsv.NAME ?? "",
+                                ErrorType = "ValidationError",
+                                ErrorMessage = "El nombre del producto es obligatorio.",
+                                FieldErrors = new Dictionary<string, string> { { "NAME", "Campo vacío o inválido" } }
+                            });
                             result.FailureCount++;
                             continue;
                         }
@@ -669,7 +678,19 @@ namespace VentasPetApi.Controllers
                         
                         if (categoria == null)
                         {
-                            result.Errors.Add($"Línea {lineNumber}: Categoría '{productoCsv.CATEGORIA}' no encontrada.");
+                            var errorMsg = $"Línea {lineNumber}: Categoría '{productoCsv.CATEGORIA}' no encontrada.";
+                            result.Errors.Add(errorMsg);
+                            result.DetailedErrors.Add(new ImportRowErrorDto
+                            {
+                                LineNumber = lineNumber,
+                                ProductName = nombreBase,
+                                ErrorType = "ValidationError",
+                                ErrorMessage = $"Categoría '{productoCsv.CATEGORIA}' no existe en la base de datos.",
+                                FieldErrors = new Dictionary<string, string> 
+                                { 
+                                    { "CATEGORIA", $"Categoría '{productoCsv.CATEGORIA}' no encontrada. Verifique que existe en la base de datos." } 
+                                }
+                            });
                             result.FailureCount++;
                             continue;
                         }
@@ -718,7 +739,19 @@ namespace VentasPetApi.Controllers
                         var productoExiste = await _context.Productos.AnyAsync(p => p.NombreBase == nombreBase);
                         if (productoExiste)
                         {
-                            result.Errors.Add($"Línea {lineNumber}: El producto '{nombreBase}' ya existe.");
+                            var errorMsg = $"Línea {lineNumber}: El producto '{nombreBase}' ya existe.";
+                            result.Errors.Add(errorMsg);
+                            result.DetailedErrors.Add(new ImportRowErrorDto
+                            {
+                                LineNumber = lineNumber,
+                                ProductName = nombreBase,
+                                ErrorType = "DuplicateError",
+                                ErrorMessage = $"El producto '{nombreBase}' ya existe en la base de datos.",
+                                FieldErrors = new Dictionary<string, string> 
+                                { 
+                                    { "NAME", "Producto duplicado. Use un nombre diferente o actualice el existente." } 
+                                }
+                            });
                             result.FailureCount++;
                             continue;
                         }
@@ -760,8 +793,34 @@ namespace VentasPetApi.Controllers
                                 decimal precio = 0;
                                 if (!string.IsNullOrWhiteSpace(csvData.PRICE))
                                 {
-                                    var precioStr = csvData.PRICE.Replace("$", "").Replace(",", "").Replace(".", "").Trim();
-                                    if (!decimal.TryParse(precioStr, out precio))
+                                    // Limpiar precio: remover símbolo $ y espacios
+                                    var precioStr = csvData.PRICE.Replace("$", "").Trim();
+                                    
+                                    // Detectar formato: si tiene coma como separador de miles y punto como decimal
+                                    // Ejemplo: $20,400.00 -> 20400.00
+                                    if (precioStr.Contains(",") && precioStr.Contains("."))
+                                    {
+                                        // Formato estadounidense: remover comas (miles), mantener punto (decimal)
+                                        precioStr = precioStr.Replace(",", "");
+                                    }
+                                    // Si solo tiene coma, podría ser separador decimal (formato europeo)
+                                    else if (precioStr.Contains(",") && !precioStr.Contains("."))
+                                    {
+                                        // Verificar si es separador decimal o de miles
+                                        var parts = precioStr.Split(',');
+                                        if (parts.Length == 2 && parts[1].Length <= 2)
+                                        {
+                                            // Es separador decimal: $20400,00 -> 20400.00
+                                            precioStr = precioStr.Replace(",", ".");
+                                        }
+                                        else
+                                        {
+                                            // Es separador de miles: $20,400 -> 20400
+                                            precioStr = precioStr.Replace(",", "");
+                                        }
+                                    }
+                                    
+                                    if (!decimal.TryParse(precioStr, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out precio))
                                     {
                                         Console.WriteLine($"⚠️  Línea {csvLineNumber}: Precio inválido '{csvData.PRICE}', usando 0.");
                                         precio = 0;
@@ -820,14 +879,32 @@ namespace VentasPetApi.Controllers
                         catch (Exception exTrans)
                         {
                             await transaction.RollbackAsync();
-                            result.Errors.Add($"Línea {lineNumber}: Error al crear producto '{nombreBase}' - {exTrans.Message}");
+                            var errorMsg = $"Línea {lineNumber}: Error al crear producto '{nombreBase}' - {exTrans.Message}";
+                            result.Errors.Add(errorMsg);
+                            result.DetailedErrors.Add(new ImportRowErrorDto
+                            {
+                                LineNumber = lineNumber,
+                                ProductName = nombreBase,
+                                ErrorType = "DatabaseError",
+                                ErrorMessage = $"Error de base de datos al crear el producto: {exTrans.Message}",
+                                FieldErrors = null
+                            });
                             result.FailureCount++;
                             Console.WriteLine($"❌ Línea {lineNumber}: Error - {exTrans.Message}");
                         }
                     }
                     catch (Exception exProd)
                     {
-                        result.Errors.Add($"Línea {lineNumber}: Error procesando producto - {exProd.Message}");
+                        var errorMsg = $"Línea {lineNumber}: Error procesando producto - {exProd.Message}";
+                        result.Errors.Add(errorMsg);
+                        result.DetailedErrors.Add(new ImportRowErrorDto
+                        {
+                            LineNumber = lineNumber,
+                            ProductName = nombreBase,
+                            ErrorType = "ParsingError",
+                            ErrorMessage = $"Error al procesar los datos del CSV: {exProd.Message}",
+                            FieldErrors = null
+                        });
                         result.FailureCount++;
                         Console.WriteLine($"❌ Línea {lineNumber}: Error - {exProd.Message}");
                     }
