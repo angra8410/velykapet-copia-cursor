@@ -2,6 +2,10 @@
 $ApiUrl = "http://localhost:5135/api/Productos/ImportarCsv"
 $CsvFile = "sample-products.csv"
 
+# Configurar encoding UTF-8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
 # Verificar archivo
 if (-not (Test-Path $CsvFile)) {
     Write-Host "Error: No se encontró el archivo $CsvFile"
@@ -31,11 +35,76 @@ try {
     $response = Invoke-WebRequest -Uri $ApiUrl -Method Post -ContentType "multipart/form-data; boundary=$boundary" -Body $bodyLines
 
     # Mostrar respuesta
-    Write-Host "Importación completada"
+    Write-Host ""
+    Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host "✅ IMPORTACIÓN COMPLETADA" -ForegroundColor Green
+    Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+    Write-Host ""
+    
     $jsonObject = $response.Content | ConvertFrom-Json
-    Write-Host "Total: $($jsonObject.totalProcessed)"
-    Write-Host "Exitosos: $($jsonObject.successCount)"
-    Write-Host "Fallidos: $($jsonObject.failureCount)"
+    
+    Write-Host "📊 RESUMEN:" -ForegroundColor Yellow
+    Write-Host "   📦 Total procesados: $($jsonObject.TotalProcessed)" -ForegroundColor Gray
+    Write-Host "   ✅ Exitosos:         $($jsonObject.SuccessCount)" -ForegroundColor Green
+    Write-Host "   ❌ Fallidos:         $($jsonObject.FailureCount)" -ForegroundColor Red
+    Write-Host ""
+    
+    if ($jsonObject.Message) {
+        Write-Host "💬 MENSAJE:" -ForegroundColor Yellow
+        Write-Host "   $($jsonObject.Message)" -ForegroundColor Gray
+        Write-Host ""
+    }
+    
+    # Mostrar productos creados
+    if ($jsonObject.CreatedProducts -and $jsonObject.CreatedProducts.Count -gt 0) {
+        Write-Host "✨ PRODUCTOS CREADOS: $($jsonObject.CreatedProducts.Count)" -ForegroundColor Green
+        Write-Host ""
+        $count = 0
+        foreach ($producto in $jsonObject.CreatedProducts) {
+            $count++
+            Write-Host "   $count. [ID: $($producto.IdProducto)] $($producto.NombreBase)" -ForegroundColor Cyan
+            if ($producto.Variaciones -and $producto.Variaciones.Count -gt 0) {
+                foreach ($variacion in $producto.Variaciones) {
+                    Write-Host "      • $($variacion.Presentacion) - Precio: `$$($variacion.Precio) - Stock: $($variacion.Stock)" -ForegroundColor Gray
+                }
+            }
+            if ($count -ge 10) {
+                Write-Host "   ... y $($jsonObject.CreatedProducts.Count - 10) más" -ForegroundColor Gray
+                break
+            }
+        }
+        Write-Host ""
+    }
+    
+    # Mostrar errores detallados
+    if ($jsonObject.DetailedErrors -and $jsonObject.DetailedErrors.Count -gt 0) {
+        Write-Host "⚠️  ERRORES DETALLADOS: $($jsonObject.DetailedErrors.Count)" -ForegroundColor Red
+        Write-Host ""
+        foreach ($error in $jsonObject.DetailedErrors) {
+            Write-Host "   ❌ Línea $($error.LineNumber): $($error.ProductName)" -ForegroundColor Red
+            Write-Host "      Tipo: $($error.ErrorType)" -ForegroundColor DarkRed
+            Write-Host "      Error: $($error.ErrorMessage)" -ForegroundColor DarkRed
+            
+            if ($error.FieldErrors) {
+                Write-Host "      Campos con error:" -ForegroundColor DarkYellow
+                foreach ($fieldError in $error.FieldErrors.GetEnumerator()) {
+                    Write-Host "         • $($fieldError.Key): $($fieldError.Value)" -ForegroundColor Yellow
+                }
+            }
+            Write-Host ""
+        }
+    }
+    elseif ($jsonObject.Errors -and $jsonObject.Errors.Count -gt 0) {
+        Write-Host "⚠️  ERRORES: $($jsonObject.Errors.Count)" -ForegroundColor Red
+        Write-Host ""
+        foreach ($error in $jsonObject.Errors) {
+            Write-Host "   • $error" -ForegroundColor DarkRed
+        }
+        Write-Host ""
+    }
+    
+    Write-Host "═══════════════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+}
 }
 catch {
     # MANEJO DE ERRORES PRINCIPAL
