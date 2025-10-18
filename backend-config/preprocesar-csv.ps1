@@ -11,7 +11,8 @@ function Clean-Price {
     if ([string]::IsNullOrWhiteSpace($price)) {
         return ""
     }
-    $cleaned = $price -replace '[\$€£¥]', '' -replace '\s', ''
+    # Solo limpia dólar y espacio (agrega otros símbolos manualmente si puedes)
+    $cleaned = $price -replace '\$', '' -replace '\s', ''
     if ($cleaned -match '^\d{1,3}(,\d{3})*\.\d{2}$') {
         $cleaned = $cleaned -replace ',', ''
         return $cleaned
@@ -175,7 +176,7 @@ function Process-CsvFile {
             Write-Host "⚠️ ERRORES ENCONTRADOS: $($stats.Errors.Count)" -ForegroundColor Red
             Write-Host ""
             foreach ($error in $stats.Errors) {
-                Write-Host "   ❌ Fila $($error.Row):" -ForegroundColor Red
+                Write-Host ("   ❌ Fila $($error.Row):") -ForegroundColor Red
                 foreach ($errorMsg in $error.Errors) {
                     Write-Host ("      • $errorMsg") -ForegroundColor DarkRed
                 }
