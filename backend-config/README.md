@@ -88,11 +88,21 @@ El backend estará disponible en:
 
 ### Ejemplo CSV
 
+**Formato US (coma = separador de miles, punto = decimal):**
 ```csv
 NAME,CATEGORIA,PRICE,presentacion,stock
-BR FOR CAT VET X 500 GR,Alimento para Gatos,$20400.00,500 GR,10
-BR FOR CAT VET X 1.5 KG,Alimento para Gatos,$58200.00,1.5 KG,15
+BR FOR CAT VET X 500 GR,Alimento para Gatos,$20,400.00,500 GR,10
+BR FOR CAT VET X 1.5 KG,Alimento para Gatos,$58,200.00,1.5 KG,15
 ```
+
+**Formato EU (punto = separador de miles, coma = decimal):**
+```csv
+NAME,CATEGORIA,PRICE,presentacion,stock
+BR FOR CAT VET X 500 GR,Alimento para Gatos,$20.400,00,500 GR,10
+BR FOR CAT VET X 1.5 KG,Alimento para Gatos,$58.200,00,1.5 KG,15
+```
+
+**Nota:** El preprocesador detecta y convierte ambos formatos automáticamente.
 
 **Ver:** [FORMATO_CSV_VARIACIONES.md](./FORMATO_CSV_VARIACIONES.md) para más detalles.
 
