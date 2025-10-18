@@ -15,7 +15,7 @@ if (-not (Test-Path $CsvFile)) {
 Write-Host "Importando productos desde $CsvFile"
 
 try {
-    # Preparar archivo
+    # Preparar archivo para envío
     $fileBin = [System.IO.File]::ReadAllBytes((Resolve-Path $CsvFile))
     $boundary = [System.Guid]::NewGuid().ToString()
     $LF = "`r`n"
@@ -154,4 +154,4 @@ catch {
     }
 }
 
-Write-Host "Fin"
+Write-Host "Proceso de importación finalizado" -ForegroundColor Green

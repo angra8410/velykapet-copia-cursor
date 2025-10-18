@@ -63,6 +63,7 @@ function Get-InputFilePath {
     
     return $filePath
 }
+}
 
 function Test-CsvFileExists {
     param([string]$FilePath)
@@ -101,11 +102,11 @@ function Clean-PriceField {
     $cleaned = $Price.Trim() -replace '[\$€£¥₹]', '' -replace '\s', ''
     
     # Detectar formato y normalizar
-    if ($cleaned -match '^[\d]+[,][\d]{3}[.][\d]{2}$') {
+    if ($cleaned -match '^\d+,\d{3}\.\d{2}$') {
         # Formato US: 20,400.00 -> remover coma
         $cleaned = $cleaned -replace ',', ''
     }
-    elseif ($cleaned -match '^[\d]+[.][\d]{3}[,][\d]{2}$') {
+    elseif ($cleaned -match '^\d+\.\d{3},\d{2}$') {
         # Formato EU: 20.400,00 -> remover punto, cambiar coma por punto
         $cleaned = $cleaned -replace '\.', '' -replace ',', '.'
     }
@@ -242,7 +243,7 @@ function Ask-Confirmation {
         Write-Host ""
         $response = Read-Host "¿Desea sobrescribirlo? (S/N)"
         
-        if ($response -ne 'S' -and $response -ne 's') {
+        if ($response -ne 'S' -and $response -ne 's' -and $response -ne 'Y' -and $response -ne 'y') {
             Write-Host "❌ Operación cancelada por el usuario." -ForegroundColor Red
             return $false
         }
