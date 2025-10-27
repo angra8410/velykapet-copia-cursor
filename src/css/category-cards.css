@@ -1,0 +1,45 @@
+/* Category Cards Home Page Styles */
+
+/* Category grid responsive behavior */
+.categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    align-items: stretch;
+    margin: 0 auto;
+}
+
+/* Ensure 3 cards in a row on larger screens */
+@media (min-width: 1200px) {
+    .categories-grid {
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 1400px;
+    }
+}
+
+/* Two cards on medium screens */
+@media (min-width: 768px) and (max-width: 1199px) {
+    .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Single column on mobile */
+@media (max-width: 767px) {
+    .categories-grid {
+        grid-template-columns: 1fr;
+        gap: 40px; /* More space for overlapping images */
+        padding-top: 40px; /* Space for the top image overflow */
+    }
+    
+    .hero-categories-embedded {
+        padding: 50px 1rem !important;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .categories-grid {
+        gap: 50px;
+    }
+}
