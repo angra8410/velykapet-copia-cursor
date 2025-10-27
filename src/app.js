@@ -139,29 +139,32 @@ if (typeof React === 'undefined') {
                                 `👋 ¡Hola, ${currentUser.name}!`
                             ),
                             
-                            // Hero Categories - Renderizado directo para debug
+                            // Hero Categories - New Three Card Layout
                             (() => {
-                                console.log('🏠 DEBUG: Renderizando categorias directamente');
+                                console.log('🏠 DEBUG: Renderizando categorias con nuevo diseño');
                                 
-                                // Categorías embebidas
+                                // Three new categories with vibrant colors
                                 const categories = [
                                     {
-                                        id: 'perrolandia',
-                                        title: 'Perrolandia',
-                                        subtitle: 'Todo para tu mejor amigo',
-                                        description: 'Descubre productos especiales para perros',
-                                        icon: '🐕',
+                                        id: 'alimento',
+                                        category: 'Alimento',
+                                        subtitle: 'Nutrición premium para tu mascota',
                                         image: './perro_card_img.jpg',
-                                        gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                                        color: '#FF6B9D' // Vibrant pink
                                     },
                                     {
-                                        id: 'gatolandia',
-                                        title: 'Gatolandia', 
-                                        subtitle: 'Para tu felino especial',
-                                        description: 'Todo lo que tu gato necesita para estar feliz',
-                                        icon: '🐱',
+                                        id: 'salud-bienestar',
+                                        category: 'Salud & Bienestar', 
+                                        subtitle: 'Cuida su salud y felicidad',
                                         image: './gato_card_img.jpg',
-                                        gradient: 'linear-gradient(135deg, #4A90E2 0%, #357ABD 100%)'
+                                        color: '#FF4757' // Vibrant red
+                                    },
+                                    {
+                                        id: 'juguetes-accesorios',
+                                        category: 'Juguetes & Accesorios',
+                                        subtitle: 'Diversión y estilo para cada momento',
+                                        image: './perro_card_img.jpg',
+                                        color: '#FFA502' // Vibrant yellow/orange
                                     }
                                 ];
                                 
@@ -169,10 +172,10 @@ if (typeof React === 'undefined') {
                                     {
                                         className: 'hero-categories-embedded',
                                         style: {
-                                            padding: '30px 2rem', // Padding optimizado
-                                            maxWidth: '100%', // Aprovechar TODO el ancho
+                                            padding: '60px 2rem',
+                                            maxWidth: '1400px',
                                             width: '100%',
-                                            margin: '0'
+                                            margin: '0 auto'
                                         }
                                     },
                                     
@@ -181,155 +184,65 @@ if (typeof React === 'undefined') {
                                         { 
                                             style: {
                                                 textAlign: 'center',
-                                                marginBottom: '30px'
+                                                marginBottom: '60px'
                                             }
                                         },
-                                        React.createElement('h2',
+                                        React.createElement('h1',
                                             {
                                                 style: {
-                                                    fontSize: '2.5rem',
+                                                    fontSize: 'clamp(2.5rem, 5vw, 3.5rem)',
                                                     fontWeight: '800',
-                                                    background: 'linear-gradient(45deg, #E45A84, #D94876)',
+                                                    background: 'linear-gradient(45deg, #FF6B9D, #FF4757)',
                                                     backgroundClip: 'text',
                                                     WebkitBackgroundClip: 'text',
                                                     WebkitTextFillColor: 'transparent',
-                                                    marginBottom: '16px'
+                                                    marginBottom: '16px',
+                                                    fontFamily: 'var(--font-family-secondary)'
                                                 }
                                             },
-                                            '🐾 ¿Qué estás buscando?'
+                                            '🐾 Encuentra todo para tu mascota'
                                         ),
                                         React.createElement('p',
                                             {
                                                 style: {
-                                                    fontSize: '18px',
-                                                    color: '#666',
+                                                    fontSize: 'var(--font-size-xl)',
+                                                    color: 'var(--gray-600)',
                                                     maxWidth: '600px',
                                                     margin: '0 auto',
-                                                    lineHeight: '1.6'
+                                                    lineHeight: '1.6',
+                                                    fontWeight: '500'
                                                 }
                                             },
-                                            'Selecciona la categoría perfecta para tu compañero'
+                                            'Explora nuestras categorías y descubre productos de calidad'
                                         )
                                     ),
                                     
-                                    // Grid de categorías - LADO A LADO
+                                    // Grid de categorías - 3 columnas en desktop, 1 en mobile
                                     React.createElement('div',
                                         {
+                                            className: 'categories-grid',
                                             style: {
                                                 display: 'grid',
-                                                gridTemplateColumns: window.innerWidth > 768 ? 'repeat(2, 1fr)' : '1fr', // 2 columnas lado a lado en desktop, 1 en móvil
-                                                gap: '25px',
+                                                gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                                                gap: '30px',
                                                 alignItems: 'stretch',
-                                                maxWidth: '100%',
                                                 margin: '0 auto'
                                             }
                                         },
                                         
                                         categories.map(category =>
-                                            React.createElement('div',
+                                            React.createElement(window.CategoryCardComponent,
                                                 {
                                                     key: category.id,
+                                                    image: category.image,
+                                                    color: category.color,
+                                                    category: category.category,
+                                                    subtitle: category.subtitle,
                                                     onClick: () => {
-                                                        console.log(`🎯 Click en ${category.title}`);
+                                                        console.log(`🎯 Click en ${category.category}`);
                                                         window.setCurrentView('catalog');
-                                                    },
-                                                    style: {
-                                                        backgroundImage: `url(${category.image})`,
-                                                        backgroundSize: 'cover',
-                                                        backgroundPosition: category.id === 'perrolandia' ? 'center 40%' : 'center 20%',
-                                                        backgroundRepeat: 'no-repeat',
-                                                        borderRadius: '20px',
-                                                        padding: '40px 30px',
-                                                        cursor: 'pointer',
-                                                        position: 'relative',
-                                                        overflow: 'hidden',
-                                                        color: 'white',
-                                                        minHeight: '350px', // Más alto para mejor impacto
-                                                        display: 'flex',
-                                                        flexDirection: 'column',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                        textAlign: 'center',
-                                                        transition: 'all 0.3s ease',
-                                                        boxShadow: '0 15px 35px rgba(0,0,0,0.3)' // Sombra más profunda
-                                                    },
-                                                    onMouseEnter: (e) => {
-                                                        e.target.style.transform = 'translateY(-5px) scale(1.02)';
-                                                        e.target.style.boxShadow = '0 15px 30px rgba(0,0,0,0.3)';
-                                                    },
-                                                    onMouseLeave: (e) => {
-                                                        e.target.style.transform = 'translateY(0) scale(1)';
-                                                        e.target.style.boxShadow = '0 10px 20px rgba(0,0,0,0.2)';
                                                     }
-                                                },
-                                                
-                                                // Overlay sutil para legibilidad
-                                                React.createElement('div',
-                                                    {
-                                                        style: {
-                                                            position: 'absolute',
-                                                            bottom: 0,
-                                                            left: 0,
-                                                            right: 0,
-                                                            background: 'linear-gradient(transparent, rgba(0,0,0,0.7))',
-                                                            height: '60%',
-                                                            zIndex: 1
-                                                        }
-                                                    }
-                                                ),
-                                                
-                                                // Contenido del texto
-                                                React.createElement('div',
-                                                    {
-                                                        style: {
-                                                            position: 'relative',
-                                                            zIndex: 2,
-                                                            display: 'flex',
-                                                            flexDirection: 'column',
-                                                            justifyContent: 'flex-end',
-                                                            height: '100%',
-                                                            paddingBottom: '20px'
-                                                        }
-                                                    },
-                                                    
-                                                    // Título
-                                                    React.createElement('h3',
-                                                        {
-                                                            style: {
-                                                                fontSize: '2rem',
-                                                                fontWeight: '700',
-                                                                marginBottom: '10px',
-                                                                textShadow: '3px 3px 6px rgba(0,0,0,0.9)'
-                                                            }
-                                                        },
-                                                        category.title
-                                                    ),
-                                                    
-                                                    // Subtítulo
-                                                    React.createElement('p',
-                                                        {
-                                                            style: {
-                                                                fontSize: '1.1rem',
-                                                                marginBottom: '15px',
-                                                                opacity: 0.95,
-                                                                textShadow: '2px 2px 4px rgba(0,0,0,0.9)'
-                                                            }
-                                                        },
-                                                        category.subtitle
-                                                    ),
-                                                
-                                                    // Descripción
-                                                    React.createElement('p',
-                                                        {
-                                                            style: {
-                                                                fontSize: '0.9rem',
-                                                                opacity: 0.8,
-                                                                textShadow: '1px 1px 2px rgba(0,0,0,0.8)'
-                                                            }
-                                                        },
-                                                        category.description
-                                                    )
-                                                )
+                                                }
                                             )
                                         )
                                     )
