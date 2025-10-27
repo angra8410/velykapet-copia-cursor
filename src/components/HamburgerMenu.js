@@ -252,7 +252,8 @@ window.HamburgerMenuComponent = function() {
                     { style: { display: 'flex', alignItems: 'center', gap: '15px' } },
                     React.createElement('div',
                         {
-                            'aria-hidden': 'true',
+                            'aria-label': 'Avatar de usuario',
+                            role: 'img',
                             style: {
                                 width: '48px',
                                 height: '48px',
@@ -485,7 +486,7 @@ const menuStyles = `
 
 .hamburger-menu::-webkit-scrollbar-thumb {
     background: #D0D0D0;
-    borderRadius: 3px;
+    border-radius: 3px;
 }
 
 .hamburger-menu::-webkit-scrollbar-thumb:hover {

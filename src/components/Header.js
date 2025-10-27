@@ -131,7 +131,7 @@ window.HeaderComponent = function() {
                 visibility: headerVisible ? 'visible' : 'hidden',
                 opacity: headerVisible ? 1 : 0,
                 transform: headerVisible ? 'translateY(0)' : 'translateY(-100%)',
-                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 margin: '0',
                 padding: '0'
             }
