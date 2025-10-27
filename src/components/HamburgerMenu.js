@@ -1,13 +1,13 @@
-// Hamburger Menu - Menú moderno tipo móvil con navegación completa
-// Colores: #E45A84 - Estilo VelyKapet
+// Modern Hamburger Menu for VelyKapet - White background, colorful icons, smooth transitions
+// Clean, easy-to-read organization with user info at top
 
-console.log('🍔 Cargando Hamburger Menu Component...');
+console.log('🍔 Loading Modern Hamburger Menu Component...');
 
 window.HamburgerMenuComponent = function() {
     const [isOpen, setIsOpen] = React.useState(false);
     const [currentUser, setCurrentUser] = React.useState(null);
     
-    // Actualizar usuario cuando cambie el estado de autenticación
+    // Update user when authentication state changes
     React.useEffect(() => {
         const updateUser = () => {
             if (window.authManager) {
@@ -28,7 +28,7 @@ window.HamburgerMenuComponent = function() {
         };
     }, []);
     
-    // Cerrar menú cuando se hace click fuera
+    // Close menu when clicking outside
     React.useEffect(() => {
         const handleClickOutside = (event) => {
             if (isOpen && !event.target.closest('.hamburger-menu-container')) {
@@ -38,7 +38,7 @@ window.HamburgerMenuComponent = function() {
         
         if (isOpen) {
             document.addEventListener('mousedown', handleClickOutside);
-            document.body.style.overflow = 'hidden'; // Prevenir scroll
+            document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = 'auto';
         }
@@ -50,63 +50,49 @@ window.HamburgerMenuComponent = function() {
     }, [isOpen]);
     
     const toggleMenu = (e) => {
-        // Prevenir la propagación del evento para evitar comportamientos no deseados
         if (e) {
             e.preventDefault();
             e.stopPropagation();
         }
         console.log('🍔 Toggle menu:', !isOpen);
         setIsOpen(!isOpen);
-        // No navegar a ninguna vista al abrir/cerrar el menú
     };
     
     const handleMenuClick = (view, label) => {
-        console.log(`🍔 Click en ${label} - navegando a:`, view);
-        setIsOpen(false); // Cerrar menú
+        console.log(`🍔 Click on ${label} - navigating to:`, view);
+        setIsOpen(false);
         
-        // Asegurarse de que la función setCurrentView existe y llamarla con un pequeño retraso
-        // para permitir que el menú se cierre primero
         if (typeof window.setCurrentView === 'function') {
             setTimeout(() => {
-                console.log(`🚀 Redirigiendo a vista: ${view}`);
+                console.log(`🚀 Redirecting to view: ${view}`);
                 window.setCurrentView(view);
             }, 100);
         } else {
-            console.error('❌ Error: window.setCurrentView no está disponible');
-            // Alternativa de navegación si setCurrentView no está disponible
-            if (view === 'home') {
-                window.location.hash = '#home';
-            } else if (view === 'catalog') {
-                window.location.hash = '#catalog';
-            } else if (view === 'cart') {
-                window.location.hash = '#cart';
-            } else {
-                window.location.hash = `#${view}`;
-            }
+            console.error('❌ Error: window.setCurrentView not available');
+            window.location.hash = `#${view}`;
         }
     };
     
     const handleLogout = () => {
-        console.log('🍔 Logout desde menú');
+        console.log('🍔 Logout from menu');
         setIsOpen(false);
         if (window.authManager) {
             window.authManager.logout();
         }
     };
     
-    // Opciones de menú
+    // Menu items with colorful icons
     const menuItems = [
-        { id: 'home', icon: '🏠', label: 'Inicio', view: 'home' },
-        { id: 'catalog', icon: '🛍️', label: 'Catálogo', view: 'catalog' },
-        { id: 'cart', icon: '🛒', label: 'Carrito', view: 'cart' },
+        { id: 'home', icon: '🏠', label: 'Inicio', view: 'home', color: '#FF6B9D' },
+        { id: 'catalog', icon: '🛍️', label: 'Catálogo', view: 'catalog', color: '#FFA502' },
+        { id: 'cart', icon: '🛒', label: 'Carrito', view: 'cart', color: '#FF6B35' },
         ...(currentUser ? [
-            { id: 'profile', icon: '👤', label: 'Mi Perfil', view: 'profile' },
-            { id: 'orderHistory', icon: '📋', label: 'Historial de Pedidos', view: 'orderHistory' },
-            { id: 'dashboard', icon: '📊', label: 'Dashboard', view: 'dashboard' }
+            { id: 'profile', icon: '👤', label: 'Mi Perfil', view: 'profile', color: '#4A90E2' },
+            { id: 'favorites', icon: '❤️', label: 'Favoritos', view: 'favorites', color: '#FF4757' },
+            { id: 'orderHistory', icon: '📋', label: 'Mis Pedidos', view: 'orderHistory', color: '#26DE81' }
         ] : []),
-        { id: 'privacy', icon: '🔒', label: 'Privacidad', view: 'privacy' },
-        { id: 'terms', icon: '📋', label: 'Términos', view: 'terms' },
-        { id: 'policy', icon: '🔐', label: 'Política', view: 'policy' }
+        { id: 'privacy', icon: '🔒', label: 'Privacidad', view: 'privacy', color: '#8B8B8B' },
+        { id: 'terms', icon: '📋', label: 'Términos', view: 'terms', color: '#8B8B8B' }
     ];
     
     return React.createElement('div',
@@ -115,52 +101,56 @@ window.HamburgerMenuComponent = function() {
             style: { position: 'relative' }
         },
         
-        // Botón hamburguesa
+        // Hamburger button - clean design
         React.createElement('button',
             {
                 className: 'hamburger-button',
-                onClick: (e) => toggleMenu(e), // Pasar el evento para prevenir comportamientos no deseados
+                onClick: (e) => toggleMenu(e),
+                'aria-label': 'Menú de navegación',
+                'aria-expanded': isOpen,
                 style: {
-                    background: 'rgba(0, 0, 0, 0.7)',
-                    border: 'none',
-                    borderRadius: '10px',
-                    width: '40px',
-                    height: '40px',
+                    background: '#FFFFFF',
+                    border: '2px solid #F0F0F0',
+                    borderRadius: '12px',
+                    width: '44px',
+                    height: '44px',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
-                    backdropFilter: 'blur(10px)',
-                    border: '1px solid rgba(0, 0, 0, 0.5)',
-                    transition: 'all 0.3s ease',
-                    gap: '3px'
+                    transition: 'all 0.2s ease',
+                    gap: '4px',
+                    padding: '8px'
                 },
                 onMouseEnter: (e) => {
-                    e.target.style.background = 'rgba(0, 0, 0, 0.9)';
-                    e.target.style.transform = 'scale(1.05)';
+                    e.currentTarget.style.background = '#FAFAFA';
+                    e.currentTarget.style.borderColor = '#E0E0E0';
+                    e.currentTarget.style.transform = 'scale(1.05)';
                 },
                 onMouseLeave: (e) => {
-                    e.target.style.background = 'rgba(0, 0, 0, 0.7)';
-                    e.target.style.transform = 'scale(1)';
+                    e.currentTarget.style.background = '#FFFFFF';
+                    e.currentTarget.style.borderColor = '#F0F0F0';
+                    e.currentTarget.style.transform = 'scale(1)';
                 }
             },
             
-            // Líneas del hamburguesa (animadas)
+            // Animated hamburger lines
             ...[1, 2, 3].map(i => 
                 React.createElement('div',
                     {
                         key: i,
+                        'aria-hidden': 'true',
                         style: {
-                            width: isOpen ? '20px' : '18px',
-                            height: '2px',
-                            background: 'white',
+                            width: isOpen ? '20px' : '22px',
+                            height: '3px',
+                            background: isOpen ? '#FF6B9D' : '#333',
                             borderRadius: '2px',
-                            transition: 'all 0.3s ease',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                             transform: isOpen ? 
-                                (i === 1 ? 'rotate(45deg) translateY(5px)' :
-                                 i === 2 ? 'opacity(0)' : 
-                                 'rotate(-45deg) translateY(-5px)') : 'none'
+                                (i === 1 ? 'rotate(45deg) translateY(7px)' :
+                                 i === 2 ? 'opacity(0) translateX(10px)' : 
+                                 'rotate(-45deg) translateY(-7px)') : 'none'
                         }
                     }
                 )
@@ -171,60 +161,66 @@ window.HamburgerMenuComponent = function() {
         isOpen && React.createElement('div',
             {
                 className: 'menu-overlay',
+                'aria-hidden': 'true',
                 style: {
                     position: 'fixed',
                     top: 0,
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    background: 'rgba(0, 0, 0, 0.5)',
+                    background: 'rgba(0, 0, 0, 0.4)',
                     zIndex: 9998,
-                    backdropFilter: 'blur(5px)',
+                    backdropFilter: 'blur(4px)',
                     animation: 'fadeIn 0.3s ease'
                 }
             }
         ),
         
-        // Menú desplegable - LADO IZQUIERDO
-        isOpen && React.createElement('div',
+        // Menu sidebar - white background, left side
+        isOpen && React.createElement('aside',
             {
                 className: 'hamburger-menu',
+                role: 'navigation',
+                'aria-label': 'Menú principal',
                 style: {
                     position: 'fixed',
                     top: 0,
-                    left: 0, // Cambiado de right a left
-                    width: '280px',
+                    left: 0,
+                    width: '300px',
                     height: '100vh',
-                    background: 'linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%)',
-                    boxShadow: '10px 0 30px rgba(0, 0, 0, 0.3)', // Sombra hacia la derecha
+                    background: '#FFFFFF',
+                    boxShadow: '4px 0 20px rgba(0, 0, 0, 0.15)',
                     zIndex: 9999,
                     display: 'flex',
                     flexDirection: 'column',
-                    animation: 'slideInLeft 0.3s ease', // Animación desde la izquierda
-                    color: 'white'
+                    animation: 'slideInLeft 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    color: '#333'
                 }
             },
             
-            // Header del menú
+            // Header section
             React.createElement('div',
                 {
                     className: 'menu-header',
                     style: {
                         padding: '30px 20px',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-                        textAlign: 'center'
+                        borderBottom: '1px solid #F0F0F0',
+                        textAlign: 'center',
+                        background: 'linear-gradient(135deg, #FFF0F5 0%, #FFF5F0 100%)'
                     }
                 },
                 React.createElement('div',
-                    { style: { fontSize: '2rem', marginBottom: '10px' } },
+                    { style: { fontSize: '3rem', marginBottom: '12px' } },
                     '🐾'
                 ),
-                React.createElement('h3',
+                React.createElement('h2',
                     { 
                         style: { 
-                            margin: '0 0 5px 0', 
-                            fontSize: '1.5rem', 
-                            fontWeight: '700' 
+                            margin: '0 0 6px 0', 
+                            fontSize: '1.75rem', 
+                            fontWeight: '800',
+                            color: '#333',
+                            fontFamily: 'Poppins, sans-serif'
                         } 
                     },
                     'VelyKapet'
@@ -234,36 +230,39 @@ window.HamburgerMenuComponent = function() {
                         style: { 
                             margin: 0, 
                             fontSize: '0.9rem', 
-                            opacity: 0.8 
+                            color: '#666',
+                            fontWeight: '500'
                         } 
                     },
                     'Todo para tu mascota'
                 )
             ),
             
-            // Usuario info (si está autenticado)
+            // User info section (if authenticated)
             currentUser && React.createElement('div',
                 {
                     className: 'menu-user-info',
                     style: {
                         padding: '20px',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-                        background: 'rgba(255, 255, 255, 0.1)'
+                        borderBottom: '1px solid #F0F0F0',
+                        background: '#FAFAFA'
                     }
                 },
                 React.createElement('div',
                     { style: { display: 'flex', alignItems: 'center', gap: '15px' } },
                     React.createElement('div',
                         {
+                            'aria-hidden': 'true',
                             style: {
-                                width: '40px',
-                                height: '40px',
+                                width: '48px',
+                                height: '48px',
                                 borderRadius: '50%',
-                                background: 'rgba(255, 255, 255, 0.3)',
+                                background: 'linear-gradient(135deg, #FF6B9D, #FF4757)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontSize: '18px'
+                                fontSize: '22px',
+                                boxShadow: '0 2px 8px rgba(255, 107, 157, 0.3)'
                             }
                         },
                         '👤'
@@ -271,14 +270,14 @@ window.HamburgerMenuComponent = function() {
                     React.createElement('div',
                         { style: { flex: 1 } },
                         React.createElement('div',
-                            { style: { fontWeight: '600', fontSize: '16px' } },
-                            currentUser.name || 'Invitado'
+                            { style: { fontWeight: '700', fontSize: '16px', color: '#333', marginBottom: '4px' } },
+                            currentUser.name || 'Usuario'
                         ),
                         React.createElement('div',
                             { 
                                 style: { 
                                     fontSize: '13px', 
-                                    opacity: 0.8,
+                                    color: '#666',
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap'
@@ -290,14 +289,15 @@ window.HamburgerMenuComponent = function() {
                 )
             ),
             
-            // Items del menú
-            React.createElement('div',
+            // Menu items list
+            React.createElement('nav',
                 {
                     className: 'menu-items',
                     style: {
                         flex: 1,
-                        padding: '20px 0',
-                        overflowY: 'auto'
+                        padding: '10px 0',
+                        overflowY: 'auto',
+                        overflowX: 'hidden'
                     }
                 },
                 ...menuItems.map(item =>
@@ -307,126 +307,147 @@ window.HamburgerMenuComponent = function() {
                             onClick: (e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                console.log(`🔗 Navegando a ${item.view} desde menú hamburguesa`);
+                                console.log(`🔗 Navigating to ${item.view} from hamburger menu`);
                                 handleMenuClick(item.view, item.label);
                             },
+                            'aria-label': item.label,
                             style: {
                                 width: '100%',
                                 background: 'transparent',
                                 border: 'none',
-                                color: 'white',
-                                padding: '15px 20px',
+                                color: '#333',
+                                padding: '16px 20px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '15px',
+                                gap: '16px',
                                 cursor: 'pointer',
                                 transition: 'all 0.2s ease',
                                 fontSize: '16px',
+                                fontWeight: '600',
                                 textAlign: 'left',
-                                outline: 'none' // Eliminar el contorno al hacer clic
+                                outline: 'none',
+                                borderLeft: '4px solid transparent'
                             },
                             className: 'menu-item-button',
                             onMouseEnter: (e) => {
-                                // Usar currentTarget en lugar de target para asegurar que el estilo se aplica al botón completo
-                                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)';
-                                e.currentTarget.style.paddingLeft = '25px';
+                                e.currentTarget.style.background = '#FAFAFA';
+                                e.currentTarget.style.borderLeftColor = item.color;
+                                e.currentTarget.style.paddingLeft = '24px';
                             },
                             onMouseLeave: (e) => {
-                                // Usar currentTarget en lugar de target para asegurar que el estilo se aplica al botón completo
                                 e.currentTarget.style.background = 'transparent';
+                                e.currentTarget.style.borderLeftColor = 'transparent';
                                 e.currentTarget.style.paddingLeft = '20px';
                             }
                         },
-                        React.createElement('span', { style: { fontSize: '20px' } }, item.icon),
+                        React.createElement('span', 
+                            { 
+                                style: { 
+                                    fontSize: '22px',
+                                    width: '28px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                },
+                                'aria-hidden': 'true'
+                            }, 
+                            item.icon
+                        ),
                         React.createElement('span', null, item.label)
                     )
                 )
             ),
             
-            // Footer del menú
+            // Footer section
             React.createElement('div',
                 {
                     className: 'menu-footer',
                     style: {
                         padding: '20px',
-                        borderTop: '1px solid rgba(255, 255, 255, 0.2)',
-                        background: 'rgba(0, 0, 0, 0.1)'
+                        borderTop: '1px solid #F0F0F0',
+                        background: '#FAFAFA'
                     }
                 },
                 
-                // Botón de cerrar sesión (si está autenticado)
-                currentUser ? React.createElement('button',
-                    {
-                        onClick: handleLogout,
-                        style: {
-                            width: '100%',
-                            background: 'rgba(255, 255, 255, 0.2)',
-                            border: '1px solid rgba(255, 255, 255, 0.3)',
-                            color: 'white',
-                            padding: '12px 20px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            marginBottom: '15px',
-                            transition: 'all 0.2s ease'
+                // Logout/Login button
+                currentUser ? 
+                    React.createElement('button',
+                        {
+                            onClick: handleLogout,
+                            'aria-label': 'Cerrar sesión',
+                            style: {
+                                width: '100%',
+                                background: 'linear-gradient(135deg, #FF6B9D, #FF4757)',
+                                border: 'none',
+                                color: 'white',
+                                padding: '14px 20px',
+                                borderRadius: '12px',
+                                cursor: 'pointer',
+                                fontSize: '15px',
+                                fontWeight: '700',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '10px',
+                                marginBottom: '15px',
+                                transition: 'all 0.2s ease',
+                                boxShadow: '0 2px 8px rgba(255, 107, 157, 0.3)'
+                            },
+                            onMouseEnter: (e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 107, 157, 0.4)';
+                            },
+                            onMouseLeave: (e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(255, 107, 157, 0.3)';
+                            }
                         },
-                        onMouseEnter: (e) => {
-                            e.target.style.background = 'rgba(255, 255, 255, 0.3)';
+                        React.createElement('span', null, '👋'),
+                        React.createElement('span', null, 'Cerrar Sesión')
+                    ) :
+                    React.createElement('button',
+                        {
+                            onClick: () => handleMenuClick('auth', 'Login'),
+                            'aria-label': 'Iniciar sesión',
+                            style: {
+                                width: '100%',
+                                background: 'linear-gradient(135deg, #4A90E2, #357ABD)',
+                                border: 'none',
+                                color: 'white',
+                                padding: '14px 20px',
+                                borderRadius: '12px',
+                                cursor: 'pointer',
+                                fontSize: '15px',
+                                fontWeight: '700',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '10px',
+                                marginBottom: '15px',
+                                transition: 'all 0.2s ease',
+                                boxShadow: '0 2px 8px rgba(74, 144, 226, 0.3)'
+                            },
+                            onMouseEnter: (e) => {
+                                e.currentTarget.style.transform = 'translateY(-2px)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(74, 144, 226, 0.4)';
+                            },
+                            onMouseLeave: (e) => {
+                                e.currentTarget.style.transform = 'translateY(0)';
+                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(74, 144, 226, 0.3)';
+                            }
                         },
-                        onMouseLeave: (e) => {
-                            e.target.style.background = 'rgba(255, 255, 255, 0.2)';
-                        }
-                    },
-                    React.createElement('span', null, '👋'),
-                    React.createElement('span', null, 'Cerrar Sesión')
-                ) : 
+                        React.createElement('span', null, '🔐'),
+                        React.createElement('span', null, 'Iniciar Sesión')
+                    ),
                 
-                // Botón de login (si no está autenticado)
-                React.createElement('button',
-                    {
-                        onClick: () => handleMenuClick('auth', 'Login'),
-                        style: {
-                            width: '100%',
-                            background: 'rgba(255, 255, 255, 0.9)',
-                            border: 'none',
-                            color: '#E45A84',
-                            padding: '12px 20px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: '600',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            marginBottom: '15px',
-                            transition: 'all 0.2s ease'
-                        },
-                        onMouseEnter: (e) => {
-                            e.target.style.background = 'white';
-                            e.target.style.transform = 'scale(1.02)';
-                        },
-                        onMouseLeave: (e) => {
-                            e.target.style.background = 'rgba(255, 255, 255, 0.9)';
-                            e.target.style.transform = 'scale(1)';
-                        }
-                    },
-                    React.createElement('span', null, '🔐'),
-                    React.createElement('span', null, 'Iniciar Sesión')
-                ),
-                
-                // Versión
+                // Version text
                 React.createElement('div',
                     {
                         style: {
                             textAlign: 'center',
                             fontSize: '12px',
-                            opacity: 0.6
+                            color: '#999',
+                            fontWeight: '500'
                         }
                     },
                     'VelyKapet v1.0'
@@ -436,22 +457,11 @@ window.HamburgerMenuComponent = function() {
     );
 };
 
-// Estilos CSS para animaciones
+// CSS animations
 const menuStyles = `
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
-}
-
-@keyframes slideInRight {
-    from { 
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to { 
-        transform: translateX(0);
-        opacity: 1;
-    }
 }
 
 @keyframes slideInLeft {
@@ -470,16 +480,20 @@ const menuStyles = `
 }
 
 .hamburger-menu::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
+    background: #F5F5F5;
 }
 
 .hamburger-menu::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 3px;
+    background: #D0D0D0;
+    borderRadius: 3px;
+}
+
+.hamburger-menu::-webkit-scrollbar-thumb:hover {
+    background: #B0B0B0;
 }
 `;
 
-// Inyectar estilos
+// Inject styles
 if (!document.querySelector('#hamburger-menu-styles')) {
     const styleSheet = document.createElement('style');
     styleSheet.id = 'hamburger-menu-styles';
@@ -487,5 +501,5 @@ if (!document.querySelector('#hamburger-menu-styles')) {
     document.head.appendChild(styleSheet);
 }
 
-console.log('✅ Hamburger Menu Component cargado');
-console.log('🔍 HamburgerMenuComponent disponible:', !!window.HamburgerMenuComponent);
+console.log('✅ Modern Hamburger Menu Component loaded');
+console.log('🔍 HamburgerMenuComponent available:', !!window.HamburgerMenuComponent);

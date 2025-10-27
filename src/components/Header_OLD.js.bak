@@ -13,7 +13,7 @@ window.HeaderComponent = function() {
     const [headerVisible, setHeaderVisible] = React.useState(true);
     const [lastScrollTop, setLastScrollTop] = React.useState(0);
     
-    // Update cart counter
+    // Actualizar contador del carrito
     React.useEffect(() => {
         const updateCart = () => {
             if (window.cartManager) {
@@ -21,12 +21,15 @@ window.HeaderComponent = function() {
             }
         };
         
+        // Actualizar inmediatamente
         updateCart();
         
+        // Suscribirse a cambios del carrito
         if (window.cartManager && window.cartManager.subscribe) {
             window.cartManager.subscribe(updateCart);
         }
         
+        // Actualizar cada segundo (backup)
         const interval = setInterval(updateCart, 1000);
         
         return () => {
@@ -37,7 +40,7 @@ window.HeaderComponent = function() {
         };
     }, []);
     
-    // Update favorites counter
+    // Actualizar contador de favoritos
     React.useEffect(() => {
         const updateFavorites = () => {
             if (window.favoritesManager) {
@@ -45,12 +48,15 @@ window.HeaderComponent = function() {
             }
         };
         
+        // Actualizar inmediatamente
         updateFavorites();
         
+        // Suscribirse a cambios de favoritos
         if (window.favoritesManager && window.favoritesManager.subscribe) {
             window.favoritesManager.subscribe(updateFavorites);
         }
         
+        // Actualizar cada segundo (backup)
         const interval = setInterval(updateFavorites, 1000);
         
         return () => {
@@ -61,8 +67,9 @@ window.HeaderComponent = function() {
         };
     }, []);
     
-    // Scroll effect for header visibility
+    // Efecto para controlar la visibilidad del header al hacer scroll
     React.useEffect(() => {
+        // Usar un debounce para mejorar el rendimiento
         let scrollTimer = null;
         
         const handleScroll = () => {
@@ -72,28 +79,37 @@ window.HeaderComponent = function() {
             
             scrollTimer = setTimeout(() => {
                 const currentScrollPos = window.pageYOffset;
-                const scrollThreshold = 80;
+                const scrollThreshold = 80; // Umbral para activar el efecto (altura del header)
                 const scrollDelta = Math.abs(currentScrollPos - lastScrollTop);
                 
+                // Solo procesar si el cambio de scroll es significativo
                 if (scrollDelta > 10) {
+                    // Determinar dirección del scroll
                     const isScrollingDown = currentScrollPos > lastScrollTop;
                     
+                    // Aplicar lógica de visibilidad
                     if (currentScrollPos < scrollThreshold) {
+                        // Siempre visible al inicio de la página
                         setHeaderVisible(true);
                     } else if (isScrollingDown) {
+                        // Ocultar al hacer scroll hacia abajo
                         setHeaderVisible(false);
                     } else {
+                        // Mostrar al hacer scroll hacia arriba
                         setHeaderVisible(true);
                     }
                     
+                    // Actualizar posición de scroll y última posición
                     setScrollPosition(currentScrollPos);
                     setLastScrollTop(currentScrollPos);
                 }
-            }, 50);
+            }, 50); // Pequeño retraso para mejorar rendimiento
         };
         
+        // Agregar event listener
         window.addEventListener('scroll', handleScroll, { passive: true });
         
+        // Limpiar event listener y timer
         return () => {
             window.removeEventListener('scroll', handleScroll);
             if (scrollTimer !== null) {
@@ -107,7 +123,7 @@ window.HeaderComponent = function() {
         if (searchQuery.trim() && window.ProductCatalog && window.ProductCatalog.search) {
             window.ProductCatalog.search(searchQuery);
         }
-        console.log('🔍 Searching:', searchQuery);
+        console.log('🔍 Buscando:', searchQuery);
     };
     
     console.log('📝 DEBUG Header: Rendering modern header component');
@@ -131,7 +147,7 @@ window.HeaderComponent = function() {
                 visibility: headerVisible ? 'visible' : 'hidden',
                 opacity: headerVisible ? 1 : 0,
                 transform: headerVisible ? 'translateY(0)' : 'translateY(-100%)',
-                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 margin: '0',
                 padding: '0'
             }
@@ -230,6 +246,7 @@ window.HeaderComponent = function() {
                             href: '#',
                             onClick: (e) => {
                                 e.preventDefault();
+                                // Navigate to contact section or page
                                 window.location.href = 'https://wa.me/573247770793';
                             },
                             style: {
@@ -254,12 +271,13 @@ window.HeaderComponent = function() {
                         'Contáctenos'
                     ),
                     
-                    // Blog/Catalog link
+                    // Blog link
                     React.createElement('a',
                         {
                             href: '#',
                             onClick: (e) => {
                                 e.preventDefault();
+                                // Navigate to blog or info page
                                 if (window.setCurrentView) {
                                     window.setCurrentView('catalog');
                                 }
@@ -411,148 +429,315 @@ window.HeaderComponent = function() {
                     )
                 )
             ),
-            
-            // Right side: User actions - favorites, cart, user icons
+            // Acciones del header
             React.createElement('div',
                 {
                     className: 'header-actions',
                     style: {
                         display: 'flex',
-                        alignItems: 'center',
-                        gap: '12px',
-                        flex: '0 0 auto'
+                        flexDirection: 'column',
+                        alignItems: 'flex-end',
+                        gap: '10px'
                     }
                 },
                 
-                // Favorites button
-                React.createElement('button',
+                // Redes sociales
+                React.createElement('div',
                     {
-                        className: 'btn-favorites',
-                        onClick: () => {
-                            if (window.setCurrentView) {
-                                window.setCurrentView('favorites');
-                            }
-                        },
-                        'aria-label': 'Ver favoritos',
+                        className: 'social-buttons',
                         style: {
-                            background: '#FFF0F5',
-                            border: '2px solid #FFE0EB',
-                            borderRadius: '12px',
-                            width: '44px',
-                            height: '44px',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#FF6B9D',
-                            cursor: 'pointer',
-                            fontSize: '20px',
-                            position: 'relative',
-                            transition: 'all 0.2s ease'
-                        },
-                        onMouseEnter: (e) => {
-                            e.currentTarget.style.background = '#FFE0EB';
-                            e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)';
-                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 107, 157, 0.2)';
-                        },
-                        onMouseLeave: (e) => {
-                            e.currentTarget.style.background = '#FFF0F5';
-                            e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                            e.currentTarget.style.boxShadow = 'none';
+                            gap: '10px',
+                            marginBottom: '5px'
                         }
                     },
-                    '❤️',
-                    
-                    favoritesCount > 0 && React.createElement('span',
+                    // Instagram con imagen real
+                    React.createElement('a',
                         {
-                            className: 'favorites-badge',
-                            'aria-label': `${favoritesCount} favoritos`,
+                            href: 'https://www.instagram.com/velykapet',
+                            target: '_blank',
+                            rel: 'noopener noreferrer',
                             style: {
-                                position: 'absolute',
-                                top: '-6px',
-                                right: '-6px',
-                                background: '#FF4757',
-                                color: 'white',
-                                borderRadius: '50%',
-                                width: '20px',
-                                height: '20px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontSize: '11px',
-                                fontWeight: '700',
-                                boxShadow: '0 2px 8px rgba(255, 71, 87, 0.3)'
-                            }
-                        },
-                        favoritesCount > 99 ? '99+' : favoritesCount
-                    )
-                ),
-                
-                // Cart button
-                React.createElement('button',
-                    {
-                        className: 'btn-cart',
-                        onClick: () => {
-                            if (window.setCurrentView) {
-                                window.setCurrentView('cart');
-                            }
-                        },
-                        'aria-label': 'Ver carrito de compras',
-                        style: {
-                            background: '#FFF5F0',
-                            border: '2px solid #FFE5D9',
-                            borderRadius: '12px',
-                            width: '44px',
-                            height: '44px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: '#FFA502',
-                            cursor: 'pointer',
-                            fontSize: '20px',
-                            position: 'relative',
-                            transition: 'all 0.2s ease'
-                        },
-                        onMouseEnter: (e) => {
-                            e.currentTarget.style.background = '#FFE5D9';
-                            e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)';
-                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(255, 165, 2, 0.2)';
-                        },
-                        onMouseLeave: (e) => {
-                            e.currentTarget.style.background = '#FFF5F0';
-                            e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                            e.currentTarget.style.boxShadow = 'none';
-                        }
-                    },
-                    '🛒',
-                    
-                    cartItems > 0 && React.createElement('span',
-                        {
-                            className: 'cart-badge',
-                            'aria-label': `${cartItems} items en el carrito`,
-                            style: {
-                                position: 'absolute',
-                                top: '-6px',
-                                right: '-6px',
-                                background: '#FF6B35',
-                                color: 'white',
+                                width: '36px',
+                                height: '36px',
                                 borderRadius: '50%',
-                                width: '20px',
-                                height: '20px',
+                                background: 'white',
+                                textDecoration: 'none',
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                                transition: 'all 0.2s ease'
+                            },
+                            onMouseEnter: (e) => {
+                                e.target.style.transform = 'scale(1.1)';
+                            },
+                            onMouseLeave: (e) => {
+                                e.target.style.transform = 'scale(1)';
+                            }
+                        },
+                        React.createElement('img', {
+                            src: '/images/instagram.svg',
+                            alt: 'Instagram',
+                            style: {
+                                width: '24px',
+                                height: '24px',
+                                objectFit: 'contain'
+                            },
+                            onError: (e) => {
+                                console.error('Error al cargar imagen de Instagram');
+                                e.target.onerror = null;
+                                // Intentar con PNG si SVG falla
+                                if (e.target.src.endsWith('.svg')) {
+                                    e.target.src = '/images/instagram.png';
+                                } else {
+                                    // Reemplazar la imagen con texto
+                                    const parent = e.target.parentNode;
+                                    parent.innerHTML = 'IG';
+                                    parent.style.color = '#E45A84';
+                                    parent.style.fontSize = '16px';
+                                    parent.style.fontWeight = 'bold';
+                                }
+                            }
+                        })
+                    ),
+                    // WhatsApp con imagen real
+                    React.createElement('a',
+                        {
+                            href: 'https://wa.me/573247770793',
+                            target: '_blank',
+                            rel: 'noopener noreferrer',
+                            style: {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                fontSize: '11px',
-                                fontWeight: '700',
-                                boxShadow: '0 2px 8px rgba(255, 107, 53, 0.3)'
+                                width: '36px',
+                                height: '36px',
+                                borderRadius: '50%',
+                                background: 'white',
+                                textDecoration: 'none',
+                                boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
+                                transition: 'all 0.2s ease'
+                            },
+                            onMouseEnter: (e) => {
+                                e.target.style.transform = 'scale(1.1)';
+                            },
+                            onMouseLeave: (e) => {
+                                e.target.style.transform = 'scale(1)';
                             }
                         },
-                        cartItems > 99 ? '99+' : cartItems
+                        React.createElement('img', {
+                            src: '/images/whatsapp.svg',
+                            alt: 'WhatsApp',
+                            style: {
+                                width: '24px',
+                                height: '24px',
+                                objectFit: 'contain'
+                            },
+                            onError: (e) => {
+                                console.error('Error al cargar imagen de WhatsApp');
+                                e.target.onerror = null;
+                                // Intentar con PNG si SVG falla
+                                if (e.target.src.endsWith('.svg')) {
+                                    e.target.src = '/images/whatsapp.png';
+                                } else {
+                                    // Reemplazar la imagen con texto
+                                    const parent = e.target.parentNode;
+                                    parent.innerHTML = 'WA';
+                                    parent.style.color = '#25D366';
+                                    parent.style.fontSize = '16px';
+                                    parent.style.fontWeight = 'bold';
+                                }
+                            }
+                        })
+                    ),
+                    // Phone number display
+                    React.createElement('span',
+                        {
+                            style: {
+                                color: '#333',
+                                fontSize: '14px',
+                                fontWeight: '600',
+                                marginLeft: '5px',
+                                letterSpacing: '0.3px',
+                                textShadow: 'none',
+                                padding: '4px 8px',
+                                background: '#f0f0f0',
+                                borderRadius: '4px'
+                            }
+                        },
+                        '324-7770793'
                     )
                 ),
                 
-                // User button (login or profile)
-                window.authManager && !window.authManager.isAuthenticated() ? 
+                // Contenedor de botones principales
+                React.createElement('div',
+                    {
+                        className: 'main-buttons',
+                        style: {
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '15px'
+                        }
+                    },
+                    
+                    // Búsqueda móvil
+                    window.innerWidth <= 768 && React.createElement('button',
+                        {
+                            className: 'btn-search-mobile',
+                            onClick: () => setIsSearchExpanded(!isSearchExpanded),
+                            style: {
+                                background: '#f8f9fa',
+                                border: '2px solid #e9ecef',
+                                borderRadius: '10px',
+                                width: '45px',
+                                height: '45px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#333',
+                                cursor: 'pointer',
+                                fontSize: '18px',
+                                transition: 'all 0.2s ease'
+                            }
+                        },
+                        '🔍'
+                    ),
+                    
+                    // Botón de favoritos
                     React.createElement('button',
+                        {
+                            className: 'btn-favorites',
+                            onClick: () => {
+                                if (window.setCurrentView) {
+                                    window.setCurrentView('favorites');
+                                }
+                            },
+                            style: {
+                                background: 'rgba(255, 255, 255, 0.2)',
+                                border: 'none',
+                                borderRadius: '10px',
+                                width: '45px',
+                                height: '45px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: '#E45A84',
+                                cursor: 'pointer',
+                                fontSize: '22px',
+                                fontWeight: '600',
+                                backdropFilter: 'blur(10px)',
+                                border: '1px solid rgba(255, 255, 255, 0.3)',
+                                position: 'relative',
+                                transition: 'all 0.2s ease'
+                            },
+                            onMouseEnter: (e) => {
+                                e.target.style.background = 'rgba(255, 255, 255, 0.3)';
+                                e.target.style.transform = 'scale(1.05)';
+                            },
+                            onMouseLeave: (e) => {
+                                e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                                e.target.style.transform = 'scale(1)';
+                            }
+                        },
+                        // Ícono del corazón
+                        '❤️',
+                        
+                        // Badge del contador de favoritos
+                        favoritesCount > 0 && React.createElement('span',
+                            {
+                                className: 'favorites-badge',
+                                style: {
+                                    position: 'absolute',
+                                    top: '-5px',
+                                    right: '-5px',
+                                    background: '#E45A84',
+                                    color: 'white',
+                                    borderRadius: '50%',
+                                    width: '22px',
+                                    height: '22px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '12px',
+                                    fontWeight: 'bold',
+                                    boxShadow: '0 2px 6px rgba(228, 90, 132, 0.4)',
+                                    animation: 'heartbeat 1.5s ease-in-out'
+                                }
+                            },
+                            favoritesCount > 99 ? '99+' : favoritesCount
+                        )
+                    ),
+                    
+                    // Carrito
+                    React.createElement('button',
+                        {
+                            className: 'btn-cart',
+                            onClick: () => {
+                                if (window.setCurrentView) {
+                                    window.setCurrentView('cart');
+                                }
+                            },
+                            style: {
+                                background: 'rgba(255, 255, 255, 0.2)',
+                                border: 'none',
+                                borderRadius: '10px',
+                                width: '45px',
+                                height: '45px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: 'white',
+                                cursor: 'pointer',
+                                fontSize: '22px',
+                                fontWeight: '600',
+                                backdropFilter: 'blur(10px)',
+                                border: '1px solid rgba(255, 255, 255, 0.3)',
+                                position: 'relative',
+                                transition: 'all 0.2s ease'
+                            },
+                            onMouseEnter: (e) => {
+                                e.target.style.background = 'rgba(255, 255, 255, 0.3)';
+                                e.target.style.transform = 'scale(1.05)';
+                            },
+                            onMouseLeave: (e) => {
+                                e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                                e.target.style.transform = 'scale(1)';
+                            }
+                        },
+                        
+                        // Ícono del carrito
+                        React.createElement('span', { style: { fontSize: '22px' } }, '🛒'),
+                        
+                        // Badge del contador
+                        cartItems > 0 && React.createElement('span',
+                            {
+                                className: 'cart-badge animate-bounce',
+                                style: {
+                                    position: 'absolute',
+                                    top: '-5px',
+                                    right: '-5px',
+                                    background: '#FF6B35',
+                                    color: 'white',
+                                    borderRadius: '50%',
+                                    width: '22px',
+                                    height: '22px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '12px',
+                                    fontWeight: 'bold',
+                                    boxShadow: '0 2px 6px rgba(255, 107, 53, 0.4)',
+                                    animation: 'heartbeat 1.5s ease-in-out'
+                                }
+                            },
+                            cartItems > 99 ? '99+' : cartItems
+                        )
+                    ),
+                    
+                    // Botón de login para usuarios no autenticados
+                    window.authManager && !window.authManager.isAuthenticated() && React.createElement('button',
                         {
                             className: 'btn-login',
                             onClick: () => {
@@ -560,35 +745,39 @@ window.HeaderComponent = function() {
                                     window.setCurrentView('auth');
                                 }
                             },
-                            'aria-label': 'Iniciar sesión',
                             style: {
-                                background: '#F0F5FF',
-                                border: '2px solid #D9E5FF',
-                                borderRadius: '12px',
-                                width: '44px',
-                                height: '44px',
+                                background: 'rgba(255, 255, 255, 0.9)',
+                                border: 'none',
+                                borderRadius: '10px',
+                                width: '45px',
+                                height: '45px',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                color: '#4A90E2',
+                                color: '#E45A84',
                                 cursor: 'pointer',
-                                fontSize: '20px',
-                                transition: 'all 0.2s ease'
+                                fontSize: '22px',
+                                fontWeight: '600',
+                                transition: 'all 0.2s ease',
+                                backdropFilter: 'blur(10px)',
+                                border: '1px solid rgba(255, 255, 255, 0.3)'
                             },
                             onMouseEnter: (e) => {
-                                e.currentTarget.style.background = '#D9E5FF';
-                                e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)';
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(74, 144, 226, 0.2)';
+                                e.target.style.background = 'white';
+                                e.target.style.transform = 'scale(1.05)';
+                                e.target.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
                             },
                             onMouseLeave: (e) => {
-                                e.currentTarget.style.background = '#F0F5FF';
-                                e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                                e.currentTarget.style.boxShadow = 'none';
+                                e.target.style.background = 'rgba(255, 255, 255, 0.9)';
+                                e.target.style.transform = 'scale(1)';
+                                e.target.style.boxShadow = 'none';
                             }
                         },
-                        '👤'
-                    ) :
-                    React.createElement('div',
+                        React.createElement('span', { style: { fontSize: '22px' } }, '👤')
+                    ),
+                    
+                    // Perfil de usuario
+                    window.authManager && window.authManager.isAuthenticated() && React.createElement('div',
                         {
                             className: 'user-profile',
                             onClick: () => {
@@ -596,60 +785,58 @@ window.HeaderComponent = function() {
                                     window.setCurrentView('profile');
                                 }
                             },
-                            'aria-label': 'Ver perfil de usuario',
-                            role: 'button',
-                            tabIndex: 0,
                             style: {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                width: '44px',
-                                height: '44px',
-                                background: '#F0F5FF',
-                                border: '2px solid #D9E5FF',
-                                borderRadius: '12px',
+                                width: '45px',
+                                height: '45px',
+                                background: 'rgba(255, 255, 255, 0.2)',
+                                borderRadius: '10px',
+                                backdropFilter: 'blur(10px)',
+                                border: '1px solid rgba(255, 255, 255, 0.3)',
                                 cursor: 'pointer',
                                 transition: 'all 0.2s ease'
                             },
                             onMouseEnter: (e) => {
-                                e.currentTarget.style.background = '#D9E5FF';
-                                e.currentTarget.style.transform = 'translateY(-2px) scale(1.05)';
-                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(74, 144, 226, 0.2)';
+                                e.target.style.background = 'rgba(255, 255, 255, 0.3)';
+                                e.target.style.transform = 'scale(1.05)';
                             },
                             onMouseLeave: (e) => {
-                                e.currentTarget.style.background = '#F0F5FF';
-                                e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                                e.currentTarget.style.boxShadow = 'none';
-                            },
-                            onKeyPress: (e) => {
-                                if (e.key === 'Enter' || e.key === ' ') {
-                                    if (window.setCurrentView) {
-                                        window.setCurrentView('profile');
-                                    }
-                                }
+                                e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                                e.target.style.transform = 'scale(1)';
                             }
                         },
+                        
+                        // Avatar
                         React.createElement('div',
                             {
                                 style: {
-                                    fontSize: '20px',
-                                    color: '#4A90E2'
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '50%',
+                                    background: 'rgba(255, 255, 255, 0.3)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontSize: '22px'
                                 }
                             },
                             '👤'
                         )
                     )
+                )
             )
         ),
         
-        // Mobile search bar (expanded)
+        // Barra de búsqueda móvil expandida
         isSearchExpanded && window.innerWidth <= 768 && React.createElement('div',
             {
                 className: 'mobile-search',
                 style: {
-                    background: '#FAFAFA',
+                    background: 'rgba(255, 255, 255, 0.1)',
                     padding: '15px 20px',
-                    borderTop: '1px solid #F0F0F0'
+                    borderTop: '1px solid rgba(255, 255, 255, 0.2)'
                 }
             },
             React.createElement('form',
@@ -668,15 +855,16 @@ window.HeaderComponent = function() {
                         value: searchQuery,
                         onChange: (e) => setSearchQuery(e.target.value),
                         autoFocus: true,
-                        'aria-label': 'Buscar productos para tu mascota',
                         style: {
                             width: '100%',
                             padding: '12px 50px 12px 20px',
-                            border: '2px solid #F0F0F0',
+                            border: 'none',
                             borderRadius: '25px',
                             fontSize: '16px',
-                            background: '#FFFFFF',
-                            color: '#333',
+                            background: 'rgba(255, 255, 255, 0.2)',
+                            color: 'white',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255, 255, 255, 0.3)',
                             outline: 'none'
                         }
                     }
@@ -684,18 +872,22 @@ window.HeaderComponent = function() {
                 React.createElement('button',
                     {
                         type: 'submit',
-                        'aria-label': 'Buscar',
                         style: {
                             position: 'absolute',
                             right: '5px',
                             top: '50%',
                             transform: 'translateY(-50%)',
-                            background: 'transparent',
+                            background: 'rgba(255, 255, 255, 0.3)',
                             border: 'none',
+                            borderRadius: '50%',
+                            width: '35px',
+                            height: '35px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'white',
                             cursor: 'pointer',
-                            fontSize: '18px',
-                            color: '#FF6B9D',
-                            padding: '8px'
+                            fontSize: '14px'
                         }
                     },
                     '🔍'
@@ -705,4 +897,4 @@ window.HeaderComponent = function() {
     );
 };
 
-console.log('✅ Modern Header Component loaded');
+console.log('✅ Header Component cargado');
