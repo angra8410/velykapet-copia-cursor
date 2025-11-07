@@ -97,6 +97,7 @@ dist
 public
 # But include public/images for static assets like icons and logos
 !public/images/
+!public/images/**
 
 # Storybook build outputs
 .out

@@ -139,34 +139,12 @@ if (typeof React === 'undefined') {
                                 `👋 ¡Hola, ${currentUser.name}!`
                             ),
                             
-                            // Hero Categories - New Three Card Layout
+                            // Hero Categories - Gallery Images Integration
                             (() => {
-                                console.log('🏠 DEBUG: Renderizando categorias con nuevo diseño');
+                                console.log('🏠 DEBUG: Renderizando categorias con galería de imágenes');
                                 
-                                // Three new categories with vibrant colors
-                                const categories = [
-                                    {
-                                        id: 'alimento',
-                                        category: 'Alimento',
-                                        subtitle: 'Nutrición premium para tu mascota',
-                                        image: './perro_card_img.jpg',
-                                        color: '#FF6B9D' // Vibrant pink
-                                    },
-                                    {
-                                        id: 'salud-bienestar',
-                                        category: 'Salud & Bienestar', 
-                                        subtitle: 'Cuida su salud y felicidad',
-                                        image: './gato_card_img.jpg',
-                                        color: '#FF4757' // Vibrant red
-                                    },
-                                    {
-                                        id: 'juguetes-accesorios',
-                                        category: 'Juguetes & Accesorios',
-                                        subtitle: 'Diversión y estilo para cada momento',
-                                        image: './perro_card_img.jpg',
-                                        color: '#FFA502' // Vibrant yellow/orange
-                                    }
-                                ];
+                                // Get categories from the data file
+                                const categories = window.CATEGORY_DATA || [];
                                 
                                 return React.createElement('section',
                                     {
@@ -234,10 +212,12 @@ if (typeof React === 'undefined') {
                                             React.createElement(window.CategoryCardComponent,
                                                 {
                                                     key: category.id,
-                                                    image: category.image,
+                                                    baseImage: category.baseImage,
                                                     color: category.color,
                                                     category: category.category,
                                                     subtitle: category.subtitle,
+                                                    fit: category.fit,
+                                                    alt: category.alt,
                                                     onClick: () => {
                                                         console.log(`🎯 Click en ${category.category}`);
                                                         window.setCurrentView('catalog');
