@@ -1,12 +1,15 @@
-/* Category Card Module Styles */
-/* Responsive, accessible category cards with image support */
+/* Category Card Module Styles (mejorado)
+   - la imagen está en un frame con border-radius + overflow:hidden
+   - el contenido tiene z-index superior para que nunca quede tapado
+   - suavizado de esquinas y padding para evitar recortes agresivos
+*/
 
 .categoryCard {
   position: relative;
   border-radius: var(--border-radius-2xl, 24px);
   padding: 30px;
   cursor: pointer;
-  overflow: hidden;
+  overflow: visible;
   min-height: 320px;
   display: flex;
   flex-direction: column;
@@ -15,60 +18,66 @@
   transition: all 0.3s ease;
   isolation: isolate;
   outline: none;
-  
-  &:hover {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-    transform: translateY(-8px);
-  }
-  
-  &:focus,
-  &:focus-visible {
-    outline: 3px solid rgba(255, 255, 255, 0.8);
-    outline-offset: 4px;
-  }
 }
 
+.categoryCard:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  transform: translateY(-8px);
+}
+
+.categoryCard:focus,
+.categoryCard:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 4px;
+}
+
+/* IMAGE CONTAINER / FRAME
+   - tiene border-radius y overflow:hidden para recortar la imagen con la misma curva
+   - background igual al color de la card (se aplica inline desde el componente)
+   - pointer-events: none -> evita que la caja de imagen intercepte clicks/tabs
+*/
 .imageContainer {
   position: absolute;
-  top: -40px;
+  top: -36px;
   right: 20px;
   width: 200px;
   height: 200px;
-  z-index: 2;
+  z-index: 1; /* por debajo del contenido textual (z-index:2) */
   transition: all 0.3s ease;
   filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
-  
-  .categoryCard:hover & {
-    transform: scale(1.1) rotate(5deg);
-  }
-  
-  /* Ensure picture element takes full space */
-  picture,
-  .category-picture {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-  
-  img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 12px;
-  }
-  
-  &.fitCover img {
-    object-fit: cover;
-  }
-  
-  &.fitContain img {
-    object-fit: contain;
-  }
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  box-sizing: border-box;
 }
 
+/* picture / img fill */
+.imageContainer picture,
+.imageContainer .category-picture,
+.imageContainer img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* soft rounding inside the frame */
+.imageContainer img {
+  border-radius: 10px;
+  transition: transform .25s ease, opacity .12s ease;
+  will-change: transform, opacity;
+}
+
+/* fit helpers */
+.imageContainer.fitCover img { object-fit: cover; }
+.imageContainer.fitContain img { object-fit: contain; }
+
+/* CONTENT (texto) */
 .content {
   position: relative;
-  z-index: 1;
+  z-index: 2; /* contenido arriba de la imagen */
   margin-top: auto;
 }
 
@@ -109,83 +118,40 @@
   color: #ffffff;
   transition: all 0.2s ease;
   backdrop-filter: blur(10px);
-  
-  .categoryCard:hover & {
-    transform: translateX(5px);
-  }
+  z-index: 2;
 }
 
-/* Tablet responsive */
+.categoryCard:hover .arrow {
+  transform: translateX(5px);
+}
+
+/* Responsive adjustments */
 @media (max-width: 1024px) {
-  .categoryCard {
-    min-height: 280px;
-    padding: 25px;
-  }
-  
-  .imageContainer {
-    width: 180px;
-    height: 180px;
-    top: -35px;
-    right: 15px;
-  }
+  .categoryCard { min-height: 280px; padding: 25px; }
+  .imageContainer { width: 180px; height: 180px; top: -35px; right: 15px; }
 }
 
-/* Mobile responsive */
 @media (max-width: 768px) {
-  .categoryCard {
-    min-height: 250px;
-    padding: 25px;
-  }
-  
-  .imageContainer {
-    width: 160px;
-    height: 160px;
-    top: -30px;
-    right: 15px;
-  }
+  .categoryCard { min-height: 250px; padding: 25px; }
+  .imageContainer { width: 160px; height: 160px; top: -30px; right: 15px; }
 }
 
-/* Small mobile responsive */
 @media (max-width: 480px) {
-  .categoryCard {
-    min-height: 220px;
-    padding: 20px;
-  }
-  
-  .imageContainer {
-    width: 140px;
-    height: 140px;
-    top: -25px;
-    right: 10px;
-  }
+  .categoryCard { min-height: 220px; padding: 20px; }
+  .imageContainer { width: 140px; height: 140px; top: -25px; right: 10px; }
 }
 
 /* Accessibility - Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .categoryCard,
-  .imageContainer,
-  .arrow {
-    transition: none !important;
-    transform: none !important;
-  }
-  
-  .categoryCard:hover {
-    transform: none !important;
-  }
-  
-  .categoryCard:hover .imageContainer {
-    transform: none !important;
-  }
-  
-  .categoryCard:hover .arrow {
-    transform: none !important;
-  }
+  .categoryCard, .imageContainer, .arrow { transition: none !important; transform: none !important; }
+  .categoryCard:hover { transform: none !important; }
+  .categoryCard:hover .imageContainer { transform: none !important; }
+  .categoryCard:hover .arrow { transform: none !important; }
 }
 
 /* Accessibility - High contrast mode */
 @media (prefers-contrast: high) {
-  .categoryCard:focus,
-  .categoryCard:focus-visible {
+  .categoryCard:focus, .categoryCard:focus-visible {
     outline: 3px solid currentColor;
   }
 }
