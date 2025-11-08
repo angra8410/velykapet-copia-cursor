@@ -42,7 +42,16 @@
     transform: scale(1.1) rotate(5deg);
   }
   
+  /* Ensure picture element takes full space */
+  picture,
+  .category-picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  
   img {
+    display: block;
     width: 100%;
     height: 100%;
     border-radius: 12px;

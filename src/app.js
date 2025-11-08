@@ -212,7 +212,9 @@ if (typeof React === 'undefined') {
                                             React.createElement(window.CategoryCardComponent,
                                                 {
                                                     key: category.id,
-                                                    baseImage: category.baseImage,
+                                                    img1x: category.img1x,
+                                                    img2x: category.img2x,
+                                                    thumb: category.thumb,
                                                     color: category.color,
                                                     category: category.category,
                                                     subtitle: category.subtitle,

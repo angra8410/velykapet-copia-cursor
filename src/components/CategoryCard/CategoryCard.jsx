@@ -15,7 +15,9 @@ console.log('🎴 Cargando Responsive Category Card Component...');
  * - Responsive styles
  * 
  * @param {Object} props
- * @param {string} props.baseImage - Base image name (e.g., 'imagen01-perroygato')
+ * @param {string} props.img1x - 1x image URL (principal)
+ * @param {string} props.img2x - 2x image URL (retina)
+ * @param {string} props.thumb - Thumbnail image URL
  * @param {string} props.category - Category name
  * @param {string} props.subtitle - Subtitle text
  * @param {string} props.color - Background color
@@ -24,7 +26,9 @@ console.log('🎴 Cargando Responsive Category Card Component...');
  * @param {string} props.alt - Alternative text for image
  */
 function CategoryCardComponent({ 
-    baseImage, 
+    img1x,
+    img2x,
+    thumb,
     category, 
     subtitle, 
     color, 
@@ -35,20 +39,11 @@ function CategoryCardComponent({
     const [isHovered, setIsHovered] = React.useState(false);
     const [imageError, setImageError] = React.useState(false);
     
-    // Image paths
-    const imagePaths = {
-        // Principal images (1120x640)
-        jpg1x: `/images/gallery/principal/${baseImage}-gallery-1120x640.jpg`,
-        webp1x: `/images/webp/${baseImage}-gallery-1120x640.webp`,
-        // Retina images (2240x1280)
-        jpg2x: `/images/gallery/retina/${baseImage}-gallery-2240x1280@2x.jpg`,
-        webp2x: `/images/webp/${baseImage}-gallery-2240x1280@2x.webp`,
-        // Thumbnail (420x240)
-        thumb: `/images/gallery/miniatura/${baseImage}-thumb-420x240.jpg`,
-    };
-    
     const handleImageError = (e) => {
-        console.warn(`Failed to load image: ${e.target.src}`);
+        console.warn(`❌ IMAGE LOAD ERROR: ${e.target.src || e.target.currentSrc}`);
+        // Add visual indicator for QA
+        e.target.style.outline = '3px solid red';
+        e.target.style.background = '#f3f3f3';
         setImageError(true);
     };
     
@@ -107,30 +102,49 @@ function CategoryCardComponent({
                 }
             },
             !imageError && React.createElement('picture',
-                null,
-                // WebP source with srcset for retina
-                React.createElement('source', {
-                    type: 'image/webp',
-                    srcSet: `${imagePaths.webp1x} 1x, ${imagePaths.webp2x} 2x`
-                }),
-                // JPEG source with srcset for retina
+                {
+                    className: 'category-picture',
+                    style: {
+                        display: 'block',
+                        width: '100%',
+                        height: '100%'
+                    }
+                },
+                // JPEG source with srcset for retina (R2 URLs)
                 React.createElement('source', {
                     type: 'image/jpeg',
-                    srcSet: `${imagePaths.jpg1x} 1x, ${imagePaths.jpg2x} 2x`
+                    srcSet: img2x ? `${img1x} 1x, ${img2x} 2x` : img1x
                 }),
                 // Fallback img element
                 React.createElement('img', {
-                    src: imagePaths.jpg1x,
+                    src: img1x || thumb,
                     alt: alt || category,
                     loading: 'lazy',
                     onError: handleImageError,
                     style: {
+                        display: 'block',
                         width: '100%',
                         height: '100%',
                         objectFit: fit,
                         borderRadius: '12px'
                     }
                 })
+            ),
+            // Fallback for error state - show background color
+            imageError && React.createElement('div',
+                {
+                    style: {
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'rgba(255, 255, 255, 0.2)',
+                        borderRadius: '12px',
+                        fontSize: '3rem'
+                    }
+                },
+                '🐾'
             )
         ),
         
