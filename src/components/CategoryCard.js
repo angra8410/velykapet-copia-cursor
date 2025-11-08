@@ -1,10 +1,14 @@
 // VentasPet - Category Card Component
-// Reusable card component for homepage categories
+// Reusable card component for homepage categories with R2 image support
 
 console.log('🎴 Cargando Category Card Component...');
 
-function CategoryCardComponent({ image, color, category, subtitle, onClick }) {
+function CategoryCardComponent({ img1x, img2x, thumb, image, color, category, subtitle, onClick, fit = 'cover', alt }) {
     const [isHovered, setIsHovered] = React.useState(false);
+    const [imageError, setImageError] = React.useState(false);
+    
+    // Support both old 'image' prop and new img1x/img2x props for backward compatibility
+    const imageSrc = img1x || image || thumb;
     
     return React.createElement('div',
         {
@@ -12,6 +16,15 @@ function CategoryCardComponent({ image, color, category, subtitle, onClick }) {
             onClick: onClick,
             onMouseEnter: () => setIsHovered(true),
             onMouseLeave: () => setIsHovered(false),
+            tabIndex: 0,
+            role: 'button',
+            'aria-label': `Explorar ${category}: ${subtitle}`,
+            onKeyPress: (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onClick && onClick();
+                }
+            },
             style: {
                 position: 'relative',
                 backgroundColor: color,
@@ -28,7 +41,8 @@ function CategoryCardComponent({ image, color, category, subtitle, onClick }) {
                     '0 10px 30px rgba(0, 0, 0, 0.15)',
                 transform: isHovered ? 'translateY(-8px)' : 'translateY(0)',
                 transition: 'all var(--transition-normal)',
-                isolation: 'isolate'
+                isolation: 'isolate',
+                outline: 'none'
             }
         },
         
@@ -40,29 +54,65 @@ function CategoryCardComponent({ image, color, category, subtitle, onClick }) {
                     position: 'absolute',
                     top: '-40px',
                     right: '20px',
-                    width: '180px',
-                    height: '180px',
+                    width: '200px',
+                    height: '200px',
                     zIndex: 2,
                     transform: isHovered ? 'scale(1.1) rotate(5deg)' : 'scale(1) rotate(0deg)',
                     transition: 'all var(--transition-normal)',
                     filter: 'drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2))'
                 }
             },
-            React.createElement('img',
+            !imageError && React.createElement('picture',
                 {
-                    src: image,
-                    alt: category,
+                    className: 'category-picture',
+                    style: {
+                        display: 'block',
+                        width: '100%',
+                        height: '100%'
+                    }
+                },
+                // JPEG source with srcset for retina (R2 URLs)
+                React.createElement('source', {
+                    type: 'image/jpeg',
+                    srcSet: (img1x && img2x) ? `${img1x} 1x, ${img2x} 2x` : (imageSrc || '')
+                }),
+                // Fallback img element
+                React.createElement('img',
+                    {
+                        src: imageSrc || '',
+                        alt: alt || category,
+                        loading: 'lazy',
+                        style: {
+                            display: 'block',
+                            width: '100%',
+                            height: '100%',
+                            objectFit: fit || 'cover',
+                            borderRadius: '12px'
+                        },
+                        onError: (e) => {
+                            console.warn(`❌ IMAGE LOAD ERROR: ${e.target.src || e.target.currentSrc}`);
+                            e.target.style.outline = '3px solid red';
+                            e.target.style.background = '#f3f3f3';
+                            setImageError(true);
+                        }
+                    }
+                )
+            ),
+            // Fallback for error state - show emoji
+            imageError && React.createElement('div',
+                {
                     style: {
                         width: '100%',
                         height: '100%',
-                        objectFit: 'contain',
-                        borderRadius: '50%'
-                    },
-                    onError: (e) => {
-                        console.error(`Failed to load image: ${image}`);
-                        e.target.style.display = 'none';
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'rgba(255, 255, 255, 0.2)',
+                        borderRadius: '12px',
+                        fontSize: '3rem'
                     }
-                }
+                },
+                '🐾'
             )
         ),
         
@@ -144,18 +194,51 @@ function CategoryCardComponent({ image, color, category, subtitle, onClick }) {
 // Register the component globally
 window.CategoryCardComponent = CategoryCardComponent;
 
-// Add responsive styles
+// Add responsive styles and picture element support
 const categoryCardStyles = document.createElement('style');
 categoryCardStyles.textContent = `
-    @media (max-width: 768px) {
+    /* Ensure picture element takes full space */
+    .category-picture {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+    
+    .category-picture img {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+    
+    /* Focus styles for accessibility */
+    .category-card:focus {
+        outline: 3px solid rgba(255, 255, 255, 0.8);
+        outline-offset: 4px;
+    }
+    
+    @media (max-width: 1024px) {
         .category-card {
-            min-height: 220px !important;
+            min-height: 280px !important;
             padding: 25px !important;
         }
         
         .category-image-container {
-            width: 140px !important;
-            height: 140px !important;
+            width: 180px !important;
+            height: 180px !important;
+            top: -35px !important;
+            right: 15px !important;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .category-card {
+            min-height: 250px !important;
+            padding: 25px !important;
+        }
+        
+        .category-image-container {
+            width: 160px !important;
+            height: 160px !important;
             top: -30px !important;
             right: 15px !important;
         }
@@ -163,15 +246,25 @@ categoryCardStyles.textContent = `
     
     @media (max-width: 480px) {
         .category-card {
-            min-height: 200px !important;
+            min-height: 220px !important;
             padding: 20px !important;
         }
         
         .category-image-container {
-            width: 120px !important;
-            height: 120px !important;
+            width: 140px !important;
+            height: 140px !important;
             top: -25px !important;
             right: 10px !important;
+        }
+    }
+    
+    /* Accessibility - Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        .category-card,
+        .category-image-container,
+        .category-arrow {
+            transition: none !important;
+            transform: none !important;
         }
     }
 `;
