@@ -16,6 +16,15 @@ function CategoryCardComponent({ img1x, img2x, thumb, image, color, category, su
             onClick: onClick,
             onMouseEnter: () => setIsHovered(true),
             onMouseLeave: () => setIsHovered(false),
+            tabIndex: 0,
+            role: 'button',
+            'aria-label': `Explorar ${category}: ${subtitle}`,
+            onKeyPress: (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onClick && onClick();
+                }
+            },
             style: {
                 position: 'relative',
                 backgroundColor: color,
@@ -32,7 +41,8 @@ function CategoryCardComponent({ img1x, img2x, thumb, image, color, category, su
                     '0 10px 30px rgba(0, 0, 0, 0.15)',
                 transform: isHovered ? 'translateY(-8px)' : 'translateY(0)',
                 transition: 'all var(--transition-normal)',
-                isolation: 'isolate'
+                isolation: 'isolate',
+                outline: 'none'
             }
         },
         
