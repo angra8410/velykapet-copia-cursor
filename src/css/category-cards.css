@@ -1,4 +1,5 @@
 /* Category Cards Home Page Styles */
+/* Clean, minimal card design without images, overlays or decorations */
 
 /* Category grid responsive behavior */
 .categories-grid {
@@ -7,6 +8,34 @@
     gap: 30px;
     align-items: stretch;
     margin: 0 auto;
+}
+
+/* Hide any decorations, overlays, floating icons */
+.card-deco,
+.hero-icon,
+.card-overlay,
+.category-overlay,
+.category-watermark,
+.floating-icon,
+.category-gradient {
+    display: none !important;
+}
+
+/* Clean card base styles */
+.category-card,
+.category-card-responsive {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+    padding: 24px !important;
+    border: 1px solid rgba(0, 0, 0, 0.06) !important;
+    min-height: 200px !important;
+}
+
+.category-card:hover,
+.category-card-responsive:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
+    transform: translateY(-4px) !important;
 }
 
 /* Ensure 3 cards in a row on larger screens */
@@ -28,18 +57,18 @@
 @media (max-width: 767px) {
     .categories-grid {
         grid-template-columns: 1fr;
-        gap: 40px; /* More space for overlapping images */
-        padding-top: 40px; /* Space for the top image overflow */
+        gap: 20px;
+        padding-top: 20px;
     }
     
     .hero-categories-embedded {
-        padding: 50px 1rem !important;
+        padding: 40px 1rem !important;
     }
 }
 
 /* Extra small screens */
 @media (max-width: 480px) {
     .categories-grid {
-        gap: 50px;
+        gap: 20px;
     }
 }

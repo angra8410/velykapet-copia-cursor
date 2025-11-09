@@ -1,69 +1,49 @@
 /* Category Card Module Styles */
-/* Responsive, accessible category cards with image support */
+/* Clean, minimal card design without images, overlays or decorations */
 
 .categoryCard {
   position: relative;
-  border-radius: var(--border-radius-2xl, 24px);
-  padding: 30px;
+  background: #ffffff !important;
+  border-radius: 12px;
+  padding: 24px;
   cursor: pointer;
   overflow: hidden;
-  min-height: 320px;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   isolation: isolate;
   outline: none;
+  border: 1px solid rgba(0, 0, 0, 0.06);
   
   &:hover {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
   }
   
   &:focus,
   &:focus-visible {
-    outline: 3px solid rgba(255, 255, 255, 0.8);
-    outline-offset: 4px;
+    outline: 3px solid rgba(74, 144, 226, 0.5);
+    outline-offset: 2px;
   }
 }
 
+/* Hide image container and all decorations */
 .imageContainer {
-  position: absolute;
-  top: -40px;
-  right: 20px;
-  width: 200px;
-  height: 200px;
-  z-index: 2;
-  transition: all 0.3s ease;
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2));
-  
-  .categoryCard:hover & {
-    transform: scale(1.1) rotate(5deg);
-  }
-  
-  /* Ensure picture element takes full space */
-  picture,
-  .category-picture {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-  
-  img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 12px;
-  }
-  
-  &.fitCover img {
-    object-fit: cover;
-  }
-  
-  &.fitContain img {
-    object-fit: contain;
-  }
+  display: none !important;
+}
+
+/* Hide any decorations */
+.card-deco,
+.hero-icon,
+.card-overlay,
+.category-overlay,
+.category-watermark,
+.floating-icon,
+.category-gradient {
+  display: none !important;
 }
 
 .content {
@@ -73,111 +53,61 @@
 }
 
 .categoryName {
-  font-size: clamp(1.75rem, 4vw, 2.25rem);
-  font-weight: 800;
-  color: #ffffff;
+  font-size: clamp(1.5rem, 3vw, 1.875rem);
+  font-weight: 700;
+  color: #1a1a1a;
   margin: 0 0 8px 0;
   text-align: left;
   font-family: var(--font-family-secondary, 'Poppins', sans-serif);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
   line-height: 1.2;
 }
 
 .subtitle {
-  font-size: var(--font-size-lg, 1.125rem);
-  font-weight: 500;
-  color: #ffffff;
+  font-size: var(--font-size-base, 1rem);
+  font-weight: 400;
+  color: #666666;
   margin: 0;
   text-align: left;
-  opacity: 0.95;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
+/* Remove arrow indicator */
 .arrow {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  color: #ffffff;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(10px);
-  
-  .categoryCard:hover & {
-    transform: translateX(5px);
-  }
+  display: none !important;
 }
 
 /* Tablet responsive */
 @media (max-width: 1024px) {
   .categoryCard {
-    min-height: 280px;
-    padding: 25px;
-  }
-  
-  .imageContainer {
-    width: 180px;
-    height: 180px;
-    top: -35px;
-    right: 15px;
+    min-height: 180px;
+    padding: 20px;
   }
 }
 
 /* Mobile responsive */
 @media (max-width: 768px) {
   .categoryCard {
-    min-height: 250px;
-    padding: 25px;
-  }
-  
-  .imageContainer {
-    width: 160px;
-    height: 160px;
-    top: -30px;
-    right: 15px;
+    min-height: 160px;
+    padding: 20px;
   }
 }
 
 /* Small mobile responsive */
 @media (max-width: 480px) {
   .categoryCard {
-    min-height: 220px;
-    padding: 20px;
-  }
-  
-  .imageContainer {
-    width: 140px;
-    height: 140px;
-    top: -25px;
-    right: 10px;
+    min-height: 150px;
+    padding: 18px;
   }
 }
 
 /* Accessibility - Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .categoryCard,
-  .imageContainer,
-  .arrow {
+  .categoryCard {
     transition: none !important;
     transform: none !important;
   }
   
   .categoryCard:hover {
-    transform: none !important;
-  }
-  
-  .categoryCard:hover .imageContainer {
-    transform: none !important;
-  }
-  
-  .categoryCard:hover .arrow {
     transform: none !important;
   }
 }

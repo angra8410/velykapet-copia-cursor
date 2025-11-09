@@ -19,45 +19,40 @@ const categories = [
     id: 'alimento',
     category: 'Alimento',
     subtitle: 'Nutrición premium para tu mascota',
-    color: '#ffffff', // Clean white background
+    color: '#FF6B6B', // Warm red/coral
     fit: 'cover',
     alt: 'Alimento premium para perros y gatos con ingredientes naturales',
-    // Images disabled - no loading from velyka-gallery
-    showImage: false,
-    img1x: '',
-    img2x: '',
-    thumb: '',
-    og: '',
+    // R2-hosted URLs (principal, retina, thumbnail, social-og)
+    img1x: `${IMAGE_BASE}/principal/FOTO_PERRO_GATO_ALIMENTO.jpg`,
+    img2x: `${IMAGE_BASE}/retina/FOTO_PERRO_GATO_ALIMENTO.jpg`,
+    thumb: `${IMAGE_BASE}/miniatura/FOTO_PERRO_GATO_ALIMENTO.jpg`,
+    og: `${IMAGE_BASE}/social-og/FOTO_PERRO_GATO_ALIMENTO.jpg`,
     href: '/productos/alimentos'
   },
   {
     id: 'salud-bienestar',
     category: 'Salud & Bienestar',
     subtitle: 'Cuidado integral para su salud',
-    color: '#ffffff', // Clean white background
+    color: '#4ECDC4', // Teal/turquoise
     fit: 'contain',
     alt: 'Productos de salud y bienestar para el cuidado integral de mascotas',
-    // Images disabled - no loading from velyka-gallery
-    showImage: false,
-    img1x: '',
-    img2x: '',
-    thumb: '',
-    og: '',
+    img1x: `${IMAGE_BASE}/principal/FOTO_PERRO_SALUD_Y_BIENESTAR.jpg`,
+    img2x: `${IMAGE_BASE}/retina/FOTO_PERRO_SALUD_Y_BIENESTAR.jpg`,
+    thumb: `${IMAGE_BASE}/miniatura/FOTO_PERRO_SALUD_Y_BIENESTAR.jpg`,
+    og: `${IMAGE_BASE}/social-og/FOTO_PERRO_SALUD_Y_BIENESTAR.jpg`,
     href: '/productos/salud-bienestar'
   },
   {
     id: 'juguetes-accesorios',
     category: 'Juguetes & Accesorios',
     subtitle: 'Diversión y estilo para tu compañero',
-    color: '#ffffff', // Clean white background
+    color: '#95E1D3', // Soft mint green
     fit: 'contain',
     alt: 'Juguetes divertidos y accesorios elegantes para mascotas',
-    // Images disabled - no loading from velyka-gallery
-    showImage: false,
-    img1x: '',
-    img2x: '',
-    thumb: '',
-    og: '',
+    img1x: `${IMAGE_BASE}/principal/FOTO_PERRO_JUGUETES_Y_ACCESORIOS.jpg`,
+    img2x: `${IMAGE_BASE}/retina/FOTO_PERRO_JUGUETES_Y_ACCESORIOS.jpg`,
+    thumb: `${IMAGE_BASE}/miniatura/FOTO_PERRO_JUGUETES_Y_ACCESORIOS.jpg`,
+    og: `${IMAGE_BASE}/social-og/FOTO_PERRO_JUGUETES_Y_ACCESORIOS.jpg`,
     href: '/productos/juguetes-accesorios'
   }
 ];
