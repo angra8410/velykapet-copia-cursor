@@ -127,7 +127,6 @@ Thumbs.db
 *.backup
 *.old
 *.tmp
-*.bak
 
 # SQLite database files
 *.db
