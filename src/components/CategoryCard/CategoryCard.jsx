@@ -85,7 +85,7 @@ function CategoryCardComponent({
             }
         },
         
-        // Responsive image with picture element
+        // Image frame with background matching card color
         React.createElement('div',
             {
                 className: 'category-image-container-responsive',
@@ -101,50 +101,70 @@ function CategoryCardComponent({
                     filter: 'drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2))'
                 }
             },
-            !imageError && React.createElement('picture',
+            // Image frame with card color background and overflow hidden
+            React.createElement('div',
                 {
-                    className: 'category-picture',
-                    style: {
-                        display: 'block',
-                        width: '100%',
-                        height: '100%'
-                    }
-                },
-                // JPEG source with srcset for retina (R2 URLs)
-                React.createElement('source', {
-                    type: 'image/jpeg',
-                    srcSet: img2x ? `${img1x} 1x, ${img2x} 2x` : img1x
-                }),
-                // Fallback img element
-                React.createElement('img', {
-                    src: img1x || thumb,
-                    alt: alt || category,
-                    loading: 'lazy',
-                    onError: handleImageError,
-                    style: {
-                        display: 'block',
-                        width: '100%',
-                        height: '100%',
-                        objectFit: fit,
-                        borderRadius: '12px'
-                    }
-                })
-            ),
-            // Fallback for error state - show background color
-            imageError && React.createElement('div',
-                {
+                    className: 'imageFrame',
                     style: {
                         width: '100%',
                         height: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        background: 'rgba(255, 255, 255, 0.2)',
+                        backgroundColor: color || '#4A90E2',
                         borderRadius: '12px',
-                        fontSize: '3rem'
+                        overflow: 'hidden',
+                        position: 'relative'
                     }
                 },
-                '🐾'
+                !imageError && React.createElement('picture',
+                    {
+                        className: 'category-picture',
+                        style: {
+                            display: 'block',
+                            width: '100%',
+                            height: '100%'
+                        }
+                    },
+                    // JPEG source with srcset for retina (R2 URLs)
+                    React.createElement('source', {
+                        type: 'image/jpeg',
+                        srcSet: img2x ? `${img1x} 1x, ${img2x} 2x` : img1x
+                    }),
+                    // Fallback img element
+                    React.createElement('img', {
+                        src: img1x || thumb,
+                        alt: alt || category,
+                        loading: 'lazy',
+                        onError: handleImageError,
+                        style: {
+                            display: 'block',
+                            width: '100%',
+                            height: '100%',
+                            objectFit: fit
+                        }
+                    })
+                ),
+                // Fallback for error state - show thumb or colored background
+                imageError && React.createElement('div',
+                    {
+                        style: {
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '3rem'
+                        }
+                    },
+                    thumb ? React.createElement('img', {
+                        src: thumb,
+                        alt: alt || category,
+                        style: {
+                            display: 'block',
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'contain'
+                        }
+                    }) : '🐾'
+                )
             )
         ),
         
