@@ -149,10 +149,11 @@ function HeroCategoriesComponent() {
                             flexDirection: 'column',
                             maxWidth: '380px',
                             justifyContent: 'space-between'
-                        },
+                        }
+                    },
                         
-                        // Overlay para mejor legibilidad
-                        React.createElement('div',
+                    // Overlay para mejor legibilidad
+                    React.createElement('div',
                         {
                             className: 'category-overlay',
                             style: {

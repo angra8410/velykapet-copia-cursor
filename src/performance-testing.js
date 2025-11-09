@@ -1,10 +1,10 @@
-// VentasPet - Sistema de Testing y Validación de Rendimiento
-// Implementa tests automatizados, lighthouse integration y validación de optimizaciones
+// VentasPet - Sistema de Testing y Validacion de Rendimiento
+// Implementa tests automatizados, lighthouse integration y validacion de optimizaciones
 
 console.log('🧪 Cargando Performance Testing Suite...');
 
 window.PerformanceTesting = {
-    // Configuración de testing
+    // Configuracion de testing
     config: {
         // Umbrales de rendimiento (milisegundos)
         thresholds: {
@@ -13,7 +13,7 @@ window.PerformanceTesting = {
             fid: { good: 100, poor: 300 },
             cls: { good: 0.1, poor: 0.25 },
             
-            // Métricas personalizadas
+            // Metricas personalizadas
             pageLoad: { good: 3000, poor: 5000 },
             domReady: { good: 1500, poor: 3000 },
             firstPaint: { good: 1000, poor: 2000 },
@@ -26,7 +26,7 @@ window.PerformanceTesting = {
             imageSize: { good: 200, poor: 500 }
         },
         
-        // Configuración de tests
+        // Configuracion de tests
         testConfig: {
             iterations: 3,
             warmupIterations: 1,
@@ -55,12 +55,12 @@ window.PerformanceTesting = {
     currentTest: null,
     
     init() {
-        console.log('🚀 Inicializando Performance Testing Suite...');
+        console.log('[ICON:ROCKET] Inicializando Performance Testing Suite...');
         
-        // Configurar listeners para métricas automáticas
+        // Configurar listeners para metricas automaticas
         this.setupAutomaticTesting();
         
-        // Configurar reportes automáticos
+        // Configurar reportes automaticos
         this.setupAutomaticReporting();
         
         // Cargar baseline si existe
@@ -72,4 +72,833 @@ window.PerformanceTesting = {
     // ========= TESTS PRINCIPALES =========
     
     // Ejecutar suite completa de tests
-    async runFullTestSuite() {\n        if (this.isRunning) {\n            console.warn('⚠️ Tests ya en ejecución');\n            return;\n        }\n        \n        console.log('🧪 Iniciando suite completa de tests de rendimiento...');\n        this.isRunning = true;\n        \n        const startTime = Date.now();\n        const results = {\n            timestamp: new Date().toISOString(),\n            userAgent: navigator.userAgent,\n            url: window.location.href,\n            viewport: {\n                width: window.innerWidth,\n                height: window.innerHeight\n            },\n            connection: this._getConnectionInfo(),\n            tests: {},\n            summary: {}\n        };\n        \n        try {\n            // Tests de métricas básicas\n            console.log('📊 Ejecutando tests de métricas básicas...');\n            results.tests.basicMetrics = await this.testBasicMetrics();\n            \n            // Tests de Core Web Vitals\n            console.log('🎯 Ejecutando tests de Core Web Vitals...');\n            results.tests.coreWebVitals = await this.testCoreWebVitals();\n            \n            // Tests de cache y almacenamiento\n            console.log('💾 Ejecutando tests de cache...');\n            results.tests.cachePerformance = await this.testCachePerformance();\n            \n            // Tests de API\n            console.log('📡 Ejecutando tests de API...');\n            results.tests.apiPerformance = await this.testApiPerformance();\n            \n            // Tests de imágenes\n            console.log('🖼️ Ejecutando tests de imágenes...');\n            results.tests.imageOptimization = await this.testImageOptimization();\n            \n            // Tests de componentes React\n            console.log('⚛️ Ejecutando tests de React...');\n            results.tests.reactPerformance = await this.testReactPerformance();\n            \n            // Generar resumen\n            results.summary = this._generateSummary(results.tests);\n            \n            // Guardar resultados\n            this.testResults.current = results;\n            this._saveResults(results);\n            \n            const duration = Date.now() - startTime;\n            console.log(`✅ Suite de tests completada en ${duration}ms`);\n            \n            // Mostrar resumen\n            this.showTestReport();\n            \n            return results;\n            \n        } catch (error) {\n            console.error('❌ Error ejecutando tests:', error);\n            throw error;\n        } finally {\n            this.isRunning = false;\n        }\n    },\n    \n    // Test de métricas básicas\n    async testBasicMetrics() {\n        const results = {};\n        \n        // Navigation Timing API\n        const navigationEntry = performance.getEntriesByType('navigation')[0];\n        if (navigationEntry) {\n            results.pageLoadTime = navigationEntry.loadEventEnd - navigationEntry.navigationStart;\n            results.domContentLoaded = navigationEntry.domContentLoadedEventEnd - navigationEntry.navigationStart;\n            results.firstPaint = this._getFirstPaint();\n            results.domInteractive = navigationEntry.domInteractive - navigationEntry.navigationStart;\n            results.dnsTime = navigationEntry.domainLookupEnd - navigationEntry.domainLookupStart;\n            results.connectTime = navigationEntry.connectEnd - navigationEntry.connectStart;\n            results.serverResponseTime = navigationEntry.responseEnd - navigationEntry.requestStart;\n        }\n        \n        // Resource timing\n        const resources = performance.getEntriesByType('resource');\n        results.totalResources = resources.length;\n        results.totalTransferSize = resources.reduce((sum, r) => sum + (r.transferSize || 0), 0);\n        results.averageResourceTime = resources.reduce((sum, r) => sum + r.duration, 0) / resources.length;\n        \n        // Memory usage (si está disponible)\n        if (performance.memory) {\n            results.memoryUsage = {\n                used: performance.memory.usedJSHeapSize,\n                total: performance.memory.totalJSHeapSize,\n                limit: performance.memory.jsHeapSizeLimit\n            };\n        }\n        \n        return this._evaluateResults(results, {\n            pageLoadTime: this.config.thresholds.pageLoad,\n            domContentLoaded: this.config.thresholds.domReady,\n            firstPaint: this.config.thresholds.firstPaint\n        });\n    },\n    \n    // Test de Core Web Vitals\n    async testCoreWebVitals() {\n        const results = {};\n        \n        // Obtener métricas del PerformanceAnalyzer si está disponible\n        if (window.PerformanceAnalyzer && window.PerformanceAnalyzer.metrics) {\n            const cwv = window.PerformanceAnalyzer.metrics.coreWebVitals;\n            \n            if (cwv.lcp) results.lcp = cwv.lcp;\n            if (cwv.fid) results.fid = cwv.fid;\n            if (cwv.cls) results.cls = cwv.cls;\n        }\n        \n        // Medir FCP manualmente\n        results.fcp = this._getFirstContentfulPaint();\n        \n        // Calcular CLS manualmente si no está disponible\n        if (!results.cls) {\n            results.cls = await this._measureCLS();\n        }\n        \n        return this._evaluateResults(results, {\n            lcp: this.config.thresholds.lcp,\n            fid: this.config.thresholds.fid,\n            cls: this.config.thresholds.cls\n        });\n    },\n    \n    // Test de rendimiento de cache\n    async testCachePerformance() {\n        const results = {};\n        \n        if (window.CacheManager) {\n            const stats = window.CacheManager.getStats();\n            results.cacheStats = stats;\n            results.hitRate = parseFloat(stats.hitRate) || 0;\n            results.totalKeys = stats.totalKeys;\n            results.cacheSize = stats.formattedSize;\n        }\n        \n        // Test de velocidad de cache\n        const cacheSpeedTest = await this._testCacheSpeed();\n        results.cacheSpeed = cacheSpeedTest;\n        \n        return this._evaluateResults(results, {\n            hitRate: { good: 70, poor: 30 }, // porcentaje\n            cacheSpeed: { good: 10, poor: 50 } // ms\n        });\n    },\n    \n    // Test de rendimiento de API\n    async testApiPerformance() {\n        const results = {};\n        \n        if (window.ApiOptimizer) {\n            const stats = window.ApiOptimizer.getStats();\n            results.apiStats = stats;\n            results.averageResponseTime = parseFloat(stats.averageResponseTime) || 0;\n            results.hitRate = parseFloat(stats.hitRate) || 0;\n            results.failureRate = (stats.failedRequests / stats.totalRequests * 100) || 0;\n        }\n        \n        // Test de endpoints críticos\n        const endpointTests = await this._testCriticalEndpoints();\n        results.endpointTests = endpointTests;\n        \n        return this._evaluateResults(results, {\n            averageResponseTime: this.config.thresholds.apiResponse,\n            hitRate: { good: 60, poor: 20 },\n            failureRate: { good: 5, poor: 15 }\n        });\n    },\n    \n    // Test de optimización de imágenes\n    async testImageOptimization() {\n        const results = {};\n        \n        if (window.ImageOptimizer) {\n            const stats = window.ImageOptimizer.getStats();\n            results.imageStats = stats;\n            results.compressionRatio = parseFloat(stats.averageCompressionPercent) || 0;\n            results.lazyLoadedImages = stats.lazyLoadedImages;\n            results.webpSupported = stats.webpSupported;\n        }\n        \n        // Analizar imágenes en página\n        const imageAnalysis = this._analyzePageImages();\n        results.imageAnalysis = imageAnalysis;\n        \n        return this._evaluateResults(results, {\n            compressionRatio: { good: 70, poor: 90 }, // menor es mejor\n            averageImageSize: this.config.thresholds.imageSize\n        });\n    },\n    \n    // Test de rendimiento de React\n    async testReactPerformance() {\n        const results = {};\n        \n        // Contar componentes y renders\n        results.componentCount = this._countReactComponents();\n        \n        // Medir tiempo de render\n        const renderTime = await this._measureRenderTime();\n        results.averageRenderTime = renderTime;\n        \n        // Detectar re-renders innecesarios\n        const rerenderAnalysis = this._analyzeReRenders();\n        results.rerenderAnalysis = rerenderAnalysis;\n        \n        return this._evaluateResults(results, {\n            averageRenderTime: { good: 16, poor: 50 }, // 60fps = 16ms por frame\n            unnecessaryRerenders: { good: 5, poor: 20 }\n        });\n    },\n    \n    // ========= MÉTODOS DE MEDICIÓN =========\n    \n    // Obtener First Paint\n    _getFirstPaint() {\n        const paintEntries = performance.getEntriesByType('paint');\n        const firstPaint = paintEntries.find(entry => entry.name === 'first-paint');\n        return firstPaint ? firstPaint.startTime : null;\n    },\n    \n    // Obtener First Contentful Paint\n    _getFirstContentfulPaint() {\n        const paintEntries = performance.getEntriesByType('paint');\n        const fcp = paintEntries.find(entry => entry.name === 'first-contentful-paint');\n        return fcp ? fcp.startTime : null;\n    },\n    \n    // Medir Cumulative Layout Shift\n    async _measureCLS() {\n        return new Promise((resolve) => {\n            let clsScore = 0;\n            \n            if ('PerformanceObserver' in window) {\n                try {\n                    const observer = new PerformanceObserver((list) => {\n                        const entries = list.getEntries();\n                        entries.forEach(entry => {\n                            if (!entry.hadRecentInput) {\n                                clsScore += entry.value;\n                            }\n                        });\n                    });\n                    \n                    observer.observe({ entryTypes: ['layout-shift'] });\n                    \n                    // Observar por 2 segundos\n                    setTimeout(() => {\n                        observer.disconnect();\n                        resolve({ value: clsScore, rating: this._rateCLS(clsScore) });\n                    }, 2000);\n                } catch (error) {\n                    resolve({ value: 0, rating: 'unknown', error: error.message });\n                }\n            } else {\n                resolve({ value: 0, rating: 'unsupported' });\n            }\n        });\n    },\n    \n    // Test de velocidad de cache\n    async _testCacheSpeed() {\n        const iterations = 10;\n        const testKey = 'performance_test_' + Date.now();\n        const testData = { test: 'data', timestamp: Date.now() };\n        \n        // Test de escritura\n        const writeStart = performance.now();\n        for (let i = 0; i < iterations; i++) {\n            if (window.CacheManager) {\n                window.CacheManager.set(`${testKey}_${i}`, testData, 1, 'temp');\n            }\n        }\n        const writeTime = (performance.now() - writeStart) / iterations;\n        \n        // Test de lectura\n        const readStart = performance.now();\n        for (let i = 0; i < iterations; i++) {\n            if (window.CacheManager) {\n                window.CacheManager.get(`${testKey}_${i}`, 'temp');\n            }\n        }\n        const readTime = (performance.now() - readStart) / iterations;\n        \n        // Limpiar datos de test\n        for (let i = 0; i < iterations; i++) {\n            if (window.CacheManager) {\n                window.CacheManager.remove(`${testKey}_${i}`, 'temp');\n            }\n        }\n        \n        return {\n            writeTime: writeTime,\n            readTime: readTime,\n            averageTime: (writeTime + readTime) / 2\n        };\n    },\n    \n    // Test de endpoints críticos\n    async _testCriticalEndpoints() {\n        const endpoints = [\n            { name: 'Products', url: '/api/products' },\n            { name: 'Categories', url: '/api/categories' },\n            { name: 'Health Check', url: '/api/health' }\n        ];\n        \n        const results = {};\n        \n        for (const endpoint of endpoints) {\n            try {\n                const startTime = performance.now();\n                const response = await fetch(endpoint.url);\n                const endTime = performance.now();\n                \n                results[endpoint.name] = {\n                    responseTime: endTime - startTime,\n                    status: response.status,\n                    ok: response.ok,\n                    size: response.headers.get('content-length') || 0\n                };\n            } catch (error) {\n                results[endpoint.name] = {\n                    responseTime: null,\n                    status: null,\n                    ok: false,\n                    error: error.message\n                };\n            }\n        }\n        \n        return results;\n    },\n    \n    // Analizar imágenes en la página\n    _analyzePageImages() {\n        const images = document.querySelectorAll('img');\n        const analysis = {\n            totalImages: images.length,\n            lazyImages: 0,\n            optimizedImages: 0,\n            largeImages: 0,\n            totalEstimatedSize: 0\n        };\n        \n        images.forEach(img => {\n            if (img.hasAttribute('data-src') || img.loading === 'lazy') {\n                analysis.lazyImages++;\n            }\n            \n            if (img.hasAttribute('data-optimized')) {\n                analysis.optimizedImages++;\n            }\n            \n            if (img.naturalWidth > 800 || img.naturalHeight > 600) {\n                analysis.largeImages++;\n            }\n            \n            // Estimar tamaño\n            analysis.totalEstimatedSize += (img.naturalWidth * img.naturalHeight * 3) / 8; // bytes estimados\n        });\n        \n        analysis.lazyPercentage = (analysis.lazyImages / analysis.totalImages * 100) || 0;\n        analysis.optimizedPercentage = (analysis.optimizedImages / analysis.totalImages * 100) || 0;\n        analysis.averageImageSize = analysis.totalEstimatedSize / analysis.totalImages / 1024; // KB\n        \n        return analysis;\n    },\n    \n    // Contar componentes React\n    _countReactComponents() {\n        // Heurística simple para contar componentes\n        const reactRoots = document.querySelectorAll('[data-reactroot]');\n        const componentElements = document.querySelectorAll('[data-react-component]');\n        \n        return {\n            roots: reactRoots.length,\n            components: componentElements.length,\n            estimatedTotal: Math.max(componentElements.length, 10) // mínimo estimado\n        };\n    },\n    \n    // Medir tiempo de render\n    async _measureRenderTime() {\n        return new Promise((resolve) => {\n            const measurements = [];\n            const observer = new PerformanceObserver((list) => {\n                const entries = list.getEntries();\n                entries.forEach(entry => {\n                    if (entry.name.includes('react') || entry.name.includes('render')) {\n                        measurements.push(entry.duration);\n                    }\n                });\n            });\n            \n            observer.observe({ entryTypes: ['measure'] });\n            \n            setTimeout(() => {\n                observer.disconnect();\n                const average = measurements.length > 0 ? \n                    measurements.reduce((sum, time) => sum + time, 0) / measurements.length : 0;\n                resolve(average);\n            }, 2000);\n        });\n    },\n    \n    // Analizar re-renders\n    _analyzeReRenders() {\n        // Placeholder para análisis de re-renders\n        // En una implementación real, esto requeriría instrumentación específica de React\n        return {\n            detected: false,\n            count: 0,\n            components: [],\n            note: 'Análisis de re-renders requiere instrumentación específica'\n        };\n    },\n    \n    // ========= EVALUACIÓN Y RATING =========\n    \n    // Evaluar resultados contra umbrales\n    _evaluateResults(results, thresholds) {\n        const evaluation = {\n            raw: results,\n            scores: {},\n            overall: 'unknown'\n        };\n        \n        let totalScore = 0;\n        let scoreCount = 0;\n        \n        for (const [metric, value] of Object.entries(results)) {\n            if (thresholds[metric] && typeof value === 'number') {\n                const threshold = thresholds[metric];\n                let score;\n                \n                if (value <= threshold.good) {\n                    score = 'good';\n                } else if (value <= threshold.poor) {\n                    score = 'needs-improvement';\n                } else {\n                    score = 'poor';\n                }\n                \n                evaluation.scores[metric] = {\n                    value: value,\n                    score: score,\n                    threshold: threshold\n                };\n                \n                // Convertir a número para promedio\n                const numScore = score === 'good' ? 3 : score === 'needs-improvement' ? 2 : 1;\n                totalScore += numScore;\n                scoreCount++;\n            }\n        }\n        \n        // Calcular score general\n        if (scoreCount > 0) {\n            const avgScore = totalScore / scoreCount;\n            evaluation.overall = avgScore >= 2.5 ? 'good' : avgScore >= 1.5 ? 'needs-improvement' : 'poor';\n        }\n        \n        return evaluation;\n    },\n    \n    // Rating para CLS\n    _rateCLS(value) {\n        if (value <= 0.1) return 'good';\n        if (value <= 0.25) return 'needs-improvement';\n        return 'poor';\n    },\n    \n    // ========= UTILIDADES =========\n    \n    // Obtener información de conexión\n    _getConnectionInfo() {\n        if ('connection' in navigator) {\n            return {\n                effectiveType: navigator.connection.effectiveType,\n                downlink: navigator.connection.downlink,\n                rtt: navigator.connection.rtt\n            };\n        }\n        return null;\n    },\n    \n    // Generar resumen de todos los tests\n    _generateSummary(tests) {\n        const summary = {\n            totalTests: Object.keys(tests).length,\n            passedTests: 0,\n            failedTests: 0,\n            overallScore: 'unknown',\n            criticalIssues: [],\n            recommendations: []\n        };\n        \n        let totalScore = 0;\n        let scoreCount = 0;\n        \n        for (const [testName, testResult] of Object.entries(tests)) {\n            if (testResult.overall === 'good') {\n                summary.passedTests++;\n                totalScore += 3;\n            } else if (testResult.overall === 'needs-improvement') {\n                totalScore += 2;\n            } else if (testResult.overall === 'poor') {\n                summary.failedTests++;\n                totalScore += 1;\n                summary.criticalIssues.push(`${testName}: ${testResult.overall}`);\n            }\n            scoreCount++;\n        }\n        \n        if (scoreCount > 0) {\n            const avgScore = totalScore / scoreCount;\n            summary.overallScore = avgScore >= 2.5 ? 'good' : avgScore >= 1.5 ? 'needs-improvement' : 'poor';\n        }\n        \n        // Generar recomendaciones basadas en resultados\n        summary.recommendations = this._generateRecommendations(tests);\n        \n        return summary;\n    },\n    \n    // Generar recomendaciones\n    _generateRecommendations(tests) {\n        const recommendations = [];\n        \n        // Recomendaciones basadas en Core Web Vitals\n        if (tests.coreWebVitals) {\n            const cwv = tests.coreWebVitals;\n            if (cwv.scores.lcp && cwv.scores.lcp.score !== 'good') {\n                recommendations.push('Optimizar LCP: Reducir tamaño de imágenes hero y mejorar tiempo de servidor');\n            }\n            if (cwv.scores.cls && cwv.scores.cls.score !== 'good') {\n                recommendations.push('Reducir CLS: Especificar dimensiones de imágenes y evitar contenido dinámico');\n            }\n        }\n        \n        // Recomendaciones de caché\n        if (tests.cachePerformance) {\n            const cache = tests.cachePerformance;\n            if (cache.scores.hitRate && cache.scores.hitRate.score !== 'good') {\n                recommendations.push('Mejorar estrategia de caché: Incrementar TTL para recursos estáticos');\n            }\n        }\n        \n        // Recomendaciones de API\n        if (tests.apiPerformance) {\n            const api = tests.apiPerformance;\n            if (api.scores.averageResponseTime && api.scores.averageResponseTime.score !== 'good') {\n                recommendations.push('Optimizar APIs: Implementar paginación y reducir payload de respuestas');\n            }\n        }\n        \n        return recommendations;\n    },\n    \n    // ========= PERSISTENCIA Y REPORTES =========\n    \n    // Guardar resultados\n    _saveResults(results) {\n        try {\n            // Guardar en localStorage\n            const key = 'ventaspet_performance_results';\n            const existing = JSON.parse(localStorage.getItem(key) || '[]');\n            existing.push(results);\n            \n            // Mantener solo los últimos 10 resultados\n            if (existing.length > 10) {\n                existing.shift();\n            }\n            \n            localStorage.setItem(key, JSON.stringify(existing));\n            this.testResults.history = existing;\n            \n        } catch (error) {\n            console.warn('⚠️ No se pudieron guardar los resultados:', error);\n        }\n    },\n    \n    // Cargar baseline\n    loadBaseline() {\n        try {\n            const baseline = localStorage.getItem('ventaspet_performance_baseline');\n            if (baseline) {\n                this.testResults.baseline = JSON.parse(baseline);\n                console.log('📊 Baseline de rendimiento cargado');\n            }\n        } catch (error) {\n            console.warn('⚠️ No se pudo cargar baseline:', error);\n        }\n    },\n    \n    // Establecer baseline\n    setBaseline() {\n        if (this.testResults.current) {\n            this.testResults.baseline = this.testResults.current;\n            localStorage.setItem('ventaspet_performance_baseline', JSON.stringify(this.testResults.baseline));\n            console.log('✅ Baseline establecido');\n        } else {\n            console.warn('⚠️ No hay resultados actuales para establecer baseline');\n        }\n    },\n    \n    // Mostrar reporte de tests\n    showTestReport() {\n        if (!this.testResults.current) {\n            console.log('⚠️ No hay resultados de tests para mostrar');\n            return;\n        }\n        \n        const results = this.testResults.current;\n        \n        console.log('\\n🧪 === REPORTE DE RENDIMIENTO VENTASPET ===');\n        console.log(`📅 Timestamp: ${results.timestamp}`);\n        console.log(`🌐 URL: ${results.url}`);\n        console.log(`📱 Viewport: ${results.viewport.width}x${results.viewport.height}`);\n        \n        if (results.connection) {\n            console.log(`📡 Conexión: ${results.connection.effectiveType}`);\n        }\n        \n        console.log(`\\n📊 Resumen General:`);\n        console.log(`✅ Tests pasados: ${results.summary.passedTests}`);\n        console.log(`❌ Tests fallidos: ${results.summary.failedTests}`);\n        console.log(`🎯 Score general: ${results.summary.overallScore}`);\n        \n        if (results.summary.criticalIssues.length > 0) {\n            console.log('\\n🚨 Problemas críticos:');\n            results.summary.criticalIssues.forEach(issue => {\n                console.log(`  • ${issue}`);\n            });\n        }\n        \n        if (results.summary.recommendations.length > 0) {\n            console.log('\\n💡 Recomendaciones:');\n            results.summary.recommendations.forEach(rec => {\n                console.log(`  • ${rec}`);\n            });\n        }\n        \n        console.log('\\n==========================================\\n');\n        \n        return results;\n    },\n    \n    // Comparar con baseline\n    compareWithBaseline() {\n        if (!this.testResults.current || !this.testResults.baseline) {\n            console.log('⚠️ Se requieren resultados actuales y baseline para comparar');\n            return null;\n        }\n        \n        const comparison = {\n            timestamp: new Date().toISOString(),\n            improvements: [],\n            regressions: [],\n            summary: {}\n        };\n        \n        // Comparar métricas clave\n        const keyMetrics = ['pageLoadTime', 'domContentLoaded', 'lcp', 'fid', 'cls'];\n        \n        keyMetrics.forEach(metric => {\n            const currentValue = this._extractMetricValue(this.testResults.current, metric);\n            const baselineValue = this._extractMetricValue(this.testResults.baseline, metric);\n            \n            if (currentValue !== null && baselineValue !== null) {\n                const difference = currentValue - baselineValue;\n                const percentChange = (difference / baselineValue) * 100;\n                \n                if (Math.abs(percentChange) > 5) { // Solo cambios significativos\n                    const item = {\n                        metric,\n                        current: currentValue,\n                        baseline: baselineValue,\n                        difference,\n                        percentChange: percentChange.toFixed(1) + '%'\n                    };\n                    \n                    if (difference < 0) {\n                        comparison.improvements.push(item);\n                    } else {\n                        comparison.regressions.push(item);\n                    }\n                }\n            }\n        });\n        \n        console.log('\\n📈 === COMPARACIÓN CON BASELINE ===');\n        \n        if (comparison.improvements.length > 0) {\n            console.log('✅ Mejoras detectadas:');\n            comparison.improvements.forEach(item => {\n                console.log(`  • ${item.metric}: ${item.baseline} → ${item.current} (${item.percentChange})`);\n            });\n        }\n        \n        if (comparison.regressions.length > 0) {\n            console.log('❌ Regresiones detectadas:');\n            comparison.regressions.forEach(item => {\n                console.log(`  • ${item.metric}: ${item.baseline} → ${item.current} (${item.percentChange})`);\n            });\n        }\n        \n        if (comparison.improvements.length === 0 && comparison.regressions.length === 0) {\n            console.log('📊 No se detectaron cambios significativos');\n        }\n        \n        console.log('=====================================\\n');\n        \n        return comparison;\n    },\n    \n    // Extraer valor de métrica de resultados\n    _extractMetricValue(results, metric) {\n        // Buscar en diferentes secciones de los resultados\n        const sections = ['basicMetrics', 'coreWebVitals', 'cachePerformance', 'apiPerformance'];\n        \n        for (const section of sections) {\n            const sectionData = results.tests[section];\n            if (sectionData && sectionData.raw && sectionData.raw[metric] !== undefined) {\n                return sectionData.raw[metric];\n            }\n            \n            // También buscar en scores\n            if (sectionData && sectionData.scores && sectionData.scores[metric]) {\n                return sectionData.scores[metric].value;\n            }\n        }\n        \n        return null;\n    },\n    \n    // ========= CONFIGURACIÓN AUTOMÁTICA =========\n    \n    // Configurar testing automático\n    setupAutomaticTesting() {\n        // Ejecutar tests ligeros cada 5 minutos\n        setInterval(() => {\n            if (!this.isRunning) {\n                this._runLightweightTest();\n            }\n        }, 5 * 60 * 1000);\n    },\n    \n    // Test ligero automático\n    async _runLightweightTest() {\n        try {\n            const basicMetrics = await this.testBasicMetrics();\n            const timestamp = new Date().toISOString();\n            \n            // Guardar métricas básicas\n            const lightResults = {\n                timestamp,\n                type: 'lightweight',\n                metrics: basicMetrics\n            };\n            \n            // Guardar en historial ligero\n            const key = 'ventaspet_light_metrics';\n            const existing = JSON.parse(localStorage.getItem(key) || '[]');\n            existing.push(lightResults);\n            \n            // Mantener solo las últimas 50 mediciones\n            if (existing.length > 50) {\n                existing.shift();\n            }\n            \n            localStorage.setItem(key, JSON.stringify(existing));\n            \n        } catch (error) {\n            console.warn('⚠️ Error en test automático:', error);\n        }\n    },\n    \n    // Configurar reportes automáticos\n    setupAutomaticReporting() {\n        // Reporte automático cuando el rendimiento empeora significativamente\n        window.addEventListener('beforeunload', () => {\n            if (this.testResults.current && this.testResults.baseline) {\n                const comparison = this.compareWithBaseline();\n                if (comparison && comparison.regressions.length > 0) {\n                    console.warn('⚠️ Detectadas regresiones de rendimiento al cerrar página');\n                }\n            }\n        });\n    }\n};\n\n// Inicializar automáticamente\nif (document.readyState === 'loading') {\n    document.addEventListener('DOMContentLoaded', () => {\n        window.PerformanceTesting.init();\n    });\n} else {\n    window.PerformanceTesting.init();\n}\n\n// Exponer funciones globales para testing manual\nwindow.runPerformanceTests = () => window.PerformanceTesting.runFullTestSuite();\nwindow.showPerformanceReport = () => window.PerformanceTesting.showTestReport();\nwindow.setPerformanceBaseline = () => window.PerformanceTesting.setBaseline();\nwindow.comparePerformance = () => window.PerformanceTesting.compareWithBaseline();\n\nconsole.log('✅ Performance Testing Suite cargado');\nconsole.log('💡 Usa runPerformanceTests() para ejecutar la suite completa');
+    async runFullTestSuite() {
+        if (this.isRunning) {
+            console.warn('[WARNING] Tests ya en ejecucion');
+            return;
+        }
+        
+        console.log('🧪 Iniciando suite completa de tests de rendimiento...');
+        this.isRunning = true;
+        
+        const startTime = Date.now();
+        const results = {
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+            url: window.location.href,
+            viewport: {
+                width: window.innerWidth,
+                height: window.innerHeight
+            },
+            connection: this._getConnectionInfo(),
+            tests: {},
+            summary: {}
+        };
+        
+        try {
+            // Tests de metricas basicas
+            console.log('📊 Ejecutando tests de metricas basicas...');
+            results.tests.basicMetrics = await this.testBasicMetrics();
+            
+            // Tests de Core Web Vitals
+            console.log('🎯 Ejecutando tests de Core Web Vitals...');
+            results.tests.coreWebVitals = await this.testCoreWebVitals();
+            
+            // Tests de cache y almacenamiento
+            console.log('💾 Ejecutando tests de cache...');
+            results.tests.cachePerformance = await this.testCachePerformance();
+            
+            // Tests de API
+            console.log('📡 Ejecutando tests de API...');
+            results.tests.apiPerformance = await this.testApiPerformance();
+            
+            // Tests de imagenes
+            console.log('[ICON:IMAGE] Ejecutando tests de imagenes...');
+            results.tests.imageOptimization = await this.testImageOptimization();
+            
+            // Tests de componentes React
+            console.log('⚛️ Ejecutando tests de React...');
+            results.tests.reactPerformance = await this.testReactPerformance();
+            
+            // Generar resumen
+            results.summary = this._generateSummary(results.tests);
+            
+            // Guardar resultados
+            this.testResults.current = results;
+            this._saveResults(results);
+            
+            const duration = Date.now() - startTime;
+            console.log(`[OK] Suite de tests completada en ${duration}ms`);
+            
+            // Mostrar resumen
+            this.showTestReport();
+            
+            return results;
+            
+        } catch (error) {
+            console.error('[ERROR] Error ejecutando tests:', error);
+            throw error;
+        } finally {
+            this.isRunning = false;
+        }
+    },
+    
+    // Test de metricas basicas
+    async testBasicMetrics() {
+        const results = {};
+        
+        // Navigation Timing API
+        const navigationEntry = performance.getEntriesByType('navigation')[0];
+        if (navigationEntry) {
+            results.pageLoadTime = navigationEntry.loadEventEnd - navigationEntry.navigationStart;
+            results.domContentLoaded = navigationEntry.domContentLoadedEventEnd - navigationEntry.navigationStart;
+            results.firstPaint = this._getFirstPaint();
+            results.domInteractive = navigationEntry.domInteractive - navigationEntry.navigationStart;
+            results.dnsTime = navigationEntry.domainLookupEnd - navigationEntry.domainLookupStart;
+            results.connectTime = navigationEntry.connectEnd - navigationEntry.connectStart;
+            results.serverResponseTime = navigationEntry.responseEnd - navigationEntry.requestStart;
+        }
+        
+        // Resource timing
+        const resources = performance.getEntriesByType('resource');
+        results.totalResources = resources.length;
+        results.totalTransferSize = resources.reduce((sum, r) => sum + (r.transferSize || 0), 0);
+        results.averageResourceTime = resources.reduce((sum, r) => sum + r.duration, 0) / resources.length;
+        
+        // Memory usage (si esta disponible)
+        if (performance.memory) {
+            results.memoryUsage = {
+                used: performance.memory.usedJSHeapSize,
+                total: performance.memory.totalJSHeapSize,
+                limit: performance.memory.jsHeapSizeLimit
+            };
+        }
+        
+        return this._evaluateResults(results, {
+            pageLoadTime: this.config.thresholds.pageLoad,
+            domContentLoaded: this.config.thresholds.domReady,
+            firstPaint: this.config.thresholds.firstPaint
+        });
+    },
+    
+    // Test de Core Web Vitals
+    async testCoreWebVitals() {
+        const results = {};
+        
+        // Obtener metricas del PerformanceAnalyzer si esta disponible
+        if (window.PerformanceAnalyzer && window.PerformanceAnalyzer.metrics) {
+            const cwv = window.PerformanceAnalyzer.metrics.coreWebVitals;
+            
+            if (cwv.lcp) results.lcp = cwv.lcp;
+            if (cwv.fid) results.fid = cwv.fid;
+            if (cwv.cls) results.cls = cwv.cls;
+        }
+        
+        // Medir FCP manualmente
+        results.fcp = this._getFirstContentfulPaint();
+        
+        // Calcular CLS manualmente si no esta disponible
+        if (!results.cls) {
+            results.cls = await this._measureCLS();
+        }
+        
+        return this._evaluateResults(results, {
+            lcp: this.config.thresholds.lcp,
+            fid: this.config.thresholds.fid,
+            cls: this.config.thresholds.cls
+        });
+    },
+    
+    // Test de rendimiento de cache
+    async testCachePerformance() {
+        const results = {};
+        
+        if (window.CacheManager) {
+            const stats = window.CacheManager.getStats();
+            results.cacheStats = stats;
+            results.hitRate = parseFloat(stats.hitRate) || 0;
+            results.totalKeys = stats.totalKeys;
+            results.cacheSize = stats.formattedSize;
+        }
+        
+        // Test de velocidad de cache
+        const cacheSpeedTest = await this._testCacheSpeed();
+        results.cacheSpeed = cacheSpeedTest;
+        
+        return this._evaluateResults(results, {
+            hitRate: { good: 70, poor: 30 }, // porcentaje
+            cacheSpeed: { good: 10, poor: 50 } // ms
+        });
+    },
+    
+    // Test de rendimiento de API
+    async testApiPerformance() {
+        const results = {};
+        
+        if (window.ApiOptimizer) {
+            const stats = window.ApiOptimizer.getStats();
+            results.apiStats = stats;
+            results.averageResponseTime = parseFloat(stats.averageResponseTime) || 0;
+            results.hitRate = parseFloat(stats.hitRate) || 0;
+            results.failureRate = (stats.failedRequests / stats.totalRequests * 100) || 0;
+        }
+        
+        // Test de endpoints criticos
+        const endpointTests = await this._testCriticalEndpoints();
+        results.endpointTests = endpointTests;
+        
+        return this._evaluateResults(results, {
+            averageResponseTime: this.config.thresholds.apiResponse,
+            hitRate: { good: 60, poor: 20 },
+            failureRate: { good: 5, poor: 15 }
+        });
+    },
+    
+    // Test de optimizacion de imagenes
+    async testImageOptimization() {
+        const results = {};
+        
+        if (window.ImageOptimizer) {
+            const stats = window.ImageOptimizer.getStats();
+            results.imageStats = stats;
+            results.compressionRatio = parseFloat(stats.averageCompressionPercent) || 0;
+            results.lazyLoadedImages = stats.lazyLoadedImages;
+            results.webpSupported = stats.webpSupported;
+        }
+        
+        // Analizar imagenes en pagina
+        const imageAnalysis = this._analyzePageImages();
+        results.imageAnalysis = imageAnalysis;
+        
+        return this._evaluateResults(results, {
+            compressionRatio: { good: 70, poor: 90 }, // menor es mejor
+            averageImageSize: this.config.thresholds.imageSize
+        });
+    },
+    
+    // Test de rendimiento de React
+    async testReactPerformance() {
+        const results = {};
+        
+        // Contar componentes y renders
+        results.componentCount = this._countReactComponents();
+        
+        // Medir tiempo de render
+        const renderTime = await this._measureRenderTime();
+        results.averageRenderTime = renderTime;
+        
+        // Detectar re-renders innecesarios
+        const rerenderAnalysis = this._analyzeReRenders();
+        results.rerenderAnalysis = rerenderAnalysis;
+        
+        return this._evaluateResults(results, {
+            averageRenderTime: { good: 16, poor: 50 }, // 60fps = 16ms por frame
+            unnecessaryRerenders: { good: 5, poor: 20 }
+        });
+    },
+    
+    // ========= MÉTODOS DE MEDICIÓN =========
+    
+    // Obtener First Paint
+    _getFirstPaint() {
+        const paintEntries = performance.getEntriesByType('paint');
+        const firstPaint = paintEntries.find(entry => entry.name === 'first-paint');
+        return firstPaint ? firstPaint.startTime : null;
+    },
+    
+    // Obtener First Contentful Paint
+    _getFirstContentfulPaint() {
+        const paintEntries = performance.getEntriesByType('paint');
+        const fcp = paintEntries.find(entry => entry.name === 'first-contentful-paint');
+        return fcp ? fcp.startTime : null;
+    },
+    
+    // Medir Cumulative Layout Shift
+    async _measureCLS() {
+        return new Promise((resolve) => {
+            let clsScore = 0;
+            
+            if ('PerformanceObserver' in window) {
+                try {
+                    const observer = new PerformanceObserver((list) => {
+                        const entries = list.getEntries();
+                        entries.forEach(entry => {
+                            if (!entry.hadRecentInput) {
+                                clsScore += entry.value;
+                            }
+                        });
+                    });
+                    
+                    observer.observe({ entryTypes: ['layout-shift'] });
+                    
+                    // Observar por 2 segundos
+                    setTimeout(() => {
+                        observer.disconnect();
+                        resolve({ value: clsScore, rating: this._rateCLS(clsScore) });
+                    }, 2000);
+                } catch (error) {
+                    resolve({ value: 0, rating: 'unknown', error: error.message });
+                }
+            } else {
+                resolve({ value: 0, rating: 'unsupported' });
+            }
+        });
+    },
+    
+    // Test de velocidad de cache
+    async _testCacheSpeed() {
+        const iterations = 10;
+        const testKey = 'performance_test_' + Date.now();
+        const testData = { test: 'data', timestamp: Date.now() };
+        
+        // Test de escritura
+        const writeStart = performance.now();
+        for (let i = 0; i < iterations; i++) {
+            if (window.CacheManager) {
+                window.CacheManager.set(`${testKey}_${i}`, testData, 1, 'temp');
+            }
+        }
+        const writeTime = (performance.now() - writeStart) / iterations;
+        
+        // Test de lectura
+        const readStart = performance.now();
+        for (let i = 0; i < iterations; i++) {
+            if (window.CacheManager) {
+                window.CacheManager.get(`${testKey}_${i}`, 'temp');
+            }
+        }
+        const readTime = (performance.now() - readStart) / iterations;
+        
+        // Limpiar datos de test
+        for (let i = 0; i < iterations; i++) {
+            if (window.CacheManager) {
+                window.CacheManager.remove(`${testKey}_${i}`, 'temp');
+            }
+        }
+        
+        return {
+            writeTime: writeTime,
+            readTime: readTime,
+            averageTime: (writeTime + readTime) / 2
+        };
+    },
+    
+    // Test de endpoints criticos
+    async _testCriticalEndpoints() {
+        const endpoints = [
+            { name: 'Products', url: '/api/products' },
+            { name: 'Categories', url: '/api/categories' },
+            { name: 'Health Check', url: '/api/health' }
+        ];
+        
+        const results = {};
+        
+        for (const endpoint of endpoints) {
+            try {
+                const startTime = performance.now();
+                const response = await fetch(endpoint.url);
+                const endTime = performance.now();
+                
+                results[endpoint.name] = {
+                    responseTime: endTime - startTime,
+                    status: response.status,
+                    ok: response.ok,
+                    size: response.headers.get('content-length') || 0
+                };
+            } catch (error) {
+                results[endpoint.name] = {
+                    responseTime: null,
+                    status: null,
+                    ok: false,
+                    error: error.message
+                };
+            }
+        }
+        
+        return results;
+    },
+    
+    // Analizar imagenes en la pagina
+    _analyzePageImages() {
+        const images = document.querySelectorAll('img');
+        const analysis = {
+            totalImages: images.length,
+            lazyImages: 0,
+            optimizedImages: 0,
+            largeImages: 0,
+            totalEstimatedSize: 0
+        };
+        
+        images.forEach(img => {
+            if (img.hasAttribute('data-src') || img.loading === 'lazy') {
+                analysis.lazyImages++;
+            }
+            
+            if (img.hasAttribute('data-optimized')) {
+                analysis.optimizedImages++;
+            }
+            
+            if (img.naturalWidth > 800 || img.naturalHeight > 600) {
+                analysis.largeImages++;
+            }
+            
+            // Estimar tamano
+            analysis.totalEstimatedSize += (img.naturalWidth * img.naturalHeight * 3) / 8; // bytes estimados
+        });
+        
+        analysis.lazyPercentage = (analysis.lazyImages / analysis.totalImages * 100) || 0;
+        analysis.optimizedPercentage = (analysis.optimizedImages / analysis.totalImages * 100) || 0;
+        analysis.averageImageSize = analysis.totalEstimatedSize / analysis.totalImages / 1024; // KB
+        
+        return analysis;
+    },
+    
+    // Contar componentes React
+    _countReactComponents() {
+        // Heuristica simple para contar componentes
+        const reactRoots = document.querySelectorAll('[data-reactroot]');
+        const componentElements = document.querySelectorAll('[data-react-component]');
+        
+        return {
+            roots: reactRoots.length,
+            components: componentElements.length,
+            estimatedTotal: Math.max(componentElements.length, 10) // minimo estimado
+        };
+    },
+    
+    // Medir tiempo de render
+    async _measureRenderTime() {
+        return new Promise((resolve) => {
+            const measurements = [];
+            const observer = new PerformanceObserver((list) => {
+                const entries = list.getEntries();
+                entries.forEach(entry => {
+                    if (entry.name.includes('react') || entry.name.includes('render')) {
+                        measurements.push(entry.duration);
+                    }
+                });
+            });
+            
+            observer.observe({ entryTypes: ['measure'] });
+            
+            setTimeout(() => {
+                observer.disconnect();
+                const average = measurements.length > 0 ? 
+                    measurements.reduce((sum, time) => sum + time, 0) / measurements.length : 0;
+                resolve(average);
+            }, 2000);
+        });
+    },
+    
+    // Analizar re-renders
+    _analyzeReRenders() {
+        // Placeholder para analisis de re-renders
+        // En una implementacion real, esto requeriria instrumentacion especifica de React
+        return {
+            detected: false,
+            count: 0,
+            components: [],
+            note: 'Analisis de re-renders requiere instrumentacion especifica'
+        };
+    },
+    
+    // ========= EVALUACIÓN Y RATING =========
+    
+    // Evaluar resultados contra umbrales
+    _evaluateResults(results, thresholds) {
+        const evaluation = {
+            raw: results,
+            scores: {},
+            overall: 'unknown'
+        };
+        
+        let totalScore = 0;
+        let scoreCount = 0;
+        
+        for (const [metric, value] of Object.entries(results)) {
+            if (thresholds[metric] && typeof value === 'number') {
+                const threshold = thresholds[metric];
+                let score;
+                
+                if (value <= threshold.good) {
+                    score = 'good';
+                } else if (value <= threshold.poor) {
+                    score = 'needs-improvement';
+                } else {
+                    score = 'poor';
+                }
+                
+                evaluation.scores[metric] = {
+                    value: value,
+                    score: score,
+                    threshold: threshold
+                };
+                
+                // Convertir a numero para promedio
+                const numScore = score === 'good' ? 3 : score === 'needs-improvement' ? 2 : 1;
+                totalScore += numScore;
+                scoreCount++;
+            }
+        }
+        
+        // Calcular score general
+        if (scoreCount > 0) {
+            const avgScore = totalScore / scoreCount;
+            evaluation.overall = avgScore >= 2.5 ? 'good' : avgScore >= 1.5 ? 'needs-improvement' : 'poor';
+        }
+        
+        return evaluation;
+    },
+    
+    // Rating para CLS
+    _rateCLS(value) {
+        if (value <= 0.1) return 'good';
+        if (value <= 0.25) return 'needs-improvement';
+        return 'poor';
+    },
+    
+    // ========= UTILIDADES =========
+    
+    // Obtener informacion de conexion
+    _getConnectionInfo() {
+        if ('connection' in navigator) {
+            return {
+                effectiveType: navigator.connection.effectiveType,
+                downlink: navigator.connection.downlink,
+                rtt: navigator.connection.rtt
+            };
+        }
+        return null;
+    },
+    
+    // Generar resumen de todos los tests
+    _generateSummary(tests) {
+        const summary = {
+            totalTests: Object.keys(tests).length,
+            passedTests: 0,
+            failedTests: 0,
+            overallScore: 'unknown',
+            criticalIssues: [],
+            recommendations: []
+        };
+        
+        let totalScore = 0;
+        let scoreCount = 0;
+        
+        for (const [testName, testResult] of Object.entries(tests)) {
+            if (testResult.overall === 'good') {
+                summary.passedTests++;
+                totalScore += 3;
+            } else if (testResult.overall === 'needs-improvement') {
+                totalScore += 2;
+            } else if (testResult.overall === 'poor') {
+                summary.failedTests++;
+                totalScore += 1;
+                summary.criticalIssues.push(`${testName}: ${testResult.overall}`);
+            }
+            scoreCount++;
+        }
+        
+        if (scoreCount > 0) {
+            const avgScore = totalScore / scoreCount;
+            summary.overallScore = avgScore >= 2.5 ? 'good' : avgScore >= 1.5 ? 'needs-improvement' : 'poor';
+        }
+        
+        // Generar recomendaciones basadas en resultados
+        summary.recommendations = this._generateRecommendations(tests);
+        
+        return summary;
+    },
+    
+    // Generar recomendaciones
+    _generateRecommendations(tests) {
+        const recommendations = [];
+        
+        // Recomendaciones basadas en Core Web Vitals
+        if (tests.coreWebVitals) {
+            const cwv = tests.coreWebVitals;
+            if (cwv.scores.lcp && cwv.scores.lcp.score !== 'good') {
+                recommendations.push('Optimizar LCP: Reducir tamano de imagenes hero y mejorar tiempo de servidor');
+            }
+            if (cwv.scores.cls && cwv.scores.cls.score !== 'good') {
+                recommendations.push('Reducir CLS: Especificar dimensiones de imagenes y evitar contenido dinamico');
+            }
+        }
+        
+        // Recomendaciones de cache
+        if (tests.cachePerformance) {
+            const cache = tests.cachePerformance;
+            if (cache.scores.hitRate && cache.scores.hitRate.score !== 'good') {
+                recommendations.push('Mejorar estrategia de cache: Incrementar TTL para recursos estaticos');
+            }
+        }
+        
+        // Recomendaciones de API
+        if (tests.apiPerformance) {
+            const api = tests.apiPerformance;
+            if (api.scores.averageResponseTime && api.scores.averageResponseTime.score !== 'good') {
+                recommendations.push('Optimizar APIs: Implementar paginacion y reducir payload de respuestas');
+            }
+        }
+        
+        return recommendations;
+    },
+    
+    // ========= PERSISTENCIA Y REPORTES =========
+    
+    // Guardar resultados
+    _saveResults(results) {
+        try {
+            // Guardar en localStorage
+            const key = 'ventaspet_performance_results';
+            const existing = JSON.parse(localStorage.getItem(key) || '[]');
+            existing.push(results);
+            
+            // Mantener solo los ultimos 10 resultados
+            if (existing.length > 10) {
+                existing.shift();
+            }
+            
+            localStorage.setItem(key, JSON.stringify(existing));
+            this.testResults.history = existing;
+            
+        } catch (error) {
+            console.warn('[WARNING] No se pudieron guardar los resultados:', error);
+        }
+    },
+    
+    // Cargar baseline
+    loadBaseline() {
+        try {
+            const baseline = localStorage.getItem('ventaspet_performance_baseline');
+            if (baseline) {
+                this.testResults.baseline = JSON.parse(baseline);
+                console.log('📊 Baseline de rendimiento cargado');
+            }
+        } catch (error) {
+            console.warn('[WARNING] No se pudo cargar baseline:', error);
+        }
+    },
+    
+    // Establecer baseline
+    setBaseline() {
+        if (this.testResults.current) {
+            this.testResults.baseline = this.testResults.current;
+            localStorage.setItem('ventaspet_performance_baseline', JSON.stringify(this.testResults.baseline));
+            console.log('[OK] Baseline establecido');
+        } else {
+            console.warn('[WARNING] No hay resultados actuales para establecer baseline');
+        }
+    },
+    
+    // Mostrar reporte de tests
+    showTestReport() {
+        if (!this.testResults.current) {
+            console.log('[WARNING] No hay resultados de tests para mostrar');
+            return;
+        }
+        
+        const results = this.testResults.current;
+        
+        console.log('\
+🧪 === REPORTE DE RENDIMIENTO VENTASPET ===');
+        console.log(`📅 Timestamp: ${results.timestamp}`);
+        console.log(`🌐 URL: ${results.url}`);
+        console.log(`📱 Viewport: ${results.viewport.width}x${results.viewport.height}`);
+        
+        if (results.connection) {
+            console.log(`📡 Conexion: ${results.connection.effectiveType}`);
+        }
+        
+        console.log(`\
+📊 Resumen General:`);
+        console.log(`[OK] Tests pasados: ${results.summary.passedTests}`);
+        console.log(`[ERROR] Tests fallidos: ${results.summary.failedTests}`);
+        console.log(`🎯 Score general: ${results.summary.overallScore}`);
+        
+        if (results.summary.criticalIssues.length > 0) {
+            console.log('\
+🚨 Problemas criticos:');
+            results.summary.criticalIssues.forEach(issue => {
+                console.log(`  • ${issue}`);
+            });
+        }
+        
+        if (results.summary.recommendations.length > 0) {
+            console.log('\
+[ICON:IDEA] Recomendaciones:');
+            results.summary.recommendations.forEach(rec => {
+                console.log(`  • ${rec}`);
+            });
+        }
+        
+        console.log('\
+==========================================\
+');
+        
+        return results;
+    },
+    
+    // Comparar con baseline
+    compareWithBaseline() {
+        if (!this.testResults.current || !this.testResults.baseline) {
+            console.log('[WARNING] Se requieren resultados actuales y baseline para comparar');
+            return null;
+        }
+        
+        const comparison = {
+            timestamp: new Date().toISOString(),
+            improvements: [],
+            regressions: [],
+            summary: {}
+        };
+        
+        // Comparar metricas clave
+        const keyMetrics = ['pageLoadTime', 'domContentLoaded', 'lcp', 'fid', 'cls'];
+        
+        keyMetrics.forEach(metric => {
+            const currentValue = this._extractMetricValue(this.testResults.current, metric);
+            const baselineValue = this._extractMetricValue(this.testResults.baseline, metric);
+            
+            if (currentValue !== null && baselineValue !== null) {
+                const difference = currentValue - baselineValue;
+                const percentChange = (difference / baselineValue) * 100;
+                
+                if (Math.abs(percentChange) > 5) { // Solo cambios significativos
+                    const item = {
+                        metric,
+                        current: currentValue,
+                        baseline: baselineValue,
+                        difference,
+                        percentChange: percentChange.toFixed(1) + '%'
+                    };
+                    
+                    if (difference < 0) {
+                        comparison.improvements.push(item);
+                    } else {
+                        comparison.regressions.push(item);
+                    }
+                }
+            }
+        });
+        
+        console.log('\
+📈 === COMPARACIÓN CON BASELINE ===');
+        
+        if (comparison.improvements.length > 0) {
+            console.log('[OK] Mejoras detectadas:');
+            comparison.improvements.forEach(item => {
+                console.log(`  • ${item.metric}: ${item.baseline} → ${item.current} (${item.percentChange})`);
+            });
+        }
+        
+        if (comparison.regressions.length > 0) {
+            console.log('[ERROR] Regresiones detectadas:');
+            comparison.regressions.forEach(item => {
+                console.log(`  • ${item.metric}: ${item.baseline} → ${item.current} (${item.percentChange})`);
+            });
+        }
+        
+        if (comparison.improvements.length === 0 && comparison.regressions.length === 0) {
+            console.log('📊 No se detectaron cambios significativos');
+        }
+        
+        console.log('=====================================\
+');
+        
+        return comparison;
+    },
+    
+    // Extraer valor de metrica de resultados
+    _extractMetricValue(results, metric) {
+        // Buscar en diferentes secciones de los resultados
+        const sections = ['basicMetrics', 'coreWebVitals', 'cachePerformance', 'apiPerformance'];
+        
+        for (const section of sections) {
+            const sectionData = results.tests[section];
+            if (sectionData && sectionData.raw && sectionData.raw[metric] !== undefined) {
+                return sectionData.raw[metric];
+            }
+            
+            // Tambien buscar en scores
+            if (sectionData && sectionData.scores && sectionData.scores[metric]) {
+                return sectionData.scores[metric].value;
+            }
+        }
+        
+        return null;
+    },
+    
+    // ========= CONFIGURACIÓN AUTOMÁTICA =========
+    
+    // Configurar testing automatico
+    setupAutomaticTesting() {
+        // Ejecutar tests ligeros cada 5 minutos
+        setInterval(() => {
+            if (!this.isRunning) {
+                this._runLightweightTest();
+            }
+        }, 5 * 60 * 1000);
+    },
+    
+    // Test ligero automatico
+    async _runLightweightTest() {
+        try {
+            const basicMetrics = await this.testBasicMetrics();
+            const timestamp = new Date().toISOString();
+            
+            // Guardar metricas basicas
+            const lightResults = {
+                timestamp,
+                type: 'lightweight',
+                metrics: basicMetrics
+            };
+            
+            // Guardar en historial ligero
+            const key = 'ventaspet_light_metrics';
+            const existing = JSON.parse(localStorage.getItem(key) || '[]');
+            existing.push(lightResults);
+            
+            // Mantener solo las ultimas 50 mediciones
+            if (existing.length > 50) {
+                existing.shift();
+            }
+            
+            localStorage.setItem(key, JSON.stringify(existing));
+            
+        } catch (error) {
+            console.warn('[WARNING] Error en test automatico:', error);
+        }
+    },
+    
+    // Configurar reportes automaticos
+    setupAutomaticReporting() {
+        // Reporte automatico cuando el rendimiento empeora significativamente
+        window.addEventListener('beforeunload', () => {
+            if (this.testResults.current && this.testResults.baseline) {
+                const comparison = this.compareWithBaseline();
+                if (comparison && comparison.regressions.length > 0) {
+                    console.warn('[WARNING] Detectadas regresiones de rendimiento al cerrar pagina');
+                }
+            }
+        });
+    }
+};
+
+// Inicializar automaticamente
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.PerformanceTesting.init();
+    });
+} else {
+    window.PerformanceTesting.init();
+}
+
+// Exponer funciones globales para testing manual
+window.runPerformanceTests = () => window.PerformanceTesting.runFullTestSuite();
+window.showPerformanceReport = () => window.PerformanceTesting.showTestReport();
+window.setPerformanceBaseline = () => window.PerformanceTesting.setBaseline();
+window.comparePerformance = () => window.PerformanceTesting.compareWithBaseline();
+
+console.log('[OK] Performance Testing Suite cargado');
+console.log('[ICON:IDEA] Usa runPerformanceTests() para ejecutar la suite completa');
