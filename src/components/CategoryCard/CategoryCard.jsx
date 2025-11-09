@@ -1,29 +1,33 @@
-// VentasPet - Responsive Category Card Component
-// Supports webp, srcset, lazy-loading, and accessibility
+// VentasPet - Responsive Category Card Component (CANONICAL VERSION)
+// Supports srcset, lazy-loading, accessibility, and image frame with overflow control
 
-console.log('🎴 Cargando Responsive Category Card Component...');
+console.log('🎴 Cargando Responsive Category Card Component (Canonical)...');
 
 /**
- * CategoryCard Component
+ * CategoryCard Component - CANONICAL VERSION
  * 
  * Features:
- * - <picture> element with webp source + jpg fallback
- * - srcset for 1x and 2x (retina) images
+ * - Image frame with border-radius and overflow:hidden
+ * - Background color matching card color
+ * - <picture> element with srcset for 1x and 2x (retina) images
  * - lazy loading for performance
  * - fit='cover' or fit='contain' to avoid cropping pets
  * - Full accessibility (aria-labels, keyboard navigation)
+ * - onError handler with visual fallback
+ * - Proper z-index hierarchy (content above image)
  * - Responsive styles
  * 
  * @param {Object} props
  * @param {string} props.img1x - 1x image URL (principal)
  * @param {string} props.img2x - 2x image URL (retina)
- * @param {string} props.thumb - Thumbnail image URL
+ * @param {string} props.thumb - Thumbnail image URL (fallback)
  * @param {string} props.category - Category name
  * @param {string} props.subtitle - Subtitle text
- * @param {string} props.color - Background color
+ * @param {string} props.color - Background color (for card and image frame)
  * @param {Function} props.onClick - Click handler
  * @param {string} props.fit - Image object-fit ('cover' or 'contain'), default 'cover'
  * @param {string} props.alt - Alternative text for image
+ * @param {string} props.href - Optional link URL
  */
 function CategoryCardComponent({ 
     img1x,
@@ -34,16 +38,17 @@ function CategoryCardComponent({
     color, 
     onClick, 
     fit = 'cover',
-    alt
+    alt,
+    href
 }) {
     const [isHovered, setIsHovered] = React.useState(false);
     const [imageError, setImageError] = React.useState(false);
     
     const handleImageError = (e) => {
-        console.warn(`❌ IMAGE LOAD ERROR: ${e.target.src || e.target.currentSrc}`);
-        // Add visual indicator for QA
-        e.target.style.outline = '3px solid red';
-        e.target.style.background = '#f3f3f3';
+        const failedUrl = e.target.src || e.target.currentSrc;
+        console.warn(`❌ IMAGE LOAD ERROR for ${category}:`, failedUrl);
+        // Hide the broken image, let the frame background show
+        e.target.style.display = 'none';
         setImageError(true);
     };
     
@@ -85,23 +90,27 @@ function CategoryCardComponent({
             }
         },
         
-        // Responsive image with picture element
+        // Image frame with background color and overflow control
         React.createElement('div',
             {
-                className: 'category-image-container-responsive',
+                className: 'category-image-frame',
                 style: {
                     position: 'absolute',
                     top: '-40px',
                     right: '20px',
                     width: '200px',
                     height: '200px',
-                    zIndex: 2,
+                    zIndex: 1,
+                    backgroundColor: color || '#4A90E2',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                    padding: '12px',
+                    boxShadow: '0 10px 20px rgba(0, 0, 0, 0.2)',
                     transform: isHovered ? 'scale(1.1) rotate(5deg)' : 'scale(1) rotate(0deg)',
-                    transition: 'all 0.3s ease',
-                    filter: 'drop-shadow(0 10px 20px rgba(0, 0, 0, 0.2))'
+                    transition: 'all 0.3s ease'
                 }
             },
-            !imageError && React.createElement('picture',
+            !imageError ? React.createElement('picture',
                 {
                     className: 'category-picture',
                     style: {
@@ -126,35 +135,48 @@ function CategoryCardComponent({
                         width: '100%',
                         height: '100%',
                         objectFit: fit,
-                        borderRadius: '12px'
+                        borderRadius: '8px'
                     }
                 })
-            ),
-            // Fallback for error state - show background color
-            imageError && React.createElement('div',
-                {
+            ) : (
+                // Fallback for error state - show paw emoji or use thumb
+                thumb ? React.createElement('img', {
+                    src: thumb,
+                    alt: alt || category,
+                    loading: 'lazy',
                     style: {
+                        display: 'block',
                         width: '100%',
                         height: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        background: 'rgba(255, 255, 255, 0.2)',
-                        borderRadius: '12px',
-                        fontSize: '3rem'
+                        objectFit: fit,
+                        borderRadius: '8px',
+                        opacity: 0.7
                     }
-                },
-                '🐾'
+                }) : React.createElement('div',
+                    {
+                        style: {
+                            width: '100%',
+                            height: '100%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: 'rgba(255, 255, 255, 0.15)',
+                            borderRadius: '8px',
+                            fontSize: '3rem'
+                        }
+                    },
+                    '🐾'
+                )
             )
         ),
         
-        // Category content
+        // Category content with higher z-index to stay above image
         React.createElement('div',
             {
                 className: 'category-content-responsive',
                 style: {
                     position: 'relative',
-                    zIndex: 1,
+                    zIndex: 2,
                     marginTop: 'auto'
                 }
             },
@@ -214,6 +236,7 @@ function CategoryCardComponent({
                     justifyContent: 'center',
                     fontSize: '1.5rem',
                     color: '#FFFFFF',
+                    zIndex: 2,
                     transform: isHovered ? 'translateX(5px)' : 'translateX(0)',
                     transition: 'all 0.2s ease',
                     backdropFilter: 'blur(10px)'
@@ -253,7 +276,7 @@ categoryCardResponsiveStyles.textContent = `
             padding: 25px !important;
         }
         
-        .category-image-container-responsive {
+        .category-image-frame {
             width: 180px !important;
             height: 180px !important;
             top: -35px !important;
@@ -268,7 +291,7 @@ categoryCardResponsiveStyles.textContent = `
             padding: 25px !important;
         }
         
-        .category-image-container-responsive {
+        .category-image-frame {
             width: 160px !important;
             height: 160px !important;
             top: -30px !important;
@@ -283,7 +306,7 @@ categoryCardResponsiveStyles.textContent = `
             padding: 20px !important;
         }
         
-        .category-image-container-responsive {
+        .category-image-frame {
             width: 140px !important;
             height: 140px !important;
             top: -25px !important;
@@ -294,7 +317,7 @@ categoryCardResponsiveStyles.textContent = `
     /* Reduced motion for accessibility */
     @media (prefers-reduced-motion: reduce) {
         .category-card-responsive,
-        .category-image-container-responsive,
+        .category-image-frame,
         .category-arrow {
             transition: none !important;
             transform: none !important;
@@ -310,4 +333,4 @@ categoryCardResponsiveStyles.textContent = `
 `;
 document.head.appendChild(categoryCardResponsiveStyles);
 
-console.log('✅ Responsive Category Card Component cargado');
+console.log('✅ Responsive Category Card Component (Canonical) cargado');
