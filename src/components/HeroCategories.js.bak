@@ -1,5 +1,5 @@
 // VentasPet - Hero Categories Component
-// Categories section removed - Perrolandia and Gatolandia cards eliminated
+// Cards principales para Perrolandia y Gatolandia
 
 console.log('🏠 Cargando Hero Categories Component...');
 
@@ -8,8 +8,32 @@ function HeroCategoriesComponent() {
     console.log('🏠 DEBUG: HeroCategoriesComponent ejecutándose...', React, ReactDOM);
     const [hoveredCard, setHoveredCard] = React.useState(null);
     
-    // Categories array is now empty - Perrolandia and Gatolandia removed
-    const categories = [];
+    const categories = [
+        {
+            id: 'perrolandia',
+            title: 'Perrolandia',
+            subtitle: 'Todo para tu mejor amigo',
+            description: 'Descubre productos especiales para perros de todas las edades y tamaños',
+            icon: '🐕',
+            image: './perro_card_img.jpg',
+            gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            shadowColor: 'rgba(102, 126, 234, 0.4)',
+            productCount: '250+ productos',
+            highlights: ['Alimento premium', 'Juguetes', 'Accesorios', 'Cuidado e higiene']
+        },
+        {
+            id: 'gatolandia',
+            title: 'Gatolandia',
+            subtitle: 'Para tu felino especial',
+            description: 'Encuentra todo lo que tu gato necesita para estar feliz y saludable',
+            icon: '🐱',
+            image: './gato_card_img.jpg',
+            gradient: 'linear-gradient(135deg, #4A90E2 0%, #357ABD 100%)',
+            shadowColor: 'rgba(74, 144, 226, 0.4)',
+            productCount: '180+ productos',
+            highlights: ['Arena y bandejas', 'Rascadores', 'Snacks felinos', 'Juguetes interactivos']
+        }
+    ];
     
     const handleCategoryClick = (categoryId) => {
         console.log(`🎯 Click en ${categoryId}`);
@@ -31,11 +55,6 @@ function HeroCategoriesComponent() {
     const handleMouseLeave = () => {
         setHoveredCard(null);
     };
-    
-    // If no categories, return null to hide the component
-    if (categories.length === 0) {
-        return null;
-    }
     
     return React.createElement('section',
         {
