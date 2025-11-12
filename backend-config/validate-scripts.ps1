@@ -210,8 +210,9 @@ foreach ($script in $scripts) {
         $passedTests++
     } else {
         Write-TestResult -Success $false -Message "Errores de sintaxis detectados"
-        foreach ($error in $syntaxResult.Errors) {
-            Write-Host "     • $error" -ForegroundColor DarkRed
+        # CHANGELOG: Renamed $error to $errorItem to avoid PSScriptAnalyzer error (readonly automatic variable)
+        foreach ($errorItem in $syntaxResult.Errors) {
+            Write-Host "     • $errorItem" -ForegroundColor DarkRed
         }
         $scriptFailed = $true
     }

@@ -5,12 +5,13 @@ $stats = @{
     )
 }
 
-foreach ($error in $stats.Errors) {
-    Write-Host "Fila $($error.Row):"
-    foreach ($errorMsg in $error.Errors) {
+# CHANGELOG: Renamed $error to $errorItem to avoid PSScriptAnalyzer error (readonly automatic variable)
+foreach ($errorItem in $stats.Errors) {
+    Write-Host "Fila $($errorItem.Row):"
+    foreach ($errorMsg in $errorItem.Errors) {
         Write-Host "  • $errorMsg"
     }
-    $errorData = $error.Data | Format-List | Out-String
+    $errorData = $errorItem.Data | Format-List | Out-String
     Write-Host "  Datos:"
     Write-Host ("  " + ($errorData.Trim() -replace "`n", "`n  "))
     Write-Host ""
