@@ -176,12 +176,13 @@ function Process-CsvFile {
         if ($stats.Errors.Count -gt 0) {
             Write-Host "ERRORES ENCONTRADOS: $($stats.Errors.Count)" -ForegroundColor Red
             Write-Host ""
-            foreach ($error in $stats.Errors) {
-                Write-Host ("   Fila $($error.Row):") -ForegroundColor Red
-                foreach ($errorMsg in $error.Errors) {
+            # CHANGELOG: Renamed $error to $errorItem to avoid PSScriptAnalyzer error (readonly automatic variable)
+            foreach ($errorItem in $stats.Errors) {
+                Write-Host ("   Fila $($errorItem.Row):") -ForegroundColor Red
+                foreach ($errorMsg in $errorItem.Errors) {
                     Write-Host ("      - $errorMsg") -ForegroundColor DarkRed
                 }
-                $errorData = $error.Data | Format-List | Out-String
+                $errorData = $errorItem.Data | Format-List | Out-String
                 Write-Host "      Datos:" -ForegroundColor DarkYellow
                 Write-Host ("      " + ($errorData.Trim() -replace "`n", "`n      ")) -ForegroundColor Gray
                 Write-Host ""

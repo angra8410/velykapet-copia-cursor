@@ -1,0 +1,4 @@
+ID,CATEGORIA,CATEGORIA ALIMENTOS,SUBCATEGORIA,PRESENTACION EMPAQUE,MARCA,NAME, PRECIO ANTES DE GANANCIA CDM , ICONOPET , MARGEN , PRECIO SUGERIDO DE VENTA ,description,presentacion, PRICE ,stock,sku,imageUrl,proveedor,creadoen,actualizadoen
+1,PERRO,ALIMENTO SECO,ADULTO,BOLSA,ROYAL CANIN,Royal Canin Maxi Adult 15kg,"$85,000.00",,,,"Alimento completo para perros adultos de raza grande",15 KG,"$85,000.00",10,RC-MAXI-15,https://example.com/royal-canin-maxi.jpg,Proveedor Test,,
+2,GATO,ALIMENTO HUMEDO,KITTEN,POUCH,WHISKAS,Whiskas Gatitos Pollo 85g,"$3,500.00",,,,"Alimento húmedo para gatitos",85 GR,"$3,500.00",50,WK-KIT-85,https://example.com/whiskas-kitten.jpg,Proveedor Test,,
+3,PERRO,SNACKS,PREMIOS,CAJA,PEDIGREE,Pedigree Dentastix Medium 7u,"$8,900.00",,,,"Premio dental para perros medianos",7 UNIDADES,"$8,900.00",25,PD-DENT-M7,https://example.com/dentastix.jpg,Proveedor Test,,
