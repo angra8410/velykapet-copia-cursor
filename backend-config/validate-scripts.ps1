@@ -1,4 +1,4 @@
-# ========================================
+﻿# ========================================
 # Script de Validación Automática de Scripts PowerShell
 # ========================================
 # Valida sintaxis, encoding y buenas prácticas
